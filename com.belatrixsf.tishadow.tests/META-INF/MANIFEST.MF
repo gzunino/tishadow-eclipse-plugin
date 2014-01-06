@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: TiShadowTestView
+Bundle-SymbolicName: com.belatrixsf.tishadow.tests; singleton:=true
+Bundle-Version: 0.0.1.qualifier
+Bundle-Activator: com.belatrixsf.tishadow.tests.Activator
+Bundle-Vendor: BELATRIXSF
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.jdt.junit,
+ org.eclipse.debug.ui,
+ org.eclipse.core.externaltools,
+ org.eclipse.ui.externaltools,
+ org.eclipse.ui.ide
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy

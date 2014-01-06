@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/com.belatrixsf.tishadow.feature_0.0.1.qualifier.jar" id="com.belatrixsf.tishadow.feature" version="0.0.1.qualifier">
+      <category name="com.belatrixsf.tishadow.category"/>
+   </feature>
+   <category-def name="com.belatrixsf.tishadow.category" label="TiShadow">
+      <description>
+         Plugin to run TiShadow tests and display results on JUnit View
+      </description>
+   </category-def>
+</site>
