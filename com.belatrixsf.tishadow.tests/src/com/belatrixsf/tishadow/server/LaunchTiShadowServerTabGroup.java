@@ -1,4 +1,4 @@
-package com.belatrixsf.tishadow.tests;
+package com.belatrixsf.tishadow.server;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -17,17 +17,17 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.externaltools.internal.program.launchConfigurations.ProgramMainTab;
 
 @SuppressWarnings("restriction")
-public class LaunchTiShadowTestsTabGroup extends
+public class LaunchTiShadowServerTabGroup extends
 		AbstractLaunchConfigurationTabGroup {
 
-	public LaunchTiShadowTestsTabGroup() {
+	public LaunchTiShadowServerTabGroup() {
 	}
-
+	
 	@Override
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
 		IResource context = getContext();
 		try {
-			LaunchTiShadowTests.setLaunchAttributes(configuration, context);
+			LaunchTiShadowServer.setLaunchAttributes(configuration, context);
 		} catch (CoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -35,8 +35,7 @@ public class LaunchTiShadowTestsTabGroup extends
 
 		super.setDefaults(configuration);
 	}
-
-
+	
 	@Override
 	public void createTabs(ILaunchConfigurationDialog dialog, String mode) {
 		ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[] {
@@ -67,4 +66,5 @@ public class LaunchTiShadowTestsTabGroup extends
 		}
 		return null;
 	}
+
 }

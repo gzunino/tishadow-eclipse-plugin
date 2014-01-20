@@ -10,6 +10,12 @@
             modes="run"
             name="TiShadow Tests">
       </launchConfigurationType>
+      <launchConfigurationType
+            delegate="com.belatrixsf.tishadow.server.LaunchTiShadowServer"
+            id="com.belatrixsf.tishadow.server.launchTiShadowServer"
+            modes="run"
+            name="TiShadow Server">
+      </launchConfigurationType>
    </extension>
    <extension
          point="org.eclipse.debug.ui.launchConfigurationTabGroups">
@@ -18,13 +24,23 @@
             id="com.belatrixsf.tishadow.tests.launchTiShadowTestsTabGroup"
             type="com.belatrixsf.tishadow.tests.launchTiShadowTests">
       </launchConfigurationTabGroup>
+      <launchConfigurationTabGroup
+            class="com.belatrixsf.tishadow.server.LaunchTiShadowServerTabGroup"
+            id="com.belatrixsf.tishadow.server.launchTiShadowServerTabGroup"
+            type="com.belatrixsf.tishadow.server.launchTiShadowServer">
+      </launchConfigurationTabGroup>
    </extension>
    <extension
          point="org.eclipse.debug.ui.launchConfigurationTypeImages">
       <launchConfigurationTypeImage
             configTypeID="com.belatrixsf.tishadow.tests.launchTiShadowTests"
-            icon="icons/tishadow.png"
+            icon="icons/tishadow_16.png"
             id="com.belatrixsf.tishadow.tests.launchTiShadowTestsImage">
+      </launchConfigurationTypeImage>
+      <launchConfigurationTypeImage
+            configTypeID="com.belatrixsf.tishadow.server.launchTiShadowServer"
+            icon="icons/tishadow-server_16.png"
+            id="com.belatrixsf.tishadow.server.launchTiShadowServerImage">
       </launchConfigurationTypeImage>
    </extension>
    <extension
@@ -32,7 +48,7 @@
       <shortcut
             class="com.belatrixsf.tishadow.tests.LaunchShortcut"
             description="Run Jasmine specs on this project and shows results in JUnit View"
-            icon="icons/tishadow.png"
+            icon="icons/tishadow_16.png"
             id="com.belatrixsf.tishadow.tests.launchTiShadowTestsShortcut"
             label="TiShadow Tests"
             modes="run">
@@ -43,12 +59,21 @@
                   mode="run">
             </contextLabel>
          </contextualLaunch>
-         <!--perspective
-               id="com.appcelerator.titanium.ui.StudioPerspective">
-         </perspective>
-         <perspective
-               id="com.aptana.ui.WebPerspective">
-         </perspective-->
+      </shortcut>
+      <shortcut
+            class="com.belatrixsf.tishadow.server.LaunchServerShortcut"
+            description="Starts the tiShadow server in order to be able to run the tests on the devices"
+            icon="icons/tishadow-server_16.png"
+            id="com.belatrixsf.tishadow.server.launchTiShadowServerShortcut"
+            label="TiShadow Server"
+            modes="run">
+         <contextualLaunch>
+            <enablement></enablement>
+            <contextLabel
+                  label="Run TiShadow Server"
+                  mode="run">
+            </contextLabel>
+         </contextualLaunch>
       </shortcut>
    </extension>
 
