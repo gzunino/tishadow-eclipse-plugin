@@ -15,6 +15,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.externaltools.internal.IExternalToolConstants;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -37,8 +38,10 @@ import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 import org.eclipse.jdt.internal.junit.ui.JUnitViewEditorLauncher;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.widgets.Display;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -50,6 +53,24 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 			ILaunch launch, final IProgressMonitor monitor) throws CoreException {
 		final SubMonitor mon = SubMonitor.convert(monitor);
 		mon.beginTask("Running Tests", IProgressMonitor.UNKNOWN);
+		
+		boolean showWizard = Activator.getDefault().getPreferenceStore().getBoolean("tishadow.showWizard");
+		
+		if(showWizard) {
+			String instructionsMessage = "1 - Make sure the tishadow server is running. You can start it using the Run Tishadow server option in the context menu.\n";
+			instructionsMessage += "2 - Open the tishadow application on the devices you want to use to run the tests and connect them to the server.\n";
+			instructionsMessage += "3 - Once this is done the tests will run properly.\n";
+			
+			MessageDialogWithToggle.openInformation(
+					null, 
+					"TiShadow Wizard", 
+					instructionsMessage, 
+					"Do not show this wizard again", 
+					true, 
+					Activator.getDefault().getPreferenceStore(), 
+					"tishadow.showWizard"
+			);
+		}
 		
 		final String projectLoc = configuration.getAttribute(IExternalToolConstants.ATTR_WORKING_DIRECTORY, "");
 		final IProject project = getProject(projectLoc);
@@ -114,35 +135,6 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 							
 							mergeXMLFiles(junitXMLResources, tishadowDirectory+"/fullTestSuite.xml");
 							
-//							for (IPath junitXMLResource : junitXMLResources) {
-//								try {
-//									ArrayList<String> linesToRemove = new ArrayList<String>();
-//									linesToRemove.add("<testsuites>");
-//									linesToRemove.add("</testsuites>");
-//									
-//									removeLine(junitXMLResource.toString(), linesToRemove, true);
-//								} catch (IOException e) {
-//									// TODO Auto-generated catch block
-//									e.printStackTrace();
-//								}
-//							}
-							
-//							FileSet fs = new FileSet();
-//							fs.createInclude().setName("*_result.xml");
-//							fs.setDir(new File(tishadowDirectory));
-//							
-//							XMLResultAggregator resultAggregator = new XMLResultAggregator();
-//							
-//							resultAggregator.setProject(new Project());
-//							
-//							resultAggregator.addFileSet(fs);
-//							
-//							resultAggregator.setTodir(new File(tishadowDirectory));
-//							
-//							resultAggregator.setTofile("fullTestSuite.xml");
-//							
-//							resultAggregator.execute();
-							
 							refreshProject(project);
 							
 							junit.open(new Path(tishadowDirectory+"/fullTestSuite.xml"));
@@ -164,77 +156,6 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 			e.printStackTrace();
 		}
 	}
-	
-//	private void stringToXMLFile (String fileContent, String fileName) {
-//		
-//		try {
-//			FileUtils.writeStringToFile(new File(fileName), fileContent);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		
-//		FileOutputStream fop = null;
-//		File file;
-// 
-//		try {
-// 
-//			file = new File(fileName.replace(".xml", ".txt"));
-//			fop = new FileOutputStream(file);
-// 
-//			// if file doesnt exists, then create it
-//			if (file.exists()) {
-//				file.delete();
-//				file.createNewFile();
-//			}
-// 
-//			// get the content in bytes
-//			byte[] contentInBytes = fileContent.getBytes();
-// 
-//			fop.write(contentInBytes);
-//			fop.flush();
-//			fop.close();
-// 
-//			System.out.println("Done");
-// 
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-		
-//		try {
-//			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-//	        DocumentBuilder builder;
-//		
-//			builder = factory.newDocumentBuilder();
-//		
-//	        Document documentFiltered = builder.parse(new InputSource(new StringReader(fileContent)));
-//	        
-//	     // Use a Transformer for output
-//	        TransformerFactory tFactory =
-//	        TransformerFactory.newInstance();
-//	        Transformer transformer = tFactory.newTransformer();
-//	
-//	        DOMSource source = new DOMSource(documentFiltered);
-//	        StreamResult result = new StreamResult(fileName);
-//	        transformer.transform(source, result);
-//		} catch (ParserConfigurationException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (SAXException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (TransformerException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
-	
-//	private String readFile (String file) throws IOException {
-//		return removeLine(file, new ArrayList<String>(), false);
-//	}
 	
 	private String mergeXMLFiles(ArrayList<IPath> junitXMLResources, String mergedFileName) {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -258,9 +179,32 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 		        
 		        NodeList testSuiteElements = document.getElementsByTagName("testsuite");
 		        
+		        String fileName = junitXMLResource.toString();
+		        
+		        fileName = fileName.substring(fileName.lastIndexOf("/") + 1, fileName.length());
+		        
+		        String[] xmlName = fileName.split("_");
+		        
+		        String deviceName = "";
+		        
+		        // Remove the ip address from the file name
+		        for (int i = 0; i < xmlName.length - 5; i++) {
+		        	if (i+1 == 1) {
+		        		deviceName += " ";
+		        	}
+		        	
+		        	deviceName += xmlName[i];
+		        	
+		        	if (StringUtils.isNumeric(xmlName[i]) && i+1 != (xmlName.length - 5)) {
+		        		deviceName += ".";
+		        	}
+		        }
+		        
 		        for(int i = 0; i < testSuiteElements.getLength(); i++) {
 		        	Node importedNode = mergedDocument.importNode(testSuiteElements.item(i), true);
-		        	testSuitesElement.appendChild(importedNode);	
+		        	String namePreviousValue = ((Element)importedNode).getAttribute("name");
+		        	((Element)importedNode).setAttribute("name", deviceName + " - " + namePreviousValue);
+		        	testSuitesElement.appendChild(importedNode);
 		        }
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -288,40 +232,6 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 		
 		return "";
 	}
-		
-//	private String removeLine (String file, ArrayList<String> remove, boolean saveToFile) throws IOException {
-//	    BufferedReader reader = new BufferedReader( new FileReader (file));
-//	    String line = null;
-//	    StringBuilder stringBuilder = new StringBuilder();
-//	    String ls = System.getProperty("line.separator");
-//
-//	    while( ( line = reader.readLine() ) != null ) {
-//	        boolean lineRemoved = false; 
-//	    	
-//	    	for(String lineToRemove : remove) {
-//	        	if(line.contains(lineToRemove)) {
-//	        		lineRemoved = true;
-//	        	}
-//	        }
-//	    	
-//	    	if (lineRemoved) {
-//	    		continue;
-//	    	}
-//	    	
-//	    	stringBuilder.append( line );
-//	        stringBuilder.append( ls );
-//	    }
-//	    
-//	    reader.close();
-//	    
-//	    String fileContent = stringBuilder.toString();
-//	    
-//	    if (saveToFile) {
-//	    	stringToXMLFile(fileContent, file);
-//        }
-//	    
-//	    return fileContent;
-//	}
 	
 	private IFolder getTiShadowResultFolder(final String projectLoc) {
 		IProject project = getProject(projectLoc);
