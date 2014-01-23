@@ -1,6 +1,7 @@
 package com.belatrixsf.tishadow.tests;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +18,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.externaltools.internal.IExternalToolConstants;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -54,21 +56,21 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 		final SubMonitor mon = SubMonitor.convert(monitor);
 		mon.beginTask("Running Tests", IProgressMonitor.UNKNOWN);
 		
-		boolean showWizard = Activator.getDefault().getPreferenceStore().getBoolean("tishadow.showWizard");
+		String hideWizard = Activator.getDefault().getPreferenceStore().getString("tishadow.hideWizard");
 		
-		if(showWizard) {
+		if(!MessageDialogWithToggle.ALWAYS.equals(hideWizard)) {
 			String instructionsMessage = "1 - Make sure the tishadow server is running. You can start it using the Run Tishadow server option in the context menu.\n";
 			instructionsMessage += "2 - Open the tishadow application on the devices you want to use to run the tests and connect them to the server.\n";
 			instructionsMessage += "3 - Once this is done the tests will run properly.\n";
 			
 			MessageDialogWithToggle.openInformation(
-					null, 
-					"TiShadow Wizard", 
-					instructionsMessage, 
-					"Do not show this wizard again", 
-					true, 
-					Activator.getDefault().getPreferenceStore(), 
-					"tishadow.showWizard"
+				null, 
+				"TiShadow Wizard", 
+				instructionsMessage, 
+				"Do not show this wizard again", 
+				true, 
+				Activator.getDefault().getPreferenceStore(), 
+				"tishadow.hideWizard"
 			);
 		}
 		
@@ -88,7 +90,7 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 		ILaunchConfigurationType type = DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurationType("org.eclipse.ui.externaltools.ProgramLaunchConfigurationType");
 		
 		final ILaunchConfigurationWorkingCopy workingCopy =
-			      type.newInstance( null, "TiShadow Spec");
+		      type.newInstance( null, "TiShadow Spec");
 		
 		final Map<String, String> envVars = configuration.getAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, new HashMap<String, String>());
 		final String location = configuration.getAttribute(IExternalToolConstants.ATTR_LOCATION, "");
@@ -101,11 +103,13 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 		workingCopy.setAttribute(IExternalToolConstants.ATTR_WORKING_DIRECTORY, projectLoc);
 		workingCopy.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, envVars);
 		
+		final boolean created_tiapp = createTiApp(project);
 		workingCopy.launch(mode, mon);
-		
+
 		DebugPlugin.getDefault().addDebugEventListener(new IDebugEventSetListener() {
 			@Override
 			public void handleDebugEvents(DebugEvent[] events) {
+				
 				if (events.length > 0 && (events[0].getKind() == DebugEvent.TERMINATE)) {
 					DebugPlugin.getDefault().removeDebugEventListener(this);
 					
@@ -122,37 +126,58 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 								e.printStackTrace();
 							}
 							
+							if (created_tiapp) {
+								deleteTiApp(project);
+							}
+							
 							if (junitXMLResources.isEmpty()) {
-								MessageDialog.openError(null, "Error", "Cannot find Junit XML results for TiShadow run");
+								MessageDialog.openError(null, "Error", "Cannot find Junit XML results for TiShadow run.");
 								return;
 							}
 							
 							String tishadowDirectory = folder.getProject().getLocation().toOSString() + "/build/tishadow";
-							
 							JUnitViewEditorLauncher junit = new JUnitViewEditorLauncher();
-							
 							refreshProject(project);
-							
 							mergeXMLFiles(junitXMLResources, tishadowDirectory+"/fullTestSuite.xml");
-							
 							refreshProject(project);
-							
 							junit.open(new Path(tishadowDirectory+"/fullTestSuite.xml"));
-							
 							mon.done();
 						}
 					});
 				}
 			}
-
 		});
 	}
 	
+	private boolean createTiApp(IProject project) {
+		IFile file = project.getFile("tiapp.xml");
+
+		if(!file.exists()) {
+			try {
+				String pathPropertiesFile = "tiapp.xml"; 
+				InputStream source = this.getClass().getResourceAsStream(pathPropertiesFile);
+				file.create(source, false, null);
+			} catch (Exception ex) {
+		       return false;
+		    }
+		}
+		
+		return true;
+	}
+
+	private void deleteTiApp(IProject project) {
+		IFile file = project.getFile("tiapp.xml");
+		try {
+			if(file.exists()) {
+				file.delete(true, null);
+			}
+		} catch (Exception ex) { }
+	}
+
 	private void refreshProject (IProject project) {
 		try {
 			project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -280,7 +305,7 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 			project = LaunchTiShadowTests.getLaunchDir(context.getProject());
 		}
 		configuration.setAttribute(IExternalToolConstants.ATTR_WORKING_DIRECTORY, project);
-		configuration.setAttribute(IExternalToolConstants.ATTR_TOOL_ARGUMENTS, "spec -x -p 8181");
+		configuration.setAttribute(IExternalToolConstants.ATTR_TOOL_ARGUMENTS, "spec -u -x -p 8181");
 		configuration.setAttribute(IExternalToolConstants.ATTR_SHOW_CONSOLE, true);
 		
 		// Get current value for PATH environment variable
@@ -291,5 +316,4 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 		envVariables.put("PATH", pathVariable);
 		configuration.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, envVariables);
 	}
-
 }
