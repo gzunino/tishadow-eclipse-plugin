@@ -76,5 +76,20 @@
          </contextualLaunch>
       </shortcut>
    </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="com.belatrixsf.tishadow.app"
+            name="TiShadow">
+      </category>
+      <wizard
+            canFinishEarly="false"
+            category="com.belatrixsf.tishadow.app"
+            class="com.belatrixsf.tishadow.app.wizards.TiShadowAppWizard"
+            icon="icons/tishadow.png"
+            id="com.belatrixsf.tishadow.app.wizards.TiShadowAppWizard"
+            name="TiShadow App Creation">
+      </wizard>
+   </extension>
 
 </plugin>

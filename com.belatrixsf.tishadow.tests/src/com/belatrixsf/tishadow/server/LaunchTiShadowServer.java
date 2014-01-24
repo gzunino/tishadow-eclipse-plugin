@@ -23,6 +23,8 @@ import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
+import com.belatrixsf.tishadow.LaunchUtils;
+
 @SuppressWarnings("restriction")
 public class LaunchTiShadowServer implements ILaunchConfigurationDelegate {
 
@@ -104,14 +106,7 @@ public class LaunchTiShadowServer implements ILaunchConfigurationDelegate {
 		configuration.setAttribute(IExternalToolConstants.ATTR_WORKING_DIRECTORY, project);
 		configuration.setAttribute(IExternalToolConstants.ATTR_TOOL_ARGUMENTS, "server -p 8181");
 		configuration.setAttribute(IExternalToolConstants.ATTR_SHOW_CONSOLE, true);
-		
-		// Get current value for PATH environment variable
-		String pathVariable = System.getenv("PATH");
-		pathVariable += ":/usr/local/bin";
-		
-		Map<String, String> envVariables = new HashMap<String, String>();
-		envVariables.put("PATH", pathVariable);
-		configuration.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, envVariables);
+		configuration.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, LaunchUtils.getEnvVars());
 	}
 	
 	public static boolean isLaunched() {
