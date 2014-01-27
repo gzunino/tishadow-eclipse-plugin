@@ -159,12 +159,14 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 				String pathPropertiesFile = "tiapp.xml"; 
 				InputStream source = this.getClass().getResourceAsStream(pathPropertiesFile);
 				file.create(source, false, null);
+				return true;
 			} catch (Exception ex) {
 		       return false;
 		    }
 		}
-		
-		return true;
+		else {
+			return false;
+		}
 	}
 
 	private void deleteTiApp(IProject project) {
