@@ -58,7 +58,7 @@ public class LaunchTiShadowServer implements ILaunchConfigurationDelegate {
 		ILaunchConfigurationType type = DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurationType("org.eclipse.ui.externaltools.ProgramLaunchConfigurationType");
 		
 		final ILaunchConfigurationWorkingCopy workingCopy =
-			      type.newInstance( null, "TiShadow Spec");
+			      type.newInstance( null, "TiShadow Server");
 		
 		final Map<String, String> envVars = configuration.getAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, new HashMap<String, String>());
 		final String location = configuration.getAttribute(IExternalToolConstants.ATTR_LOCATION, "");
@@ -104,7 +104,7 @@ public class LaunchTiShadowServer implements ILaunchConfigurationDelegate {
 			project = LaunchTiShadowServer.getLaunchDir(context.getProject());
 		}
 		configuration.setAttribute(IExternalToolConstants.ATTR_WORKING_DIRECTORY, project);
-		configuration.setAttribute(IExternalToolConstants.ATTR_TOOL_ARGUMENTS, "server -p 8181");
+		configuration.setAttribute(IExternalToolConstants.ATTR_TOOL_ARGUMENTS, "server");
 		configuration.setAttribute(IExternalToolConstants.ATTR_SHOW_CONSOLE, true);
 		configuration.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, LaunchUtils.getEnvVars());
 	}

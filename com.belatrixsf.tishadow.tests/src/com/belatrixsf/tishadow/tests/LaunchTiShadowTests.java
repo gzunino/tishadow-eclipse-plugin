@@ -58,23 +58,7 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 		final SubMonitor mon = SubMonitor.convert(monitor);
 		mon.beginTask("Running Tests", IProgressMonitor.UNKNOWN);
 		
-		String hideWizard = Activator.getDefault().getPreferenceStore().getString("tishadow.hideWizard");
-		
-		if(!MessageDialogWithToggle.ALWAYS.equals(hideWizard)) {
-			String instructionsMessage = "1 - Make sure the tishadow server is running. You can start it using the Run Tishadow server option in the context menu.\n";
-			instructionsMessage += "2 - Open the tishadow application on the devices you want to use to run the tests and connect them to the server.\n";
-			instructionsMessage += "3 - Once this is done the tests will run properly.\n";
-			
-			MessageDialogWithToggle.openInformation(
-				null, 
-				"TiShadow Wizard", 
-				instructionsMessage, 
-				"Do not show this wizard again", 
-				true, 
-				Activator.getDefault().getPreferenceStore(), 
-				"tishadow.hideWizard"
-			);
-		}
+		showWizard();
 		
 		final String projectLoc = configuration.getAttribute(IExternalToolConstants.ATTR_WORKING_DIRECTORY, "");
 		final IProject project = getProject(projectLoc);
@@ -108,16 +92,13 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 		final boolean created_tiapp = createTiApp(project);
 		workingCopy.launch(mode, mon);
 
+		// wait for termination and show results
 		DebugPlugin.getDefault().addDebugEventListener(new IDebugEventSetListener() {
 			@Override
 			public void handleDebugEvents(DebugEvent[] events) {
 				
 				if (events.length > 0 && (events[0].getKind() == DebugEvent.TERMINATE)) {
 					DebugPlugin.getDefault().removeDebugEventListener(this);
-					
-					final IFolder folder = getTiShadowResultFolder(projectLoc);
-					
-					final ArrayList<IPath> junitXMLResources = getXmlResults(mon, folder);
 					
 					Display.getDefault().asyncExec(new Runnable() {
 						@Override
@@ -132,23 +113,45 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 								deleteTiApp(project);
 							}
 							
+							final IFolder folder = getTiShadowResultFolder(projectLoc);
+							final ArrayList<IPath> junitXMLResources = getXmlResults(mon, folder);
 							if (junitXMLResources.isEmpty()) {
-								MessageDialog.openError(null, "Error", "Cannot find Junit XML results for TiShadow run.");
+								MessageDialog.openError(null, "Error", "Cannot find JUnit XML results for TiShadow run. Check the console logs.");
 								return;
 							}
 							
-							String tishadowDirectory = folder.getProject().getLocation().toOSString() + "/build/tishadow";
 							JUnitViewEditorLauncher junit = new JUnitViewEditorLauncher();
+							//refreshProject(project);
+							String mergedXml = folder.getLocation().toOSString() + "/build/tishadow/fullTestSuite.xml";
+							mergeXMLFiles(junitXMLResources, mergedXml);
 							refreshProject(project);
-							mergeXMLFiles(junitXMLResources, tishadowDirectory+"/fullTestSuite.xml");
-							refreshProject(project);
-							junit.open(new Path(tishadowDirectory+"/fullTestSuite.xml"));
+							junit.open(new Path(mergedXml));
 							mon.done();
 						}
 					});
 				}
 			}
 		});
+	}
+
+	private void showWizard() {
+		String hideWizard = Activator.getDefault().getPreferenceStore().getString("tishadow.hideWizard");
+		
+		if(!MessageDialogWithToggle.ALWAYS.equals(hideWizard)) {
+			String instructionsMessage = "1 - Make sure the tishadow server is running. You can start it using the Run Tishadow server option in the context menu.\n";
+			instructionsMessage += "2 - Open the tishadow application on the devices you want to use to run the tests and connect them to the server.\n";
+			instructionsMessage += "3 - Once this is done the tests will run properly.\n";
+			
+			MessageDialogWithToggle.openInformation(
+				null, 
+				"TiShadow Wizard", 
+				instructionsMessage, 
+				"Do not show this wizard again", 
+				true, 
+				Activator.getDefault().getPreferenceStore(), 
+				"tishadow.hideWizard"
+			);
+		}
 	}
 	
 	private boolean createTiApp(IProject project) {
@@ -236,7 +239,7 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 		        	testSuitesElement.appendChild(importedNode);
 		        }
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				MessageDialog.openError(null, "Error merging results", e.toString() + "\n" + e.getLocalizedMessage().toString());
 				e.printStackTrace();
 			}
 		}
@@ -252,10 +255,10 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 	        StreamResult result = new StreamResult(mergedFileName);
 	        transformer.transform(source, result);
 		} catch (TransformerConfigurationException e) {
-			// TODO Auto-generated catch block
+			MessageDialog.openError(null, "Error merging results", e.toString() + "\n" + e.getLocalizedMessage().toString());
 			e.printStackTrace();
 		} catch (TransformerException e) {
-			// TODO Auto-generated catch block
+			MessageDialog.openError(null, "Error merging results", e.toString() + "\n" + e.getLocalizedMessage().toString());
 			e.printStackTrace();
 		}
 		
@@ -282,7 +285,7 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 		ArrayList<IPath> jUnitResources = new ArrayList<IPath>();
 		if (folder.exists()) {
 			try {
-				folder.refreshLocal(1, monitor);
+				folder.refreshLocal(IFolder.DEPTH_INFINITE, monitor);
 				IResource[] members;
 				members = folder.members();
 				for (IResource iResource : members) {
@@ -309,7 +312,7 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 			project = LaunchTiShadowTests.getLaunchDir(context.getProject());
 		}
 		configuration.setAttribute(IExternalToolConstants.ATTR_WORKING_DIRECTORY, project);
-		configuration.setAttribute(IExternalToolConstants.ATTR_TOOL_ARGUMENTS, "spec -u -x -p 8181");
+		configuration.setAttribute(IExternalToolConstants.ATTR_TOOL_ARGUMENTS, "spec -u -x");
 		configuration.setAttribute(IExternalToolConstants.ATTR_SHOW_CONSOLE, true);
 		configuration.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, LaunchUtils.getEnvVars());
 	}
