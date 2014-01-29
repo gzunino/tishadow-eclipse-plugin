@@ -52,6 +52,8 @@ import com.belatrixsf.tishadow.LaunchUtils;
 @SuppressWarnings("restriction")
 public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 
+	private static final String RESULT_XML = "_result.xml";
+
 	@Override
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, final IProgressMonitor monitor) throws CoreException {
@@ -90,6 +92,10 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 		workingCopy.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, envVars);
 		
 		final boolean created_tiapp = createTiApp(project);
+
+		final IFolder folder = getTiShadowResultFolder(projectLoc);
+		removeOldResults(monitor, folder);
+		
 		workingCopy.launch(mode, mon);
 
 		// wait for termination and show results
@@ -113,7 +119,6 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 								deleteTiApp(project);
 							}
 							
-							final IFolder folder = getTiShadowResultFolder(projectLoc);
 							final ArrayList<IPath> junitXMLResources = getXmlResults(mon, folder);
 							if (junitXMLResources.isEmpty()) {
 								MessageDialog.openError(null, "Error", "Cannot find JUnit XML results for TiShadow run. Check the console logs.");
@@ -132,6 +137,19 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 				}
 			}
 		});
+	}
+
+	private void removeOldResults(final IProgressMonitor monitor,
+			final IFolder folder) throws CoreException {
+		IResource[] members = folder.members();
+		try {
+			for (IResource iResource : members) {
+				if (iResource.getFullPath().toPortableString().contains(RESULT_XML)) {
+					iResource.delete(true, monitor);
+				}
+			}
+		} catch (CoreException e) {
+		}
 	}
 
 	private void showWizard() {
@@ -289,7 +307,7 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 				IResource[] members;
 				members = folder.members();
 				for (IResource iResource : members) {
-					if (iResource.getFullPath().toPortableString().contains("_result.xml")) {
+					if (iResource.getFullPath().toPortableString().contains(RESULT_XML)) {
 						jUnitResources.add(iResource.getLocation());
 					}
 				}
