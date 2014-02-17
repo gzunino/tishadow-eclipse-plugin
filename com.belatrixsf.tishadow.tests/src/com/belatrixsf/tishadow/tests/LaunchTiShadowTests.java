@@ -10,8 +10,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -272,20 +270,28 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 			DOMSource source = new DOMSource(mergedDocument);
 	        StreamResult result = new StreamResult(mergedFileName);
 	        transformer.transform(source, result);
-		} catch (TransformerConfigurationException e) {
-			MessageDialog.openError(null, "Error merging results", e.toString() + "\n" + e.getLocalizedMessage().toString());
-			e.printStackTrace();
-		} catch (TransformerException e) {
+		} catch (Exception e) {
+			LaunchUtils.handleError("Error merging results", e);
 			MessageDialog.openError(null, "Error merging results", e.toString() + "\n" + e.getLocalizedMessage().toString());
 			e.printStackTrace();
 		}
 		
 		return "";
 	}
-	
+
 	private IFolder getTiShadowResultFolder(final String projectLoc) {
 		IProject project = getProject(projectLoc);
-		IFolder folder = project.getFolder(Path.fromOSString("build/tishadow/"));
+		IFolder folder = project.getFolder("build");
+		try {
+			if (!folder.exists()) {
+				folder.create(true, true, new NullProgressMonitor());
+			}
+			folder = folder.getFolder("tishadow");
+			if (!folder.exists()) {
+				folder.create(false, true, new NullProgressMonitor());
+			}
+		} catch (CoreException e) {
+		}
 		return folder;
 	}
 	
