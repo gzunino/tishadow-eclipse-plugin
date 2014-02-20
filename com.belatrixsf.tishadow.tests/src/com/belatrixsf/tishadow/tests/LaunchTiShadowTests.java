@@ -10,8 +10,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -22,7 +20,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -53,17 +50,18 @@ import com.belatrixsf.tishadow.LaunchUtils;
 public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 
 	private static final String RESULT_XML = "_result.xml";
+	boolean created_tiapp = false;
 
 	@Override
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, final IProgressMonitor monitor) throws CoreException {
 		final SubMonitor mon = SubMonitor.convert(monitor);
 		mon.beginTask("Running Tests", IProgressMonitor.UNKNOWN);
-		
 		showWizard();
-		
+
 		final String projectLoc = configuration.getAttribute(IExternalToolConstants.ATTR_WORKING_DIRECTORY, "");
-		final IProject project = getProject(projectLoc);
+		final IProject project = LaunchUtils.getProject(projectLoc);
+
 		if (project == null || !project.isOpen()) {
 			Display.getDefault().asyncExec(new Runnable() {
 				@Override
@@ -76,71 +74,87 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 		}
 
 		ILaunchConfigurationType type = DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurationType("org.eclipse.ui.externaltools.ProgramLaunchConfigurationType");
-		
-		final ILaunchConfigurationWorkingCopy workingCopy =
-		      type.newInstance( null, "TiShadow Spec");
-		
+
+		final ILaunchConfigurationWorkingCopy workingCopy = type.newInstance(null, "TiShadow Spec");
 		final Map<String, String> envVars = configuration.getAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, new HashMap<String, String>());
-		final String location = configuration.getAttribute(IExternalToolConstants.ATTR_LOCATION, "");
+		final String location = configuration.getAttribute(IExternalToolConstants.ATTR_LOCATION,"");
 		final boolean showConsole = configuration.getAttribute(IExternalToolConstants.ATTR_SHOW_CONSOLE, false);
 		final String toolArguments = configuration.getAttribute(IExternalToolConstants.ATTR_TOOL_ARGUMENTS, "");
-		
+
 		workingCopy.setAttribute(IExternalToolConstants.ATTR_LOCATION, location);
 		workingCopy.setAttribute(IExternalToolConstants.ATTR_SHOW_CONSOLE, showConsole);
 		workingCopy.setAttribute(IExternalToolConstants.ATTR_TOOL_ARGUMENTS, toolArguments);
 		workingCopy.setAttribute(IExternalToolConstants.ATTR_WORKING_DIRECTORY, projectLoc);
 		workingCopy.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, envVars);
-		
-		final boolean created_tiapp = createTiApp(project);
 
-		final IFolder folder = getTiShadowResultFolder(projectLoc);
-		removeOldResults(monitor, folder);
-		
-		workingCopy.launch(mode, mon);
+		try {
+			final boolean spec_touch = touchSpecFiles(project,monitor);
 
-		// wait for termination and show results
-		DebugPlugin.getDefault().addDebugEventListener(new IDebugEventSetListener() {
-			@Override
-			public void handleDebugEvents(DebugEvent[] events) {
-				
-				if (events.length > 0 && (events[0].getKind() == DebugEvent.TERMINATE)) {
-					DebugPlugin.getDefault().removeDebugEventListener(this);
-					
-					Display.getDefault().asyncExec(new Runnable() {
+			if(spec_touch) {
+				if(!LaunchUtils.serverLaunched()) {
+
+					created_tiapp = createTiApp(project);
+
+					final IFolder folder = getTiShadowResultFolder(projectLoc);
+					removeOldResults(monitor, folder);
+					workingCopy.launch(mode, mon);
+
+					// wait for termination and show results
+					DebugPlugin.getDefault().addDebugEventListener(new IDebugEventSetListener() {
 						@Override
-						public void run() {
-							try {
-								workingCopy.delete();
-							} catch (CoreException e) {
-								e.printStackTrace();
+						public void handleDebugEvents(DebugEvent[] events) {
+							if (events.length > 0 && (events[0].getKind() == DebugEvent.TERMINATE)) {
+								DebugPlugin.getDefault().removeDebugEventListener(this);
+
+								Display.getDefault().asyncExec(new Runnable() {
+									@Override
+									public void run() {
+										try {
+											workingCopy.delete();
+										} catch (CoreException e) {
+											e.printStackTrace();
+										}
+
+										if (created_tiapp) {
+											deleteTiApp(project);
+										}
+
+										final ArrayList<IPath> junitXMLResources = getXmlResults(mon, folder);
+										if (junitXMLResources.isEmpty()) {
+											MessageDialog.openError(null, "Error", "Cannot find JUnit XML results for TiShadow run. Check the console logs.");
+											return;
+										}
+
+										JUnitViewEditorLauncher junit = new JUnitViewEditorLauncher();
+										//refreshProject(project);
+										String mergedXml = folder.getLocation().toOSString() + "/fullTestSuite.xml";
+										mergeXMLFiles(junitXMLResources, mergedXml);
+										refreshProject(project);
+										junit.open(new Path(mergedXml));
+										mon.done();
+									}
+								});
 							}
-							
-							if (created_tiapp) {
-								deleteTiApp(project);
-							}
-							
-							final ArrayList<IPath> junitXMLResources = getXmlResults(mon, folder);
-							if (junitXMLResources.isEmpty()) {
-								MessageDialog.openError(null, "Error", "Cannot find JUnit XML results for TiShadow run. Check the console logs.");
-								return;
-							}
-							
-							JUnitViewEditorLauncher junit = new JUnitViewEditorLauncher();
-							//refreshProject(project);
-							String mergedXml = folder.getLocation().toOSString() + "/fullTestSuite.xml";
-							mergeXMLFiles(junitXMLResources, mergedXml);
-							refreshProject(project);
-							junit.open(new Path(mergedXml));
-							mon.done();
 						}
 					});
 				}
+				else {
+					if (created_tiapp) {
+						deleteTiApp(project);
+					}
+					MessageDialog.openError(null, "Error", "TiShadow Server is not running");
+					return;
+				}
 			}
-		});
+		}
+		catch (Exception ex) {
+			if (created_tiapp) {
+				deleteTiApp(project);
+			}
+	    }
 	}
 
-	private void removeOldResults(final IProgressMonitor monitor,
-			final IFolder folder) throws CoreException {
+	private void removeOldResults(final IProgressMonitor monitor,final IFolder folder) throws CoreException {
 		IResource[] members = folder.members();
 		try {
 			for (IResource iResource : members) {
@@ -148,7 +162,8 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 					iResource.delete(true, monitor);
 				}
 			}
-		} catch (CoreException e) {
+		}
+		catch (CoreException e) {
 		}
 	}
 
@@ -159,7 +174,7 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 			String instructionsMessage = "1 - Make sure the tishadow server is running. You can start it using the Run Tishadow server option in the context menu.\n";
 			instructionsMessage += "2 - Open the tishadow application on the devices you want to use to run the tests and connect them to the server.\n";
 			instructionsMessage += "3 - Once this is done the tests will run properly.\n";
-			
+
 			MessageDialogWithToggle.openInformation(
 				null, 
 				"TiShadow Wizard", 
@@ -171,32 +186,63 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 			);
 		}
 	}
-	
-	private boolean createTiApp(IProject project) {
-		IFile file = project.getFile("tiapp.xml");
 
-		if(!file.exists()) {
-			try {
-				String pathPropertiesFile = "tiapp.xml"; 
+	private boolean createTiApp(IProject project) throws CoreException {
+		String pathPropertiesFile = "tiapp.xml";
+		IFile file = project.getFile(pathPropertiesFile);
+		try {
+			if(!file.exists()) {
 				InputStream source = this.getClass().getResourceAsStream(pathPropertiesFile);
 				file.create(source, false, null);
 				return true;
-			} catch (Exception ex) {
-		       return false;
-		    }
+			}
+			else {
+				return false;
+			}
 		}
-		else {
+		catch (Exception ex) {
+			ex.printStackTrace();
 			return false;
-		}
+	    }
 	}
 
 	private void deleteTiApp(IProject project) {
 		IFile file = project.getFile("tiapp.xml");
+
 		try {
 			if(file.exists()) {
 				file.delete(true, null);
 			}
-		} catch (Exception ex) { }
+		}
+		catch (Exception ex) { }
+	}
+
+	private boolean touchSpecFiles(IProject project,IProgressMonitor monitor) {
+		try {
+			IFolder folder = project.getFolder(Path.fromOSString("spec/"));
+			if(folder.exists()) {
+				IResource[] resources = folder.members();
+				boolean enter  = false;
+				for(IResource resource : resources) {
+					if(resource instanceof IFile) {
+						folder.getFile(resource.getName().toString()).setLocalTimeStamp(System.currentTimeMillis());
+						enter = true;
+						break;
+					}
+				}
+
+				return enter;
+			}
+			else {
+				MessageDialog.openError(null, "Error", "Spec folder doesn't exist");
+				return false;
+			}
+		}
+		catch (Exception ex) {
+			MessageDialog.openError(null, "Error", "Spec folder error");
+			ex.printStackTrace();
+			return false;
+		}
 	}
 
 	private void refreshProject (IProject project) {
@@ -224,19 +270,13 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 		for (IPath junitXMLResource : junitXMLResources) {
 			try {
 		        Document document = builder.parse(new File(junitXMLResource.toString()));
-		        
 		        Node testSuitesElement = mergedDocument.getElementsByTagName("testsuites").item(0);
-		        
 		        NodeList testSuiteElements = document.getElementsByTagName("testsuite");
-		        
 		        String fileName = junitXMLResource.toString();
-		        
 		        fileName = fileName.substring(fileName.lastIndexOf("/") + 1, fileName.length());
-		        
 		        String[] xmlName = fileName.split("_");
-		        
 		        String deviceName = "";
-		        
+
 		        // Remove the ip address from the file name
 		        for (int i = 0; i < xmlName.length - 5; i++) {
 		        	if (i+1 == 1) {
@@ -272,31 +312,29 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 			DOMSource source = new DOMSource(mergedDocument);
 	        StreamResult result = new StreamResult(mergedFileName);
 	        transformer.transform(source, result);
-		} catch (TransformerConfigurationException e) {
-			MessageDialog.openError(null, "Error merging results", e.toString() + "\n" + e.getLocalizedMessage().toString());
-			e.printStackTrace();
-		} catch (TransformerException e) {
+		} catch (Exception e) {
+			LaunchUtils.handleError("Error merging results", e);
 			MessageDialog.openError(null, "Error merging results", e.toString() + "\n" + e.getLocalizedMessage().toString());
 			e.printStackTrace();
 		}
 		
 		return "";
 	}
-	
+
 	private IFolder getTiShadowResultFolder(final String projectLoc) {
-		IProject project = getProject(projectLoc);
-		IFolder folder = project.getFolder(Path.fromOSString("build/tishadow/"));
-		return folder;
-	}
-	
-	private IProject getProject(final String projectLoc) {
+		IProject project = LaunchUtils.getProject(projectLoc);
+		IFolder folder = project.getFolder("build");
 		try {
-			String projectName = Path.fromOSString(projectLoc).lastSegment();
-			IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
-			return project;
-		} catch (Exception e) {
-			return null;
+			if (!folder.exists()) {
+				folder.create(true, true, new NullProgressMonitor());
+			}
+			folder = folder.getFolder("tishadow");
+			if (!folder.exists()) {
+				folder.create(false, true, new NullProgressMonitor());
+			}
+		} catch (CoreException e) {
 		}
+		return folder;
 	}
 	
 	private ArrayList<IPath> getXmlResults(final IProgressMonitor monitor, IFolder folder) {
@@ -317,14 +355,13 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 		}
 		return jUnitResources;
 	}
-	
+
 	public static String getLaunchDir(IProject project) {
 		return project.getLocation().toPortableString();
 	}
 
 	public static void setLaunchAttributes(ILaunchConfigurationWorkingCopy configuration, IResource context) throws CoreException {
-		configuration.setAttribute(IExternalToolConstants.ATTR_LOCATION,
-				"/usr/local/bin/tishadow");
+		configuration.setAttribute(IExternalToolConstants.ATTR_LOCATION,"/usr/local/bin/tishadow");
 		String project = null;
 		if (context != null) {
 			project = LaunchTiShadowTests.getLaunchDir(context.getProject());

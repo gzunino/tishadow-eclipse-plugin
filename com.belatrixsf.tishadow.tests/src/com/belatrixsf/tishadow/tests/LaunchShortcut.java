@@ -56,14 +56,16 @@ public class LaunchShortcut implements ILaunchShortcut {
 				} catch (CoreException e) {
 				}
 			}
-		} catch (CoreException e1) {
 		}
-		
+		catch (CoreException e1) {
+		}
+
 		try {
 			ILaunchConfigurationWorkingCopy launch = type.newInstance(null, launchManager.generateLaunchConfigurationName(project.getName()));
 			LaunchTiShadowTests.setLaunchAttributes(launch, project);
 			return launch.doSave();
-		} catch (CoreException e) {
+		}
+		catch (CoreException e) {
 			e.printStackTrace();
 		}
 		return null;
@@ -81,5 +83,4 @@ public class LaunchShortcut implements ILaunchShortcut {
 			searchAndLaunch(project, mode);
         } 
 	}
-
 }

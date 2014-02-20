@@ -90,6 +90,14 @@
             id="com.belatrixsf.tishadow.app.wizards.TiShadowAppWizard"
             name="TiShadow App Creation">
       </wizard>
+      <wizard
+            canFinishEarly="false"
+            category="com.belatrixsf.tishadow.app"
+            class="com.belatrixsf.tishadow.app.wizards.TiShadowAppifyWizard"
+            icon="icons/tishadow.png"
+            id="com.belatrixsf.tishadow.app.wizards.TiShadowAppifyWizard"
+            name="TiShadow Appify Creation (Creates a TI app)">
+      </wizard>
    </extension>
 
 </plugin>
