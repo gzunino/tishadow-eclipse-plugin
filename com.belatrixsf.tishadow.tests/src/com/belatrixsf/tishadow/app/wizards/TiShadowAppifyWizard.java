@@ -25,8 +25,12 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard implemen
 	
 	@Override
 	public void addPages() {
+		TiShadowAppifyWizardPage page = new TiShadowAppifyWizardPage ("New Page"); 
+		page.setDescription("Info");
+		page.setTitle("Prueba");
+		this.addPage(page);
+
 		super.addPages();
-		
 		((WizardNewProjectCreationPage) getPage("basicNewProjectPage")).setInitialProjectName("tishadowapp");
 	}
 	
@@ -58,7 +62,7 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard implemen
 			workingCopy.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, LaunchUtils.getEnvVars());
 
 			ILaunch launch = workingCopy.launch(ILaunchManager.RUN_MODE, new NullProgressMonitor());
-			launch.getProcesses()[0].getStreamsProxy().write("com.test.app");
+			//launch.getProcesses()[0].getStreamsProxy().write("com.test.app");
 
 			DebugPlugin.getDefault().addDebugEventListener(new IDebugEventSetListener() {
 				@Override
@@ -67,8 +71,8 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard implemen
 					if (events.length > 0 && (events[0].getKind() == DebugEvent.TERMINATE)) {
 						DebugPlugin.getDefault().removeDebugEventListener(this);
 						try {
-							project.refreshLocal(IProject.DEPTH_INFINITE, new NullProgressMonitor());
 							addTiNature(project);
+							project.refreshLocal(IProject.DEPTH_INFINITE, new NullProgressMonitor());
 						} catch (CoreException e) {
 							e.printStackTrace();
 						}

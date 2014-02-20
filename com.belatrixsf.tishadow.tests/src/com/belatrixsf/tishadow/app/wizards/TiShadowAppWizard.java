@@ -67,8 +67,8 @@ public class TiShadowAppWizard extends BasicNewProjectResourceWizard implements 
 					if (events.length > 0 && (events[0].getKind() == DebugEvent.TERMINATE)) {
 						DebugPlugin.getDefault().removeDebugEventListener(this);
 						try {
-							project.refreshLocal(IProject.DEPTH_INFINITE, new NullProgressMonitor());
 							addTiNature(project);
+							project.refreshLocal(IProject.DEPTH_INFINITE, new NullProgressMonitor());
 						} catch (CoreException e) {
 							e.printStackTrace();
 						}

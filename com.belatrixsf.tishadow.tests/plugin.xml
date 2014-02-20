@@ -88,7 +88,8 @@
             class="com.belatrixsf.tishadow.app.wizards.TiShadowAppWizard"
             icon="icons/tishadow.png"
             id="com.belatrixsf.tishadow.app.wizards.TiShadowAppWizard"
-            name="TiShadow App Creation">
+            name="TiShadow App Creation"
+            project="true">
       </wizard>
       <wizard
             canFinishEarly="false"
@@ -96,7 +97,8 @@
             class="com.belatrixsf.tishadow.app.wizards.TiShadowAppifyWizard"
             icon="icons/tishadow.png"
             id="com.belatrixsf.tishadow.app.wizards.TiShadowAppifyWizard"
-            name="TiShadow Appify Creation (Creates a TI app)">
+            name="TiShadow Appify Creation (Creates a TI app)"
+            project="true">
       </wizard>
    </extension>
 
