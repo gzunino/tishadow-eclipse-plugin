@@ -8,6 +8,8 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 
+import org.eclipse.jface.dialogs.MessageDialog;
+
 public class LaunchUtils {
 	public static Map<String, String> getEnvVars() {
 		// Get current value for PATH environment variable

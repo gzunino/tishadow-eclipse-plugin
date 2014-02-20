@@ -21,7 +21,7 @@ import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 
 import com.belatrixsf.tishadow.LaunchUtils;
 
-public class TiShadowAppWizard extends BasicNewProjectResourceWizard implements INewWizard {
+public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard implements INewWizard {
 	
 	@Override
 	public void addPages() {
