@@ -23,15 +23,17 @@ import com.belatrixsf.tishadow.LaunchUtils;
 
 public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard implements INewWizard {
 	
+	TiShadowAppifyWizardPage page = null;
+	
 	@Override
 	public void addPages() {
-		TiShadowAppifyWizardPage page = new TiShadowAppifyWizardPage ("New Page"); 
-		page.setDescription("Info");
-		page.setTitle("Prueba");
+		page = new TiShadowAppifyWizardPage ("Properties Page"); 
+		page.setTitle("Project");
+		page.setDescription("Settings");
 		this.addPage(page);
 
 		super.addPages();
-		((WizardNewProjectCreationPage) getPage("basicNewProjectPage")).setInitialProjectName("tishadowapp");
+		((WizardNewProjectCreationPage) getPage("basicNewProjectPage")).setInitialProjectName("tishadowappify");
 	}
 	
 	/*
@@ -50,15 +52,32 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard implemen
 	}
 
 	private void createTiProject(final IProject project) {
+		
+		String projectResourceInput;
+		String outputFolder;
+		String port;
+		String arguments;
+		String room = null;
+		TiShadowAppifyWizardPage propertiesPage;
+		
 		try {
 			ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
 			ILaunchConfigurationType type = DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurationType("org.eclipse.ui.externaltools.ProgramLaunchConfigurationType");
 			ILaunchConfigurationWorkingCopy workingCopy = type.newInstance(null, launchManager.generateLaunchConfigurationName("tishadow app"));
 			
+			propertiesPage = (TiShadowAppifyWizardPage)getPage("Properties Page");
+			projectResourceInput = propertiesPage.getProjectResourceInput().getText();
+			outputFolder = propertiesPage.getLocationArea().getProjectLocation();
+			port = propertiesPage.getPort().getText();
+			//room = propertiesPage.getRoom().getText();
+			arguments = "appify -d " + projectResourceInput + "--host" + outputFolder + "--port " + port;
+			arguments = room != null ? arguments + room : arguments;
+			
+			
 			workingCopy.setAttribute(IExternalToolConstants.ATTR_LOCATION, "/usr/local/bin/tishadow");
 			workingCopy.setAttribute(IExternalToolConstants.ATTR_SHOW_CONSOLE, true);
-			workingCopy.setAttribute(IExternalToolConstants.ATTR_TOOL_ARGUMENTS, "app -d "+project.getLocation().toOSString());
-			workingCopy.setAttribute(IExternalToolConstants.ATTR_WORKING_DIRECTORY, project.getParent().getLocation().toOSString());
+			workingCopy.setAttribute(IExternalToolConstants.ATTR_TOOL_ARGUMENTS, arguments);
+			workingCopy.setAttribute(IExternalToolConstants.ATTR_WORKING_DIRECTORY, projectResourceInput);
 			workingCopy.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, LaunchUtils.getEnvVars());
 
 			ILaunch launch = workingCopy.launch(ILaunchManager.RUN_MODE, new NullProgressMonitor());
