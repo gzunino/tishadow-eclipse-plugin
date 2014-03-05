@@ -53,7 +53,7 @@ public class TiShadowAppWizard extends BasicNewProjectResourceWizard implements 
 			
 			workingCopy.setAttribute(IExternalToolConstants.ATTR_LOCATION, "/usr/local/bin/tishadow");
 			workingCopy.setAttribute(IExternalToolConstants.ATTR_SHOW_CONSOLE, true);
-			workingCopy.setAttribute(IExternalToolConstants.ATTR_TOOL_ARGUMENTS, "app -d "+project.getLocation().toOSString());
+			workingCopy.setAttribute(IExternalToolConstants.ATTR_TOOL_ARGUMENTS, "app -d "+ project.getLocation().toOSString());
 			workingCopy.setAttribute(IExternalToolConstants.ATTR_WORKING_DIRECTORY, project.getParent().getLocation().toOSString());
 			workingCopy.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, LaunchUtils.getEnvVars());
 

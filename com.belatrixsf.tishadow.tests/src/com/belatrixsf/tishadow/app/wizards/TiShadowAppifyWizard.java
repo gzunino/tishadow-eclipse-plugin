@@ -53,11 +53,12 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard implemen
 
 	private void createTiProject(final IProject project) {
 		
-		String projectResourceInput;
-		String outputFolder;
-		String port;
 		String arguments;
-		String room = null;
+		String inputFolder;
+		String outputFolder;
+		String host;
+		String port;
+		String room = "";
 		TiShadowAppifyWizardPage propertiesPage;
 		
 		try {
@@ -66,22 +67,29 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard implemen
 			ILaunchConfigurationWorkingCopy workingCopy = type.newInstance(null, launchManager.generateLaunchConfigurationName("tishadow app"));
 			
 			propertiesPage = (TiShadowAppifyWizardPage)getPage("Properties Page");
-			projectResourceInput = propertiesPage.getProjectResourceInput().getText();
-			outputFolder = propertiesPage.getLocationArea().getProjectLocation();
-			port = propertiesPage.getPort().getText();
-			//room = propertiesPage.getRoom().getText();
-			arguments = "appify -d " + projectResourceInput + "--host" + outputFolder + "--port " + port;
-			arguments = room != null ? arguments + room : arguments;
 			
+			inputFolder = propertiesPage.getProjectResourceInput().getText();
+			outputFolder = propertiesPage.getOutputFolder().getProjectLocation();
+			host = propertiesPage.getHost().getText();
+			port = propertiesPage.getPort().getText();
+			room = propertiesPage.getRoom().getText();
+
+			//tishadow appify -d <dest_directory> -o <host> -p <port> -r <room>
+			arguments = "appify -d " + outputFolder;
+			
+			//host, port and room are optionals and if its are empty default values will be used.
+			// + " -o " + host + " -p " + port;
+			arguments = host != "" ? arguments + " -o " + host : arguments;
+			arguments = port != "" ? arguments + " -p " + port : arguments;
+			arguments = room != "" ? arguments + " -r " + room : arguments;
 			
 			workingCopy.setAttribute(IExternalToolConstants.ATTR_LOCATION, "/usr/local/bin/tishadow");
 			workingCopy.setAttribute(IExternalToolConstants.ATTR_SHOW_CONSOLE, true);
 			workingCopy.setAttribute(IExternalToolConstants.ATTR_TOOL_ARGUMENTS, arguments);
-			workingCopy.setAttribute(IExternalToolConstants.ATTR_WORKING_DIRECTORY, projectResourceInput);
+			workingCopy.setAttribute(IExternalToolConstants.ATTR_WORKING_DIRECTORY, inputFolder);
 			workingCopy.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, LaunchUtils.getEnvVars());
 
 			ILaunch launch = workingCopy.launch(ILaunchManager.RUN_MODE, new NullProgressMonitor());
-			//launch.getProcesses()[0].getStreamsProxy().write("com.test.app");
 
 			DebugPlugin.getDefault().addDebugEventListener(new IDebugEventSetListener() {
 				@Override
@@ -107,15 +115,15 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard implemen
 		IProjectDescription description;
 		try {
 			description = project.getDescription();
-		
+
 			String[] natures = description.getNatureIds();
-	
+
 			String[] newNatures = new String[natures.length + 1];
-	
+
 			System.arraycopy(natures, 0, newNatures, 0, natures.length);
-	
+
 			newNatures[natures.length] = "com.appcelerator.titanium.mobile.nature";
-	
+
 			description.setNatureIds(newNatures);
 
 			project.setDescription(description, new NullProgressMonitor());

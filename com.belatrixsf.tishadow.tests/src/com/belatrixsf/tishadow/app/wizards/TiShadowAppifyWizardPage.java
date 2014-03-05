@@ -21,7 +21,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 import org.eclipse.ui.dialogs.ResourceListSelectionDialog;
 import org.eclipse.ui.internal.ide.IDEWorkbenchMessages;
 import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
@@ -48,13 +47,13 @@ import org.eclipse.ui.internal.ide.dialogs.ProjectContentsLocationArea.IErrorMes
 public class TiShadowAppifyWizardPage extends WizardPage {
 
 	// widgets
-	private Text projectResourceInput;
+	private Text inputFolder;
 	private Text port;
-	private Text outputFolder;
+	private Text room;
+	private Text host;
 	
 	private ResourceListSelectionDialog dialog;
-	private ProjectContentsLocationArea locationArea;
-	static int value = 0;
+	private ProjectContentsLocationArea outputFolder;
 
 	/**
 	 * Creates a new project creation wizard page.
@@ -81,15 +80,14 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 		composite.setLayout(new GridLayout(3, false));
 		composite.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		// create a label and a button
+		//BASE PROJECT
 		Label l = new Label(composite, SWT.NONE);
 		l.setText("Base Project:  ");
 		GridData data = new GridData(SWT.LEFT);
 		l.setLayoutData(data);
 		l.pack();
 		setProjectResourceInput(new Text(composite, SWT.SINGLE | SWT.BORDER));
-		getProjectResourceInput().setLayoutData(
-				new GridData(GridData.FILL_HORIZONTAL));
+		getProjectResourceInput().setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		getProjectResourceInput().setEnabled(false);
 
 		// add a button to load resources.
@@ -98,29 +96,43 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 		addSeparator(composite);
 
 		data = new GridData(SWT.FILL, SWT.TOP, false, false);
-
+		
+		// OUTPUT FOLDER
 		l = new Label(composite, SWT.NONE);
 		l.setText("Output folder:");
 		l.setLayoutData(data);
-		// outputFolder = new Text(composite, SWT.SINGLE | SWT.BORDER);
-		// outputFolder.setToolTipText("The folder where the appifyied application will be created.");
-
-		// add a button to set the output folder
 		openFolderDialog(composite);
 
 		addSeparator(composite);
-
+		
+		// PORT
 		l = new Label(composite, SWT.NONE);
 		l.setLayoutData(data);
 		l.setText("Port:");
 		setPort(new Text(composite, SWT.SINGLE | SWT.BORDER));
 		getPort().setTextLimit(5);
 		getPort().setToolTipText("Sets the port por tiShadow. /n'3000' is the port by default./nOnly numbers are allowed");
+		getPort().setText("3000"); // Default port
+
+		addSeparator(composite);
 		
-		// Default port
-		getPort().setText("3000");
+		// HOST
+		l = new Label(composite, SWT.NONE);
+		l.setLayoutData(data);
+		l.setText("Host:");
+		setHost(new Text(composite, SWT.SINGLE | SWT.BORDER));
+		getHost().setToolTipText("Sets the host por tiShadow. /nOptional");
 		
-		// Allows only numbers.
+		addSeparator(composite);
+		
+		// ROOM (OPTIONAL)
+		l = new Label(composite, SWT.NONE);
+		l.setLayoutData(data);
+		l.setText("Room (optional):");
+		setRoom(new Text(composite, SWT.SINGLE | SWT.BORDER));
+		getRoom().setToolTipText("Sets the room por tiShadow./nOptional");
+		
+		// Allows only numbers for the port input.
 		getPort().addVerifyListener(new VerifyListener() {
 
 			@Override
@@ -141,17 +153,16 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 			}
 
 		});
-
+		
 		setControl(composite);
 		Dialog.applyDialogFont(composite);
 	}
 
 	/**
-	 * 
+	 * Creates button to select the input folder to appify.
 	 * @param shell
 	 * @param composite
 	 */
-
 	private void createResourcesButton(Shell shell, Composite composite) {
 		Button button = new Button(composite, SWT.PUSH);
 		button.setText("Select Project");
@@ -173,7 +184,7 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 		setLocationArea(new ProjectContentsLocationArea(getErrorReporter(), composite));
 
 		// Scale the button based on the rest of the dialog
-		setButtonLayoutData(getLocationArea().getBrowseButton());
+		setButtonLayoutData(getOutputFolder().getBrowseButton());
 
 	}
 
@@ -259,9 +270,9 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 
 		IProject project = ResourcesPlugin.getWorkspace().getRoot()
 				.getProject(getProjectNameFieldValue());
-		getLocationArea().setExistingProject(project);
+		getOutputFolder().setExistingProject(project);
 
-		String validLocationMessage = getLocationArea().checkValidLocation();
+		String validLocationMessage = getOutputFolder().checkValidLocation();
 		if (validLocationMessage != null) { // there is no destination location
 											// given
 			setErrorMessage(validLocationMessage);
@@ -280,11 +291,11 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 	 * @return the project name in the field
 	 */
 	private String getProjectNameFieldValue() {
-		if (projectResourceInput == null) {
+		if (inputFolder == null) {
 			return ""; //$NON-NLS-1$
 		}
 
-		return projectResourceInput.getText().trim();
+		return inputFolder.getText().trim();
 	}
 
 	/**
@@ -292,14 +303,14 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 	 *            the projectResourceInput to set
 	 */
 	public void setProjectResourceInput(Text projectResourceInput) {
-		this.projectResourceInput = projectResourceInput;
+		this.inputFolder = projectResourceInput;
 	}
 
 	/**
 	 * @return the projectResourceInput
 	 */
 	public Text getProjectResourceInput() {
-		return projectResourceInput;
+		return inputFolder;
 	}
 
 	/**
@@ -320,14 +331,42 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 	 * @param locationArea the locationArea to set
 	 */
 	public void setLocationArea(ProjectContentsLocationArea locationArea) {
-		this.locationArea = locationArea;
+		this.outputFolder = locationArea;
 	}
 
 	/**
 	 * @return the locationArea
 	 */
-	public ProjectContentsLocationArea getLocationArea() {
-		return locationArea;
+	public ProjectContentsLocationArea getOutputFolder() {
+		return outputFolder;
+	}
+
+	/**
+	 * @param room the room to set
+	 */
+	public void setRoom(Text room) {
+		this.room = room;
+	}
+
+	/**
+	 * @return the room
+	 */
+	public Text getRoom() {
+		return room;
+	}
+
+	/**
+	 * @param host the host to set
+	 */
+	public void setHost(Text host) {
+		this.host = host;
+	}
+
+	/**
+	 * @return the host
+	 */
+	public Text getHost() {
+		return host;
 	}
 
 }
