@@ -104,7 +104,7 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
 			/**
 			 * TiShadow appify command:
 			 * 
-			 * appify -d <dest_directory> -o <host> -p <port> -r <room>
+			 * appify -d <dest_directory> -o <host> -p <port> -r <room> 
 			 */
 			arguments = "appify -d " + outputFolder;
 

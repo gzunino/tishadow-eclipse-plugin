@@ -325,7 +325,7 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 			setErrorMessage(validLocationMessage);
 			return false;
 		}
-
+		
 		setErrorMessage(null);
 		setMessage(null);
 		return true;
