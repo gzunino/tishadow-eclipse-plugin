@@ -1,5 +1,8 @@
 package com.belatrixsf.tishadow.app.wizards;
 
+import java.net.URI;
+
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -17,11 +20,15 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ResourceListSelectionDialog;
+import org.eclipse.ui.dialogs.WorkingSetGroup;
 import org.eclipse.ui.internal.ide.IDEWorkbenchMessages;
 import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
 import org.eclipse.ui.internal.ide.IIDEHelpContextIds;
@@ -51,9 +58,15 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 	private Text port;
 	private Text room;
 	private Text host;
-	
+	private Text projectNameField;
+
+	private String initialProjectFieldValue;
+
 	private ResourceListSelectionDialog dialog;
 	private ProjectContentsLocationArea outputFolder;
+	private IProject selectedBaseProject;
+
+	private WorkingSetGroup workingSetGroup;
 
 	/**
 	 * Creates a new project creation wizard page.
@@ -63,7 +76,7 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 	 */
 	public TiShadowAppifyWizardPage(String pageName) {
 		super(pageName);
-
+		setPageComplete(false);
 	}
 
 	/**
@@ -79,15 +92,26 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 
 		composite.setLayout(new GridLayout(3, false));
 		composite.setLayoutData(new GridData(GridData.FILL_BOTH));
-
-		//BASE PROJECT
-		Label l = new Label(composite, SWT.NONE);
-		l.setText("Base Project:  ");
 		GridData data = new GridData(SWT.LEFT);
+
+		// PROJECT NAME
+		Label l = new Label(composite, SWT.NONE);
+		l.setText(IDEWorkbenchMessages.WizardNewProjectCreationPage_nameLabel);
+		l.setLayoutData(data);
+		l.pack();
+		projectNameField = new Text(composite, SWT.SINGLE | SWT.BORDER);
+		projectNameField.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+		addSeparator(composite);
+
+		// BASE PROJECT
+		l = new Label(composite, SWT.NONE);
+		l.setText("Base Project:  ");
 		l.setLayoutData(data);
 		l.pack();
 		setProjectResourceInput(new Text(composite, SWT.SINGLE | SWT.BORDER));
-		getProjectResourceInput().setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		getProjectResourceInput().setLayoutData(
+				new GridData(GridData.FILL_HORIZONTAL));
 		getProjectResourceInput().setEnabled(false);
 
 		// add a button to load resources.
@@ -96,42 +120,29 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 		addSeparator(composite);
 
 		data = new GridData(SWT.FILL, SWT.TOP, false, false);
-		
+
 		// OUTPUT FOLDER
 		l = new Label(composite, SWT.NONE);
 		l.setText("Output folder:");
 		l.setLayoutData(data);
 		openFolderDialog(composite);
+		if (initialProjectFieldValue != null) {
+			outputFolder.updateProjectName(initialProjectFieldValue);
+		}
 
 		addSeparator(composite);
-		
+
 		// PORT
 		l = new Label(composite, SWT.NONE);
 		l.setLayoutData(data);
 		l.setText("Port:");
 		setPort(new Text(composite, SWT.SINGLE | SWT.BORDER));
-		getPort().setTextLimit(5);
-		getPort().setToolTipText("Sets the port por tiShadow. /n'3000' is the port by default./nOnly numbers are allowed");
+		getPort().setTextLimit(6);
+		getPort()
+				.setToolTipText(
+						"Sets the port por tiShadow.\n'3000' is the port by default.\nOnly numbers are allowed");
 		getPort().setText("3000"); // Default port
 
-		addSeparator(composite);
-		
-		// HOST
-		l = new Label(composite, SWT.NONE);
-		l.setLayoutData(data);
-		l.setText("Host:");
-		setHost(new Text(composite, SWT.SINGLE | SWT.BORDER));
-		getHost().setToolTipText("Sets the host por tiShadow. /nOptional");
-		
-		addSeparator(composite);
-		
-		// ROOM (OPTIONAL)
-		l = new Label(composite, SWT.NONE);
-		l.setLayoutData(data);
-		l.setText("Room (optional):");
-		setRoom(new Text(composite, SWT.SINGLE | SWT.BORDER));
-		getRoom().setToolTipText("Sets the room por tiShadow./nOptional");
-		
 		// Allows only numbers for the port input.
 		getPort().addVerifyListener(new VerifyListener() {
 
@@ -153,13 +164,36 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 			}
 
 		});
-		
+
+		addSeparator(composite);
+
+		// HOST
+		l = new Label(composite, SWT.NONE);
+		l.setLayoutData(data);
+		l.setText("Host:");
+		setHost(new Text(composite, SWT.SINGLE | SWT.BORDER));
+		getHost().setToolTipText("Sets the host por tiShadow.\nOptional");
+
+		addSeparator(composite);
+
+		// ROOM (OPTIONAL)
+		l = new Label(composite, SWT.NONE);
+		l.setLayoutData(data);
+		l.setText("Room (optional):");
+		setRoom(new Text(composite, SWT.SINGLE | SWT.BORDER));
+		getRoom().setToolTipText("Sets the room por tiShadow.\nOptional");
+
 		setControl(composite);
 		Dialog.applyDialogFont(composite);
+
+		getProjectResourceInput().addListener(SWT.Modify,
+				inputFolderModifyListener);
+		projectNameField.addListener(SWT.Modify, nameModifyListener);
 	}
 
 	/**
 	 * Creates button to select the input folder to appify.
+	 * 
 	 * @param shell
 	 * @param composite
 	 */
@@ -172,16 +206,18 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				dialog.open();
+				selectedBaseProject = (IProject) dialog.getResult()[0];
+				selectedBaseProject.getLocation().toOSString();
 				getProjectResourceInput().setText(
 						dialog.getResult()[0].toString().substring(2));
 			}
-
 		});
 	}
 
 	private void openFolderDialog(Composite composite) {
 
-		setLocationArea(new ProjectContentsLocationArea(getErrorReporter(), composite));
+		setLocationArea(new ProjectContentsLocationArea(getErrorReporter(),
+				composite));
 
 		// Scale the button based on the rest of the dialog
 		setButtonLayoutData(getOutputFolder().getBrowseButton());
@@ -252,12 +288,21 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 	 *         <code>false</code> if at least one is invalid
 	 */
 	protected boolean validatePage() {
+		@SuppressWarnings("restriction")
 		IWorkspace workspace = IDEWorkbenchPlugin.getPluginWorkspace();
 
+		// Check Project Name
 		String projectFieldContents = getProjectNameFieldValue();
 		if (projectFieldContents.equals("")) { //$NON-NLS-1$
 			setErrorMessage(null);
 			setMessage(IDEWorkbenchMessages.WizardNewProjectCreationPage_projectNameEmpty);
+			return false;
+		}
+
+		// Check Input Resource Folder
+		if (inputFolder.getText().equals("")) {
+			setErrorMessage(null);
+			setMessage(IDEWorkbenchMessages.WizardNewProjectCreationPage_projectLocationEmpty);
 			return false;
 		}
 
@@ -270,8 +315,10 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 
 		IProject project = ResourcesPlugin.getWorkspace().getRoot()
 				.getProject(getProjectNameFieldValue());
+
 		getOutputFolder().setExistingProject(project);
 
+		// Check outputFolder
 		String validLocationMessage = getOutputFolder().checkValidLocation();
 		if (validLocationMessage != null) { // there is no destination location
 											// given
@@ -290,12 +337,12 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 	 * 
 	 * @return the project name in the field
 	 */
-	private String getProjectNameFieldValue() {
-		if (inputFolder == null) {
+	protected String getProjectNameFieldValue() {
+		if (projectNameField == null) {
 			return ""; //$NON-NLS-1$
 		}
 
-		return inputFolder.getText().trim();
+		return projectNameField.getText().trim();
 	}
 
 	/**
@@ -309,12 +356,13 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 	/**
 	 * @return the projectResourceInput
 	 */
-	public Text getProjectResourceInput() {
+	private Text getProjectResourceInput() {
 		return inputFolder;
 	}
 
 	/**
-	 * @param port the port to set
+	 * @param port
+	 *            the port to set
 	 */
 	public void setPort(Text port) {
 		this.port = port;
@@ -323,26 +371,36 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 	/**
 	 * @return the port
 	 */
-	public Text getPort() {
+	private Text getPort() {
 		return port;
 	}
 
+	protected String getPortFieldValue() {
+		return getPort().getText();
+	}
+
 	/**
-	 * @param locationArea the locationArea to set
+	 * @param locationArea
+	 *            the locationArea to set
 	 */
 	public void setLocationArea(ProjectContentsLocationArea locationArea) {
-		this.outputFolder = locationArea;
+		outputFolder = locationArea;
 	}
 
 	/**
 	 * @return the locationArea
 	 */
-	public ProjectContentsLocationArea getOutputFolder() {
+	protected ProjectContentsLocationArea getOutputFolder() {
 		return outputFolder;
 	}
 
+	protected String getOutputFolderLocation() {
+		return getOutputFolder().getProjectLocation();
+	}
+
 	/**
-	 * @param room the room to set
+	 * @param room
+	 *            the room to set
 	 */
 	public void setRoom(Text room) {
 		this.room = room;
@@ -355,8 +413,13 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 		return room;
 	}
 
+	protected String getRoomFieldValue() {
+		return getRoom().getText();
+	}
+
 	/**
-	 * @param host the host to set
+	 * @param host
+	 *            the host to set
 	 */
 	public void setHost(Text host) {
 		this.host = host;
@@ -365,8 +428,136 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 	/**
 	 * @return the host
 	 */
-	public Text getHost() {
+	private Text getHost() {
 		return host;
 	}
+
+	protected String getHostFieldValue() {
+		return getHost().getText();
+	}
+
+	/**
+	 * @return the Selected Base Project
+	 */
+	private IProject getSelectedBaseProject() {
+		return this.selectedBaseProject;
+	}
+
+	protected String getSelectedBaseProjectPath() {
+		return getSelectedBaseProject().getLocation().toOSString();
+	}
+
+	/**
+	 * Set the location to the default location if we are set to useDefaults.
+	 */
+	void setLocationForSelection() {
+		outputFolder.updateProjectName(getProjectNameFieldValue());
+	}
+
+	/**
+	 * Creates a project resource handle for the current project name field
+	 * value. The project handle is created relative to the workspace root.
+	 * <p>
+	 * This method does not create the project resource; this is the
+	 * responsibility of <code>IProject::create</code> invoked by the new
+	 * project resource wizard.
+	 * </p>
+	 * 
+	 * @return the new project resource handle
+	 */
+	public IProject getProjectHandle() {
+		return ResourcesPlugin.getWorkspace().getRoot()
+				.getProject(getProjectName());
+	}
+
+	/**
+	 * Returns the current project name as entered by the user, or its
+	 * anticipated initial value.
+	 * 
+	 * @return the project name, its anticipated initial value, or
+	 *         <code>null</code> if no project name is known
+	 */
+	public String getProjectName() {
+		if (projectNameField == null) {
+			return initialProjectFieldValue;
+		}
+
+		return getProjectNameFieldValue();
+	}
+
+	/**
+	 * Returns the current project location URI as entered by the user, or
+	 * <code>null</code> if a valid project location has not been entered.
+	 * 
+	 * @return the project location URI, or <code>null</code>
+	 * @since 3.2
+	 */
+	public URI getLocationURI() {
+		return getOutputFolder().getProjectLocationURI();
+	}
+
+	/**
+	 * Returns the useDefaults.
+	 * 
+	 * @return boolean
+	 */
+	public boolean useDefaults() {
+		return getOutputFolder().isDefault();
+	}
+
+	/**
+	 * Return the selected working sets, if any. If this page is not configured
+	 * to interact with working sets this will be an empty array.
+	 * 
+	 * @return the selected working sets
+	 * @since 3.4
+	 */
+	public IWorkingSet[] getSelectedWorkingSets() {
+		return workingSetGroup == null ? new IWorkingSet[0] : workingSetGroup
+				.getSelectedWorkingSets();
+	}
+
+	/**
+	 * Create a working set group for this page. This method can only be called
+	 * once.
+	 * 
+	 * @param composite
+	 *            the composite in which to create the group
+	 * @param selection
+	 *            the current workbench selection
+	 * @param supportedWorkingSetTypes
+	 *            an array of working set type IDs that will restrict what types
+	 *            of working sets can be chosen in this group
+	 * @return the created group. If this method has been called previously the
+	 *         original group will be returned.
+	 * @since 3.4
+	 */
+	public WorkingSetGroup createWorkingSetGroup(Composite composite,
+			IStructuredSelection selection, String[] supportedWorkingSetTypes) {
+		if (workingSetGroup != null)
+			return workingSetGroup;
+		workingSetGroup = new WorkingSetGroup(composite, selection,
+				supportedWorkingSetTypes);
+		return workingSetGroup;
+	}
+
+	// initial value stores
+	private Listener nameModifyListener = new Listener() {
+		public void handleEvent(Event e) {
+			setLocationForSelection();
+			boolean valid = validatePage();
+			setPageComplete(valid);
+
+		}
+	};
+
+	private Listener inputFolderModifyListener = new Listener() {
+
+		@Override
+		public void handleEvent(Event event) {
+			boolean valid = validatePage();
+			setPageComplete(valid);
+		}
+	};
 
 }
