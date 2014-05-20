@@ -302,7 +302,7 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 		// Check Input Resource Folder
 		if (inputFolder.getText().equals("")) {
 			setErrorMessage(null);
-			setMessage(IDEWorkbenchMessages.WizardNewProjectCreationPage_projectLocationEmpty);
+			setMessage("Base Project to appify must me specified");
 			return false;
 		}
 

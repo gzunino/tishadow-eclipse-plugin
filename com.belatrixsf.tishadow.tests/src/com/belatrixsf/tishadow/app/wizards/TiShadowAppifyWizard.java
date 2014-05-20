@@ -44,18 +44,18 @@ import com.belatrixsf.tishadow.LaunchUtils;
 public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
 		implements INewWizard {
 
-	TiShadowAppifyWizardPage page = null;
+	TiShadowAppifyWizardPage wizardPage = null;
 	private WizardNewProjectReferencePage referencePage = null;
 	// cache of newly-created project
 	private IProject newProject;
 
 	@Override
 	public void addPages() {
-		page = new TiShadowAppifyWizardPage("Properties Page");
-		page.setTitle("Project");
-		page.setDescription("Settings");
+		wizardPage = new TiShadowAppifyWizardPage("Properties Page");
+		wizardPage.setTitle("Project");
+		wizardPage.setDescription("Settings");
 
-		this.addPage(page);
+		this.addPage(wizardPage);
 	}
 
 	/*
@@ -93,30 +93,27 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
 							"org.eclipse.ui.externaltools.ProgramLaunchConfigurationType");
 			ILaunchConfigurationWorkingCopy workingCopy = type.newInstance(
 					null, launchManager
-							.generateLaunchConfigurationName("tishadow app"));
+							.generateLaunchConfigurationName("tishadow appify"));
 
-			inputFolder = page.getSelectedBaseProjectPath();
-			outputFolder = page.getOutputFolderLocation();
-			host = page.getHostFieldValue();
-			port = page.getPortFieldValue();
-			room = page.getRoomFieldValue();
+			inputFolder = wizardPage.getSelectedBaseProjectPath();
+			outputFolder = getOutputFolderPath();
+			host = wizardPage.getHostFieldValue();
+			port = wizardPage.getPortFieldValue();
+			room = wizardPage.getRoomFieldValue();
 
 			/**
 			 * TiShadow appify command:
 			 * 
-			 * appify -d <dest_directory> -o <host> -p <port> -r <room> 
+			 * tishadow appify -d <dest_directory> -o <host> -p <port> -r <room> 
 			 */
 			arguments = "appify -d " + outputFolder;
 
-			// host, port and room are optional. If they are empty default
+			// host, port and room flags are optional. If they are empty default
 			// values will be used.
 			// + " -o " + host + " -p " + port;
-			arguments = (host.equals("") ? arguments
-					: (arguments + " -o " + host));
-			arguments = (port.equals("") ? arguments
-					: (arguments + " -p " + port));
-			arguments = (room.equals("") ? arguments
-					: (arguments + " -r " + room));
+			arguments = host.isEmpty() ? arguments : (arguments + " -o " + host);
+			arguments = port.isEmpty() ? arguments : (arguments + " -p " + port);
+			arguments = room.isEmpty() ? arguments : (arguments + " -r " + room);
 
 			workingCopy.setAttribute(IExternalToolConstants.ATTR_LOCATION,
 					"/usr/local/bin/tishadow");
@@ -155,6 +152,22 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Adds the correct folder name if default location is selected
+	 * 
+	 * @param outputFolder
+	 * @param wizardPage
+	 */
+	private String getOutputFolderPath() {
+		String outputFolderPath;
+		outputFolderPath = wizardPage.getOutputFolderLocation();
+		if (wizardPage.useDefaults()) {
+			outputFolderPath += "/" + wizardPage.getProjectName();
+		}
+		return outputFolderPath;
+
 	}
 
 	protected void addTiNature(IProject project) {
@@ -210,12 +223,12 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
 		}
 
 		// get a project handle
-		final IProject newProjectHandle = page.getProjectHandle();
+		final IProject newProjectHandle = wizardPage.getProjectHandle();
 
 		// get a project descriptor
 		URI location = null;
-		if (!page.useDefaults()) {
-			location = page.getLocationURI();
+		if (!wizardPage.useDefaults()) {
+			location = wizardPage.getLocationURI();
 		}
 
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -305,7 +318,7 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
 			return false;
 		}
 
-		IWorkingSet[] workingSets = page.getSelectedWorkingSets();
+		IWorkingSet[] workingSets = wizardPage.getSelectedWorkingSets();
 		getWorkbench().getWorkingSetManager().addToWorkingSets(newProject,
 				workingSets);
 
