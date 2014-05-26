@@ -8,10 +8,10 @@ mvn install
 echo "----- PULLING LAST P2 SITE CHANGES ----- "
 rm -rf ../gh-pages
 mkdir ../gh-pages
-../gh-pages
-git pull
+git clone -b gh-pages git@github.com:gzunino/tishadow-eclipse-plugin.git ../gh-pages
 
 echo "----- COPYING NEW PLUGINS ----- "
+../gh-pages
 rm -rf ./p2/*
 git rm -r p2/*
 
