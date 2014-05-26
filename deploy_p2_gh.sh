@@ -6,7 +6,9 @@ echo "----- BUILDING ----- "
 mvn install
 
 echo "----- PULLING LAST P2 SITE CHANGES ----- "
-cd ../gh-pages
+rm -rf ../gh-pages
+mkdir ../gh-pages
+../gh-pages
 git pull
 
 echo "----- COPYING NEW PLUGINS ----- "
