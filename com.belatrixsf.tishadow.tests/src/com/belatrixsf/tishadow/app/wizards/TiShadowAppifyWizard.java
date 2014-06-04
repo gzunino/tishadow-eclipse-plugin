@@ -1,7 +1,11 @@
 package com.belatrixsf.tishadow.app.wizards;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,6 +13,7 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.externaltools.internal.IExternalToolConstants;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IProjectNatureDescriptor;
 import org.eclipse.core.resources.IResourceStatus;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -96,6 +101,9 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
 							.generateLaunchConfigurationName("tishadow appify"));
 
 			inputFolder = wizardPage.getSelectedBaseProjectPath();
+			
+			
+			
 			outputFolder = getOutputFolderPath();
 			host = wizardPage.getHostFieldValue();
 			port = wizardPage.getPortFieldValue();
@@ -174,18 +182,17 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
 		IProjectDescription description;
 		try {
 			description = project.getDescription();
-
 			String[] natures = description.getNatureIds();
-
-			String[] newNatures = new String[natures.length + 1];
-
+			String[] newNatures = new String[natures.length + 2];
 			System.arraycopy(natures, 0, newNatures, 0, natures.length);
-
 			newNatures[natures.length] = "com.appcelerator.titanium.mobile.nature";
-
-			description.setNatureIds(newNatures);
-
-			project.setDescription(description, new NullProgressMonitor());
+			newNatures[natures.length + 1] = "com.aptana.projects.webnature";
+			IStatus status = ResourcesPlugin.getWorkspace().validateNatureSet(newNatures);
+			// check the status and decide what to do
+		    if (status.getCode() == IStatus.OK) {
+		    	description.setNatureIds(newNatures);
+				project.setDescription(description, new NullProgressMonitor());
+		    }
 		} catch (CoreException e) {
 			LaunchUtils.handleError("Cannot add Ti project nature", e);
 		}

@@ -140,7 +140,7 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 		getPort().setTextLimit(6);
 		getPort()
 				.setToolTipText(
-						"Sets the port por tiShadow.\n'3000' is the port by default.\nOnly numbers are allowed");
+						"Sets the port for tiShadow.\n'3000' is the port by default.\n*Only numbers are allowed*");
 		getPort().setText("3000"); // Default port
 
 		// Allows only numbers for the port input.
@@ -172,7 +172,7 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 		l.setLayoutData(data);
 		l.setText("Host:");
 		setHost(new Text(composite, SWT.SINGLE | SWT.BORDER));
-		getHost().setToolTipText("Sets the host por tiShadow.\nOptional");
+		getHost().setToolTipText("Sets the host for tiShadow.\n*Optional*");
 
 		addSeparator(composite);
 
@@ -181,7 +181,7 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 		l.setLayoutData(data);
 		l.setText("Room (optional):");
 		setRoom(new Text(composite, SWT.SINGLE | SWT.BORDER));
-		getRoom().setToolTipText("Sets the room por tiShadow.\nOptional");
+		getRoom().setToolTipText("Sets the room for tiShadow.\n*Optional*");
 
 		setControl(composite);
 		Dialog.applyDialogFont(composite);

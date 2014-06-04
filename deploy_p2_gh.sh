@@ -11,7 +11,7 @@ mkdir ../gh-pages
 git clone -b gh-pages git@github.com:gzunino/tishadow-eclipse-plugin.git ../gh-pages
 
 echo "----- COPYING NEW PLUGINS ----- "
-../gh-pages
+cd ../gh-pages
 rm -rf ./p2/*
 git rm -r p2/*
 

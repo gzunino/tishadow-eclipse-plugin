@@ -6,7 +6,9 @@ import java.util.Map;
 import org.eclipse.core.externaltools.internal.IExternalToolConstants;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugPlugin;
@@ -84,18 +86,17 @@ public class TiShadowAppWizard extends BasicNewProjectResourceWizard implements 
 		IProjectDescription description;
 		try {
 			description = project.getDescription();
-		
 			String[] natures = description.getNatureIds();
-	
-			String[] newNatures = new String[natures.length + 1];
-	
+			String[] newNatures = new String[natures.length + 2];
 			System.arraycopy(natures, 0, newNatures, 0, natures.length);
-	
 			newNatures[natures.length] = "com.appcelerator.titanium.mobile.nature";
-	
-			description.setNatureIds(newNatures);
-
-			project.setDescription(description, new NullProgressMonitor());
+			newNatures[natures.length + 1] = "com.aptana.projects.webnature";
+			IStatus status = ResourcesPlugin.getWorkspace().validateNatureSet(newNatures);
+			// check the status and decide what to do
+		    if (status.getCode() == IStatus.OK) {
+		    	description.setNatureIds(newNatures);
+				project.setDescription(description, new NullProgressMonitor());
+		    }
 		} catch (CoreException e) {
 			LaunchUtils.handleError("Cannot add Ti project nature", e);
 		}
