@@ -1,19 +1,12 @@
 package com.belatrixsf.tishadow.app.wizards;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.externaltools.internal.IExternalToolConstants;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
-import org.eclipse.core.resources.IProjectNatureDescriptor;
 import org.eclipse.core.resources.IResourceStatus;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -33,7 +26,6 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkingSet;
-import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.ui.dialogs.WizardNewProjectReferencePage;
 import org.eclipse.ui.ide.undo.CreateProjectOperation;
 import org.eclipse.ui.ide.undo.WorkspaceUndoUtil;
@@ -45,7 +37,9 @@ import org.eclipse.ui.statushandlers.StatusManager;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 
 import com.belatrixsf.tishadow.LaunchUtils;
+import com.belatrixsf.tishadow.preferences.page.PreferenceValues;
 
+@SuppressWarnings("restriction")
 public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
 		implements INewWizard {
 
@@ -124,7 +118,7 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
 			arguments = room.isEmpty() ? arguments : (arguments + " -r " + room);
 
 			workingCopy.setAttribute(IExternalToolConstants.ATTR_LOCATION,
-					"/usr/local/bin/tishadow");
+					PreferenceValues.getTishadowDirectory());
 			workingCopy.setAttribute(IExternalToolConstants.ATTR_SHOW_CONSOLE,
 					true);
 			workingCopy.setAttribute(
@@ -196,16 +190,6 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
 		} catch (CoreException e) {
 			LaunchUtils.handleError("Cannot add Ti project nature", e);
 		}
-	}
-
-	public static Map<String, String> getEnvVars() {
-		// Get current value for PATH environment variable
-		String pathVariable = System.getenv("PATH");
-		pathVariable += ":/usr/local/bin";
-
-		Map<String, String> envVariables = new HashMap<String, String>();
-		envVariables.put("PATH", pathVariable);
-		return envVariables;
 	}
 
 	/**

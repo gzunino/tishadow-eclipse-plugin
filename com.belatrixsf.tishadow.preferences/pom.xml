@@ -8,6 +8,6 @@
     <version>0.0.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>com.belatrixsf.tishadow.tests</artifactId>
+  <artifactId>com.belatrixsf.tishadow.preferences</artifactId>
   <packaging>eclipse-plugin</packaging>
 </project>

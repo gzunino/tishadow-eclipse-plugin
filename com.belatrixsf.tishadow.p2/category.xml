@@ -5,7 +5,7 @@
    </feature>
    <category-def name="com.belatrixsf.tishadow.category" label="TiShadow">
       <description>
-         Plugin to run TiShadow tests and display results on JUnit View
+         Plugin to run TiShadow tests and display results on JUnit View (Requires Kepler Update site enabled)
       </description>
    </category-def>
 </site>

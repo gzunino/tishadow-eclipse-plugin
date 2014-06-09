@@ -34,6 +34,7 @@ import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
 import org.eclipse.ui.internal.ide.IIDEHelpContextIds;
 import org.eclipse.ui.internal.ide.dialogs.ProjectContentsLocationArea;
 import org.eclipse.ui.internal.ide.dialogs.ProjectContentsLocationArea.IErrorMessageReporter;
+import com.belatrixsf.tishadow.preferences.page.*;
 
 /**
  * Standard main page for a wizard that is creates a project resource.
@@ -138,10 +139,12 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 		l.setText("Port:");
 		setPort(new Text(composite, SWT.SINGLE | SWT.BORDER));
 		getPort().setTextLimit(6);
+		String port = String.valueOf(PreferenceValues.getTishadowPort());
+		System.out.println("ESTE ES MI PUERTO!!! " + port);
 		getPort()
 				.setToolTipText(
-						"Sets the port for tiShadow.\n'3000' is the port by default.\n*Only numbers are allowed*");
-		getPort().setText("3000"); // Default port
+						"Sets the port for tiShadow.\n'" + port + "' is the port by default.\n*Only numbers are allowed*");
+		getPort().setText(port); // Default port
 
 		// Allows only numbers for the port input.
 		getPort().addVerifyListener(new VerifyListener() {
@@ -173,7 +176,7 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 		l.setText("Host:");
 		setHost(new Text(composite, SWT.SINGLE | SWT.BORDER));
 		getHost().setToolTipText("Sets the host for tiShadow.\n*Optional*");
-
+		getHost().setText(PreferenceValues.getTishadowHost());
 		addSeparator(composite);
 
 		// ROOM (OPTIONAL)

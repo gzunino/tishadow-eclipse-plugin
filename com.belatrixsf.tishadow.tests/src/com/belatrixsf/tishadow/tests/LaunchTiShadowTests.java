@@ -45,6 +45,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.belatrixsf.tishadow.LaunchUtils;
+import com.belatrixsf.tishadow.preferences.page.PreferenceValues;
 
 @SuppressWarnings("restriction")
 public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
@@ -361,7 +362,7 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 	}
 
 	public static void setLaunchAttributes(ILaunchConfigurationWorkingCopy configuration, IResource context) throws CoreException {
-		configuration.setAttribute(IExternalToolConstants.ATTR_LOCATION,"/usr/local/bin/tishadow");
+		configuration.setAttribute(IExternalToolConstants.ATTR_LOCATION,PreferenceValues.getTishadowDirectory());
 		String project = null;
 		if (context != null) {
 			project = LaunchTiShadowTests.getLaunchDir(context.getProject());

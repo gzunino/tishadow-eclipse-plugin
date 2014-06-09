@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: TiShadow Preferences
+Bundle-SymbolicName: com.belatrixsf.tishadow.preferences;singleton:=true
+Bundle-Version: 0.0.1.qualifier
+Bundle-Activator: com.belatrixsf.tishadow.preferences.page.Activator
+Bundle-Vendor: BELATRIXSF
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy
+Export-Package: com.belatrixsf.tishadow.preferences.page
