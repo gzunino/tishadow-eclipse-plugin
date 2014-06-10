@@ -4,11 +4,11 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
-
 import org.eclipse.jface.dialogs.MessageDialog;
+
+import com.belatrixsf.tishadow.preferences.page.PreferenceValues;
 
 public class LaunchUtils {
 	public static Map<String, String> getEnvVars() {
@@ -43,7 +43,7 @@ public class LaunchUtils {
 
 	public static boolean serverLaunched() {
 		try {
-	        Socket sock = new Socket("localhost", 3000);
+	        Socket sock = new Socket(PreferenceValues.getTishadowHost(), PreferenceValues.getTishadowPort());
 	        sock.close();
 	        return false;
 	    } catch (Exception e) {         

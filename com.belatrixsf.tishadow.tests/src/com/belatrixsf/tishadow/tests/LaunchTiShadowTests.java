@@ -361,6 +361,7 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 		return project.getLocation().toPortableString();
 	}
 
+
 	public static void setLaunchAttributes(ILaunchConfigurationWorkingCopy configuration, IResource context, String selectedTarget) throws CoreException {
 		configuration.setAttribute(IExternalToolConstants.ATTR_LOCATION,PreferenceValues.getTishadowDirectory());
 		String project = null;

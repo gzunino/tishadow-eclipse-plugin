@@ -10,6 +10,7 @@
     <module>com.belatrixsf.tishadow.feature</module>
     <module>com.belatrixsf.tishadow.tests</module>
     <module>com.belatrixsf.tishadow.p2</module>
+    <module>com.belatrixsf.tishadow.preferences</module>
   </modules>
   <repositories>
     <repository>
