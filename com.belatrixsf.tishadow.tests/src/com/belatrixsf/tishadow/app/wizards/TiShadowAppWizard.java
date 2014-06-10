@@ -22,6 +22,7 @@ import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 
 import com.belatrixsf.tishadow.LaunchUtils;
+import com.belatrixsf.tishadow.preferences.page.PreferenceValues;
 
 public class TiShadowAppWizard extends BasicNewProjectResourceWizard implements INewWizard {
 	
@@ -53,7 +54,7 @@ public class TiShadowAppWizard extends BasicNewProjectResourceWizard implements 
 			ILaunchConfigurationType type = DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurationType("org.eclipse.ui.externaltools.ProgramLaunchConfigurationType");
 			ILaunchConfigurationWorkingCopy workingCopy = type.newInstance(null, launchManager.generateLaunchConfigurationName("tishadow app"));
 			
-			workingCopy.setAttribute(IExternalToolConstants.ATTR_LOCATION, "/usr/local/bin/tishadow");
+			workingCopy.setAttribute(IExternalToolConstants.ATTR_LOCATION, PreferenceValues.getTishadowDirectory());
 			workingCopy.setAttribute(IExternalToolConstants.ATTR_SHOW_CONSOLE, true);
 			workingCopy.setAttribute(IExternalToolConstants.ATTR_TOOL_ARGUMENTS, "app -d "+ project.getLocation().toOSString());
 			workingCopy.setAttribute(IExternalToolConstants.ATTR_WORKING_DIRECTORY, project.getParent().getLocation().toOSString());

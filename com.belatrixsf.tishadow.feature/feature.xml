@@ -6,7 +6,8 @@
       provider-name="BELATRIXSF">
 
    <description url="http://www.example.com/description">
-      [Enter Feature Description here.]
+      Tooling to run TiShadow tests from Titanium Studio/Eclipse and
+display results on JUnit View.
    </description>
 
    <copyright url="http://www.example.com/copyright">
@@ -18,7 +19,7 @@
    </license>
 
    <url>
-      <discovery label="Indigo Update Site" url="http://download.eclipse.org/releases/indigo"/>
+      <discovery label="Kepler Update Site" url="http://download.eclipse.org/releases/kepler"/>
    </url>
 
    <requires>
@@ -37,5 +38,12 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
+
+   <plugin
+         id="com.belatrixsf.tishadow.preferences"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
 </feature>

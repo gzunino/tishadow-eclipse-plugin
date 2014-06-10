@@ -19,6 +19,7 @@ import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 import org.eclipse.jface.dialogs.MessageDialog;
 
 import com.belatrixsf.tishadow.LaunchUtils;
+import com.belatrixsf.tishadow.preferences.page.PreferenceValues;
 
 @SuppressWarnings("restriction")
 public class LaunchTiShadowServer implements ILaunchConfigurationDelegate {
@@ -55,7 +56,7 @@ public class LaunchTiShadowServer implements ILaunchConfigurationDelegate {
 	}
 
 	public static void setLaunchAttributes(ILaunchConfigurationWorkingCopy configuration, IResource context) throws CoreException {
-		configuration.setAttribute(IExternalToolConstants.ATTR_LOCATION, "/usr/local/bin/tishadow");
+		configuration.setAttribute(IExternalToolConstants.ATTR_LOCATION, PreferenceValues.getTishadowDirectory());
 
 		String project = null;
 		if (context != null) {

@@ -1,7 +1,13 @@
 package com.belatrixsf.tishadow.app.wizards;
 
 import java.net.URI;
-
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -11,29 +17,25 @@ import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Composite;
-
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.ISelectionService;
 import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ResourceListSelectionDialog;
 import org.eclipse.ui.dialogs.WorkingSetGroup;
+import org.eclipse.ui.internal.Workbench;
 import org.eclipse.ui.internal.ide.IDEWorkbenchMessages;
 import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
 import org.eclipse.ui.internal.ide.IIDEHelpContextIds;
 import org.eclipse.ui.internal.ide.dialogs.ProjectContentsLocationArea;
 import org.eclipse.ui.internal.ide.dialogs.ProjectContentsLocationArea.IErrorMessageReporter;
+import com.belatrixsf.tishadow.preferences.page.*;
 
 /**
  * Standard main page for a wizard that is creates a project resource.
@@ -67,7 +69,7 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 	private IProject selectedBaseProject;
 
 	private WorkingSetGroup workingSetGroup;
-
+	
 	/**
 	 * Creates a new project creation wizard page.
 	 * 
@@ -113,6 +115,13 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 		getProjectResourceInput().setLayoutData(
 				new GridData(GridData.FILL_HORIZONTAL));
 		getProjectResourceInput().setEnabled(false);
+		if (getCurrentProject() != null){
+			getProjectResourceInput().setText(getCurrentProject().getName().toString());
+		} else {
+			getProjectResourceInput().setMessage("The project to be appifyied");
+		}
+		
+		
 
 		// add a button to load resources.
 		createResourcesButton(parent.getShell(), composite);
@@ -137,11 +146,15 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 		l.setLayoutData(data);
 		l.setText("Port:");
 		setPort(new Text(composite, SWT.SINGLE | SWT.BORDER));
+		getPort().setLayoutData(
+				new GridData(GridData.FILL_HORIZONTAL));
 		getPort().setTextLimit(6);
+		String port = String.valueOf(PreferenceValues.getTishadowPort());
+		System.out.println("ESTE ES MI PUERTO!!! " + port);
 		getPort()
 				.setToolTipText(
-						"Sets the port for tiShadow.\n'3000' is the port by default.\n*Only numbers are allowed*");
-		getPort().setText("3000"); // Default port
+						"Sets the port for tiShadow.\n'" + port + "' is the port by default.\n*Only numbers are allowed*");
+		getPort().setText(port); // Default port
 
 		// Allows only numbers for the port input.
 		getPort().addVerifyListener(new VerifyListener() {
@@ -173,7 +186,7 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 		l.setText("Host:");
 		setHost(new Text(composite, SWT.SINGLE | SWT.BORDER));
 		getHost().setToolTipText("Sets the host for tiShadow.\n*Optional*");
-
+		getHost().setText(PreferenceValues.getTishadowHost());
 		addSeparator(composite);
 
 		// ROOM (OPTIONAL)
@@ -559,5 +572,25 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 			setPageComplete(valid);
 		}
 	};
+	
+	/**
+	 * Returns the selected project.
+	 * @return project
+	 */
+	public static IProject getCurrentProject(){
+        ISelectionService selectionService =     
+            Workbench.getInstance().getActiveWorkbenchWindow().getSelectionService();    
 
+        ISelection selection = selectionService.getSelection();    
+
+        IProject project = null;    
+        if(selection instanceof IStructuredSelection) {    
+            Object element = ((IStructuredSelection)selection).getFirstElement();    
+
+            if (element instanceof IResource) {    
+                project= ((IResource)element).getProject();    
+            } 
+        }     
+        return project;    
+    }
 }
