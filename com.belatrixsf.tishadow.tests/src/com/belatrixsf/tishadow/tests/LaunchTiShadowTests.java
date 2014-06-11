@@ -94,8 +94,6 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 			if(spec_touch) {
 				if(!LaunchUtils.serverLaunched()) {
 
-					created_tiapp = createTiApp(project);
-
 					final IFolder folder = getTiShadowResultFolder(projectLoc);
 					removeOldResults(monitor, folder);
 					workingCopy.launch(mode, mon);
@@ -116,10 +114,6 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 											e.printStackTrace();
 										}
 
-										if (created_tiapp) {
-											deleteTiApp(project);
-										}
-
 										final ArrayList<IPath> junitXMLResources = getXmlResults(mon, folder);
 										if (junitXMLResources.isEmpty()) {
 											MessageDialog.openError(null, "Error", "Cannot find JUnit XML results for TiShadow run. Check the console logs.");
@@ -127,7 +121,6 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 										}
 
 										JUnitViewEditorLauncher junit = new JUnitViewEditorLauncher();
-										//refreshProject(project);
 										String mergedXml = folder.getLocation().toOSString() + "/fullTestSuite.xml";
 										mergeXMLFiles(junitXMLResources, mergedXml);
 										refreshProject(project);
@@ -140,18 +133,13 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 					});
 				}
 				else {
-					if (created_tiapp) {
-						deleteTiApp(project);
-					}
 					MessageDialog.openError(null, "Error", "TiShadow Server is not running");
 					return;
 				}
 			}
 		}
 		catch (Exception ex) {
-			if (created_tiapp) {
-				deleteTiApp(project);
-			}
+			MessageDialog.openError(null, "Error", ex.getMessage());
 	    }
 	}
 
@@ -186,36 +174,6 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 				"tishadow.hideWizard"
 			);
 		}
-	}
-
-	private boolean createTiApp(IProject project) throws CoreException {
-		String pathPropertiesFile = "tiapp.xml";
-		IFile file = project.getFile(pathPropertiesFile);
-		try {
-			if(!file.exists()) {
-				InputStream source = this.getClass().getResourceAsStream(pathPropertiesFile);
-				file.create(source, false, null);
-				return true;
-			}
-			else {
-				return false;
-			}
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-			return false;
-	    }
-	}
-
-	private void deleteTiApp(IProject project) {
-		IFile file = project.getFile("tiapp.xml");
-
-		try {
-			if(file.exists()) {
-				file.delete(true, null);
-			}
-		}
-		catch (Exception ex) { }
 	}
 
 	private boolean touchSpecFiles(IProject project,IProgressMonitor monitor) {
