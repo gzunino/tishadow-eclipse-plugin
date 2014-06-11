@@ -116,13 +116,12 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 				new GridData(GridData.FILL_HORIZONTAL));
 		getProjectResourceInput().setEnabled(false);
 		if (getCurrentProject() != null){
+			selectedBaseProject = getCurrentProject();
 			getProjectResourceInput().setText(getCurrentProject().getName().toString());
 		} else {
 			getProjectResourceInput().setMessage("The project to be appifyied");
 		}
 		
-		
-
 		// add a button to load resources.
 		createResourcesButton(parent.getShell(), composite);
 
@@ -150,7 +149,6 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 				new GridData(GridData.FILL_HORIZONTAL));
 		getPort().setTextLimit(6);
 		String port = String.valueOf(PreferenceValues.getTishadowPort());
-		System.out.println("ESTE ES MI PUERTO!!! " + port);
 		getPort()
 				.setToolTipText(
 						"Sets the port for tiShadow.\n'" + port + "' is the port by default.\n*Only numbers are allowed*");
@@ -187,6 +185,8 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 		setHost(new Text(composite, SWT.SINGLE | SWT.BORDER));
 		getHost().setToolTipText("Sets the host for tiShadow.\n*Optional*");
 		getHost().setText(PreferenceValues.getTishadowHost());
+		getHost().setLayoutData(
+				new GridData(GridData.FILL_HORIZONTAL));
 		addSeparator(composite);
 
 		// ROOM (OPTIONAL)
@@ -195,6 +195,8 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 		l.setText("Room (optional):");
 		setRoom(new Text(composite, SWT.SINGLE | SWT.BORDER));
 		getRoom().setToolTipText("Sets the room for tiShadow.\n*Optional*");
+		getRoom().setLayoutData(
+				new GridData(GridData.FILL_HORIZONTAL));
 
 		setControl(composite);
 		Dialog.applyDialogFont(composite);

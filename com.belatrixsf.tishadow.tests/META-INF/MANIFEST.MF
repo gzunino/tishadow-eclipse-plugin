@@ -18,5 +18,4 @@ Require-Bundle: org.eclipse.ui,
  com.belatrixsf.tishadow.preferences;bundle-version="0.0.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: src/,
- .
+Bundle-ClassPath: .

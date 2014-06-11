@@ -2,8 +2,6 @@ package com.belatrixsf.tishadow.app.wizards;
 
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.externaltools.internal.IExternalToolConstants;
@@ -188,7 +186,7 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
 		    if (status.getCode() == IStatus.OK) {
 		    	description.setNatureIds(newNatures);
 				project.setDescription(description, new NullProgressMonitor());
-		    } 
+		    }
 		} catch (CoreException e) {
 			LaunchUtils.handleError("Cannot add Ti project nature", e);
 		}
