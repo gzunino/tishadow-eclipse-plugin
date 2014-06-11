@@ -46,4 +46,11 @@ display results on JUnit View.
          version="0.0.0"
          unpack="false"/>
 
+   <plugin
+         id="com.belatrixsf.tishadow.runner"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
 </feature>

@@ -11,6 +11,7 @@
     <module>com.belatrixsf.tishadow.tests</module>
     <module>com.belatrixsf.tishadow.p2</module>
     <module>com.belatrixsf.tishadow.preferences</module>
+    <module>com.belatrixsf.tishadow.runner</module>
   </modules>
   <repositories>
     <repository>

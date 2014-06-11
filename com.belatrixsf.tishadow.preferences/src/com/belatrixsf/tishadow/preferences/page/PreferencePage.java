@@ -28,5 +28,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements
 	public void init(IWorkbench workbench) {
 		setPreferenceStore(Activator.getDefault().getPreferenceStore());
 		setDescription("Tishadow");
+		String directory = PreferenceValues.getTishadowDirectory();
+		new Helper().ValidateTishadowPath(directory);
 	}
 }
