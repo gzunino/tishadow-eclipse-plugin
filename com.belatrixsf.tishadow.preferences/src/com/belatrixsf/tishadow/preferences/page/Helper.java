@@ -8,43 +8,53 @@ import com.belatrixsf.tishadow.runner.IRunnerCallback;
 import com.belatrixsf.tishadow.runner.TiShadowRunner;
 
 public class Helper implements IRunnerCallback{
+	private String tishadowVersion;
+
+	public void ValidateTishadowPath(String path) throws Exception{
+		if(exists(path) && canExecute(path)){
+			runTishadowVersion(path);
+		}; 
+	}
 	
+	@Override
+	public void onRunnerTishadowFinish(Object response) {
+		System.out.println(response);
+		tishadowVersion = response.toString();
+	}
 	
-	public boolean ValidateTishadowPath(String path){
-		return exists(path) && canExecute(path) && getTishadowVersion(path) != null; 
+	public String getTishadowVersion() {
+		return tishadowVersion;
 	}
 	
 	private boolean canExecute(String path) {
 		return new File(path).canExecute();
 	}
 
-	private Object getTishadowVersion(String path) {
+	private void runTishadowVersion(String path) throws Exception {
+		System.out.println(path);
 		TiShadowRunner tishadowRunner = new TiShadowRunner("Tishadow Version");
-		tishadowRunner.setAttribute(Constants.TISHADOW_TOOL_ARGUMENTS, " -v")
+		tishadowRunner
+				.setAttribute(Constants.TISHADOW_TOOL_ARGUMENTS, " -v")
 				.setAttribute(Constants.TISHADOW_SHOW_CONSOLE, true)
-				.setAttribute(Constants.TISHADOW_LOCATION, PreferenceValues.TISHADOW_DEFAULT_DIRECTORY)
-				.setAttribute(Constants.TISHADOW_WORKING_DIRECTORY, "/home/")
-				.setAttribute(Constants.TISHADOW_ENVIRONMENT_VARIABLES, getEnvVars());
-		
+				.setAttribute(Constants.TISHADOW_LOCATION,
+						path)
+				.setAttribute(Constants.TISHADOW_WORKING_DIRECTORY,
+						"/home/")
+				.setAttribute(Constants.TISHADOW_ENVIRONMENT_VARIABLES,
+						getEnvVars());
 		tishadowRunner.runTiShadow(this);
-		return null;
 	}
 
 	private boolean exists(String path) {
 		return new File(path).exists();
 	}
 	
-	public static Map<String, String> getEnvVars() {
+	private static Map<String, String> getEnvVars() {
 		// Get current value for PATH environment variable
 		String pathVariable = System.getenv("PATH");
 		pathVariable += ":/usr/local/bin";
 		Map<String, String> envVariables = new HashMap<String, String>();
 		envVariables.put("PATH", pathVariable);
 		return envVariables;
-	}
-	
-	@Override
-	public void onRunnerTishadowFinish(Object response) {
-		System.out.println(response);
 	}
 }
