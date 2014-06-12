@@ -10,5 +10,5 @@ package com.belatrixsf.tishadow.runner;
  */
 public interface IRunnerCallback {
 	/** Callback method */
-	public void onRunnerTishadowFinish();
+	public void onRunnerTishadowFinish(Object response);
 }
