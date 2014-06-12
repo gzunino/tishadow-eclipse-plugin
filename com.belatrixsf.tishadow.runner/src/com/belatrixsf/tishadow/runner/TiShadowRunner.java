@@ -1,7 +1,9 @@
 package com.belatrixsf.tishadow.runner;
 
+import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.externaltools.internal.IExternalToolConstants;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -12,6 +14,10 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.core.IStreamListener;
+import org.eclipse.debug.core.model.IStreamMonitor;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+
 
 /**
  * @author vvillegas
@@ -19,9 +25,8 @@ import org.eclipse.debug.core.ILaunchManager;
  */
 public class TiShadowRunner {
 	private ILaunchConfigurationWorkingCopy workingCopy;
-	private IProgressMonitor progressMonitor = new NullProgressMonitor();
+	private Object objectToReturn;
 	
-
 	/** Constructor */
 	public TiShadowRunner(String configurationName) {
 		ILaunchManager launchManager = DebugPlugin.getDefault()
@@ -39,17 +44,13 @@ public class TiShadowRunner {
 			e.printStackTrace();
 		}
 	}
-
-	public void setProgressMonitor(IProgressMonitor progressMonitor) {
-		this.progressMonitor = progressMonitor;
-	}
 	
 	/** Run command */
 	public void runTiShadow(final IRunnerCallback callback) {
 		try {
-			ILaunch launch = workingCopy.launch(ILaunchManager.RUN_MODE,
-					progressMonitor);
-			addDebugEventListener(callback);
+			ILaunch launch = workingCopy.launch(ILaunchManager.RUN_MODE, 
+					new NullProgressMonitor());
+			addDebugEventListener(launch, callback);
 		} catch (CoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -81,18 +82,31 @@ public class TiShadowRunner {
 		return this;
 	}
 	
-	private void addDebugEventListener(final IRunnerCallback callback) {
+	private void addDebugEventListener(final ILaunch launch, final IRunnerCallback callback) {
+		setObjectToReturn(launch);
 		DebugPlugin.getDefault().addDebugEventListener(
-				new IDebugEventSetListener() {
-					@Override
-					public void handleDebugEvents(DebugEvent[] events) {
-						if (events.length > 0
-								&& (events[0].getKind() == DebugEvent.TERMINATE)) {
-							DebugPlugin.getDefault().removeDebugEventListener(
-									this);
-							callback.onRunnerTishadowFinish();
+			new IDebugEventSetListener() {
+				@Override
+				public void handleDebugEvents(DebugEvent[] events) {
+					if (events.length > 0
+							&& (events[0].getKind() == DebugEvent.TERMINATE)) {
+						DebugPlugin.getDefault().removeDebugEventListener(
+								this);
+						if(callback != null){
+							callback.onRunnerTishadowFinish(objectToReturn);
 						}
 					}
-				});
+				}
+			});
+		
+	}
+
+	private void setObjectToReturn(final ILaunch launch) {
+		launch.getProcesses()[0].getStreamsProxy().getOutputStreamMonitor().addListener(new IStreamListener() {
+			@Override
+			public void streamAppended(String text, IStreamMonitor monitor) {
+				objectToReturn = text;
+			}
+		});
 	}
 }
