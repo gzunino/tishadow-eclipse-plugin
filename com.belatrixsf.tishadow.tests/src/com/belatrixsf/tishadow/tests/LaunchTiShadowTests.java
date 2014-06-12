@@ -319,14 +319,14 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 		return project.getLocation().toPortableString();
 	}
 
-	public static void setLaunchAttributes(ILaunchConfigurationWorkingCopy configuration, IResource context) throws CoreException {
+	public static void setLaunchAttributes(ILaunchConfigurationWorkingCopy configuration, IResource context, String selectedTarget) throws CoreException {
 		configuration.setAttribute(IExternalToolConstants.ATTR_LOCATION,PreferenceValues.getTishadowDirectory());
 		String project = null;
 		if (context != null) {
 			project = LaunchTiShadowTests.getLaunchDir(context.getProject());
 		}
 		configuration.setAttribute(IExternalToolConstants.ATTR_WORKING_DIRECTORY, project);
-		configuration.setAttribute(IExternalToolConstants.ATTR_TOOL_ARGUMENTS, "spec -u -x");
+		configuration.setAttribute(IExternalToolConstants.ATTR_TOOL_ARGUMENTS, "spec -u -x" + selectedTarget);
 		configuration.setAttribute(IExternalToolConstants.ATTR_SHOW_CONSOLE, true);
 		configuration.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, LaunchUtils.getEnvVars());
 	}

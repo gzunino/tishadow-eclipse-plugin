@@ -96,8 +96,6 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
 
 			inputFolder = wizardPage.getSelectedBaseProjectPath();
 			
-			
-			
 			outputFolder = getOutputFolderPath();
 			host = wizardPage.getHostFieldValue();
 			port = wizardPage.getPortFieldValue();

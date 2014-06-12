@@ -27,7 +27,7 @@ public class LaunchTiShadowTestsTabGroup extends
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
 		IResource context = getContext();
 		try {
-			LaunchTiShadowTests.setLaunchAttributes(configuration, context);
+			LaunchTiShadowTests.setLaunchAttributes(configuration, context, "");
 		} catch (CoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
