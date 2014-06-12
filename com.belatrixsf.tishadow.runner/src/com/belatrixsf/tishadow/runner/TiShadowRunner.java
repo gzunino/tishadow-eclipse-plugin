@@ -28,7 +28,7 @@ public class TiShadowRunner {
 	private Object objectToReturn;
 	
 	/** Constructor */
-	public TiShadowRunner(String configurationName) {
+	public TiShadowRunner(String configurationName) throws Exception {
 		ILaunchManager launchManager = DebugPlugin.getDefault()
 				.getLaunchManager();
 		ILaunchConfigurationType type = DebugPlugin
@@ -40,20 +40,19 @@ public class TiShadowRunner {
 			workingCopy = type.newInstance(null, launchManager
 					.generateLaunchConfigurationName(configurationName));
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new Exception(e.getCause());
 		}
 	}
 	
-	/** Run command */
-	public void runTiShadow(final IRunnerCallback callback) {
+	/** Run command 
+	 * @throws Exception */
+	public void runTiShadow(final IRunnerCallback callback) throws Exception {
 		try {
 			ILaunch launch = workingCopy.launch(ILaunchManager.RUN_MODE, 
 					new NullProgressMonitor());
 			addDebugEventListener(launch, callback);
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new Exception(e.getCause());
 		}
 	}
 
