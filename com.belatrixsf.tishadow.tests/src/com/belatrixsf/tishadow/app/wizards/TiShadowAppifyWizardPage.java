@@ -1,6 +1,7 @@
 package com.belatrixsf.tishadow.app.wizards;
 
 import java.net.URI;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
@@ -35,23 +36,11 @@ import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
 import org.eclipse.ui.internal.ide.IIDEHelpContextIds;
 import org.eclipse.ui.internal.ide.dialogs.ProjectContentsLocationArea;
 import org.eclipse.ui.internal.ide.dialogs.ProjectContentsLocationArea.IErrorMessageReporter;
+
 import com.belatrixsf.tishadow.preferences.page.*;
 
 /**
  * Standard main page for a wizard that is creates a project resource.
- * <p>
- * This page may be used by clients as-is; it may be also be subclassed to suit.
- * </p>
- * <p>
- * Example usage:
- * 
- * <pre>
- * mainPage = new WizardNewProjectCreationPage(&quot;basicNewProjectPage&quot;);
- * mainPage.setTitle(&quot;Project&quot;);
- * mainPage.setDescription(&quot;Create a new project resource.&quot;);
- * </pre>
- * 
- * </p>
  */
 public class TiShadowAppifyWizardPage extends WizardPage {
 
@@ -61,13 +50,11 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 	private Text room;
 	private Text host;
 	private Text projectNameField;
-
 	private String initialProjectFieldValue;
-
 	private ResourceListSelectionDialog dialog;
+	@SuppressWarnings("restriction")
 	private ProjectContentsLocationArea outputFolder;
 	private IProject selectedBaseProject;
-
 	private WorkingSetGroup workingSetGroup;
 	
 	/**
@@ -84,6 +71,7 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 	/**
 	 * (non-Javadoc) Method declared on IDialogPage.
 	 */
+	@SuppressWarnings("restriction")
 	public void createControl(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NULL);
 
@@ -151,7 +139,7 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 		String port = String.valueOf(PreferenceValues.getTishadowPort());
 		getPort()
 				.setToolTipText(
-						"Sets the port for tiShadow.\n'" + port + "' is the port by default.\n*Only numbers are allowed*");
+						"Sets the port for tiShadow.\n'" + port + "' is the port set by default.\n*Only numbers are allowed*");
 		getPort().setText(port); // Default port
 
 		// Allows only numbers for the port input.
@@ -229,6 +217,7 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 		});
 	}
 
+	@SuppressWarnings("restriction")
 	private void openFolderDialog(Composite composite) {
 
 		setLocationArea(new ProjectContentsLocationArea(getErrorReporter(),
@@ -271,6 +260,7 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 	 * 
 	 * @return IErrorMessageReporter
 	 */
+	@SuppressWarnings("restriction")
 	private IErrorMessageReporter getErrorReporter() {
 		return new IErrorMessageReporter() {
 			/*
@@ -302,8 +292,8 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 	 * @return <code>true</code> if all controls are valid, and
 	 *         <code>false</code> if at least one is invalid
 	 */
+	@SuppressWarnings("restriction")
 	protected boolean validatePage() {
-		@SuppressWarnings("restriction")
 		IWorkspace workspace = IDEWorkbenchPlugin.getPluginWorkspace();
 
 		// Check Project Name
@@ -398,6 +388,7 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 	 * @param locationArea
 	 *            the locationArea to set
 	 */
+	@SuppressWarnings("restriction")
 	public void setLocationArea(ProjectContentsLocationArea locationArea) {
 		outputFolder = locationArea;
 	}
@@ -405,10 +396,12 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 	/**
 	 * @return the locationArea
 	 */
+	@SuppressWarnings("restriction")
 	protected ProjectContentsLocationArea getOutputFolder() {
 		return outputFolder;
 	}
 
+	@SuppressWarnings("restriction")
 	protected String getOutputFolderLocation() {
 		return getOutputFolder().getProjectLocation();
 	}
@@ -465,6 +458,7 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 	/**
 	 * Set the location to the default location if we are set to useDefaults.
 	 */
+	@SuppressWarnings("restriction")
 	void setLocationForSelection() {
 		outputFolder.updateProjectName(getProjectNameFieldValue());
 	}
@@ -507,6 +501,7 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 	 * @return the project location URI, or <code>null</code>
 	 * @since 3.2
 	 */
+	@SuppressWarnings("restriction")
 	public URI getLocationURI() {
 		return getOutputFolder().getProjectLocationURI();
 	}
@@ -516,6 +511,7 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 	 * 
 	 * @return boolean
 	 */
+	@SuppressWarnings("restriction")
 	public boolean useDefaults() {
 		return getOutputFolder().isDefault();
 	}
@@ -579,6 +575,7 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 	 * Returns the selected project.
 	 * @return project
 	 */
+	@SuppressWarnings("restriction")
 	public static IProject getCurrentProject(){
         ISelectionService selectionService =     
             Workbench.getInstance().getActiveWorkbenchWindow().getSelectionService();    

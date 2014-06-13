@@ -111,9 +111,9 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
 			// host, port and room flags are optional. If they are empty default
 			// values will be used.
 			// + " -o " + host + " -p " + port;
-			arguments = host.isEmpty() ? arguments : (arguments + " -o " + host);
-			arguments = port.isEmpty() ? arguments : (arguments + " -p " + port);
-			arguments = room.isEmpty() ? arguments : (arguments + " -r " + room);
+			arguments = host.isEmpty() ? arguments : (arguments + " -o '" + host + "'");
+			arguments = port.isEmpty() ? arguments : (arguments + " -p '" + port + "'");
+			arguments = room.isEmpty() ? arguments : (arguments + " -r '" + room + "'");
 
 			workingCopy.setAttribute(IExternalToolConstants.ATTR_LOCATION,
 					PreferenceValues.getTishadowDirectory());

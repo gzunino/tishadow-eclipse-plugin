@@ -103,7 +103,7 @@ public class LaunchShortcut implements ILaunchShortcut {
     	tiShadowProjectsList = getTiShadowProjectsList();
     	
     	if (tiShadowProjectsList.isEmpty()){
-    		MessageDialog.openError(null, "No projects found", "To run specs from a Titanium module or a Native Extension its necessary to have at least one TiShadow project to run on.");
+    		MessageDialog.openError(null, "No TiShadow projects found", "To run tests from a Titanium module it's necessary to have at least one TiShadow project to run on.");
     	} else {
     		tiShadowProjectName = getSelectedProject(tiShadowProjectsList);
 	    	if (! tiShadowProjectName.isEmpty()){
@@ -145,7 +145,7 @@ public class LaunchShortcut implements ILaunchShortcut {
     		}
     	});
     	dialog.setTitle("Project Selection");
-    	dialog.setMessage("Select the appifyed project from the list:");
+    	dialog.setMessage("Select the TiShadow project from the list:");
     	dialog.setInput(projectsList);
     	dialog.open();
     	if(dialog.getReturnCode() == 0){ //0 is OK
