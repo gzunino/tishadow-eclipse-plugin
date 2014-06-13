@@ -10,37 +10,17 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 public class PreferencePage extends FieldEditorPreferencePage implements
 		IWorkbenchPreferencePage {
 	
-	//private String tishadowVersion;
+	private Helper helper;
 	
+	/**Constructor */
 	public PreferencePage() {
 		super(GRID);
-
+		helper = new Helper();
 	}
 
+	/**Create fields to preference page */
 	public void createFieldEditors() {
-		addField(new FileFieldEditor(PreferenceValues.TISHADOW_DIRECTORY,
-				"&Tishadow Path:", getFieldEditorParent()) {
-			/*
-			@Override
-			protected boolean doCheckState() {
-				String directory = PreferenceValues.getTishadowDirectory();
-				try{
-					Helper helper = new Helper().ValidateTishadowPath(directory);
-					if (helper.getTishadowVersion() != null){
-						tishadowVersion = helper.getTishadowVersion();
-						return true;
-					} 
-					else
-						setErrorMessage("Could not find TiShadow."); 
-						return false;
-				}
-				catch(Exception ex){
-					setErrorMessage("Could not find TiShadow.");
-					return false;
-				}
-			}*/
-		});
-		
+		addTishadowDirectoryField();		
 		addField(new StringFieldEditor(PreferenceValues.TISHADOW_HOST, "Tishadow &Host:",
 				getFieldEditorParent()));
 		addField(new IntegerFieldEditor(PreferenceValues.TISHADOW_PORT, "Tishadow &Port:",
@@ -50,6 +30,26 @@ public class PreferencePage extends FieldEditorPreferencePage implements
 	@Override
 	public void init(IWorkbench workbench) {
 		setPreferenceStore(Activator.getDefault().getPreferenceStore());
-		//setDescription("Tishadow");
+	}
+	
+	/**Add tishadow directory field to preference page. 
+	 * Validation of tishadow directory.
+	 * Set of information message or error message.
+	 * */
+	private void addTishadowDirectoryField() {
+		addField(new FileFieldEditor(PreferenceValues.TISHADOW_DIRECTORY,
+				"&Tishadow Path:", getFieldEditorParent()) {
+			@Override
+			protected boolean doCheckState() {
+				String actualValue = this.getStringValue();
+				if (helper.tiShadowPathIsValid(actualValue)) {
+					setMessage("TiShadow Version: " + helper.getTiShadowVersion().trim(), 1);
+					return true;
+				} else {
+					setErrorMessage("Could not find TiShadow Directory");
+					return false;
+				}
+			}
+		});
 	}
 }

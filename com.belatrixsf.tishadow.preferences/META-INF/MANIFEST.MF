@@ -7,7 +7,7 @@ Bundle-Activator: com.belatrixsf.tishadow.preferences.page.Activator
 Bundle-Vendor: BELATRIXSF
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- com.belatrixsf.tishadow.runner;bundle-version="1.0.0"
+ com.belatrixsf.tishadow.runner
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: com.belatrixsf.tishadow.preferences.page

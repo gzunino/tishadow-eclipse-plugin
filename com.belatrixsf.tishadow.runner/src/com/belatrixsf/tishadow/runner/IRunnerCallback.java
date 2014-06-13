@@ -9,6 +9,6 @@ package com.belatrixsf.tishadow.runner;
  *	about running has finished.
  */
 public interface IRunnerCallback {
-	/** Callback method */
+	/** Callback method*/
 	public void onRunnerTishadowFinish(Object response);
 }
