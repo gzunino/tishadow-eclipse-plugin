@@ -1,11 +1,10 @@
 package com.belatrixsf.tishadow.runner;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.core.externaltools.internal.IExternalToolConstants;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugPlugin;
@@ -16,7 +15,6 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.IStreamListener;
 import org.eclipse.debug.core.model.IStreamMonitor;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 
 
 /**
@@ -79,6 +77,11 @@ public class TiShadowRunner {
 			Map<String, String> value) {
 		workingCopy.setAttribute(attribute, value);
 		return this;
+	}
+	
+	public static boolean isValidNature(String[] newNatures){
+		IStatus status = ResourcesPlugin.getWorkspace().validateNatureSet(newNatures);
+		return status.isOK();
 	}
 	
 	private void addDebugEventListener(final ILaunch launch, final IRunnerCallback callback) {
