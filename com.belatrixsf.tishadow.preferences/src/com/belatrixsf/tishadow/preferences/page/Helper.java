@@ -95,7 +95,7 @@ public class Helper implements IRunnerCallback{
 		return new File(path).exists();
 	}
 	
-	private static Map<String, String> getEnvVars() {
+	public static Map<String, String> getEnvVars() {
 		String pathVariable = System.getenv("PATH");
 		pathVariable += ":/usr/local/bin";
 		Map<String, String> envVariables = new HashMap<String, String>();

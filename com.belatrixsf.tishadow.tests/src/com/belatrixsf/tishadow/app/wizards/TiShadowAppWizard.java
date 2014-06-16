@@ -3,28 +3,24 @@ package com.belatrixsf.tishadow.app.wizards;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.core.externaltools.internal.IExternalToolConstants;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.debug.core.DebugEvent;
-import org.eclipse.debug.core.DebugPlugin;
-import org.eclipse.debug.core.IDebugEventSetListener;
-import org.eclipse.debug.core.ILaunch;
-import org.eclipse.debug.core.ILaunchConfigurationType;
-import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 
 import com.belatrixsf.tishadow.LaunchUtils;
 import com.belatrixsf.tishadow.preferences.page.PreferenceValues;
+import com.belatrixsf.tishadow.runner.Constants;
+import com.belatrixsf.tishadow.runner.IRunnerCallback;
+import com.belatrixsf.tishadow.runner.TiShadowRunner;
 
-public class TiShadowAppWizard extends BasicNewProjectResourceWizard implements INewWizard {
+public class TiShadowAppWizard extends BasicNewProjectResourceWizard implements
+		INewWizard, IRunnerCallback {
 	
 	@Override
 	public void addPages() {
@@ -50,34 +46,20 @@ public class TiShadowAppWizard extends BasicNewProjectResourceWizard implements 
 
 	private void createTiProject(final IProject project) {
 		try {
-			ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
-			ILaunchConfigurationType type = DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurationType("org.eclipse.ui.externaltools.ProgramLaunchConfigurationType");
-			ILaunchConfigurationWorkingCopy workingCopy = type.newInstance(null, launchManager.generateLaunchConfigurationName("tishadow app"));
-			
-			workingCopy.setAttribute(IExternalToolConstants.ATTR_LOCATION, PreferenceValues.getTishadowDirectory());
-			workingCopy.setAttribute(IExternalToolConstants.ATTR_SHOW_CONSOLE, true);
-			workingCopy.setAttribute(IExternalToolConstants.ATTR_TOOL_ARGUMENTS, "app -d "+ project.getLocation().toOSString());
-			workingCopy.setAttribute(IExternalToolConstants.ATTR_WORKING_DIRECTORY, project.getParent().getLocation().toOSString());
-			workingCopy.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, LaunchUtils.getEnvVars());
+			TiShadowRunner tiShadowRunner = new TiShadowRunner("tishadow app");
+			tiShadowRunner
+					.setAttribute(Constants.TISHADOW_LOCATION,
+							PreferenceValues.getTishadowDirectory())
+					.setAttribute(Constants.TISHADOW_SHOW_CONSOLE, true)
+					.setAttribute(Constants.TISHADOW_TOOL_ARGUMENTS,
+							"app -d " + project.getLocation().toOSString())
+					.setAttribute(Constants.TISHADOW_LOCATION,
+							project.getParent().getLocation().toOSString())
+					.setAttribute(Constants.TISHADOW_ENVIRONMENT_VARIABLES,
+							LaunchUtils.getEnvVars());
 
-			ILaunch launch = workingCopy.launch(ILaunchManager.RUN_MODE, new NullProgressMonitor());
-			launch.getProcesses()[0].getStreamsProxy().write("com.test.app");
-
-			DebugPlugin.getDefault().addDebugEventListener(new IDebugEventSetListener() {
-				@Override
-				public void handleDebugEvents(DebugEvent[] events) {
-					
-					if (events.length > 0 && (events[0].getKind() == DebugEvent.TERMINATE)) {
-						DebugPlugin.getDefault().removeDebugEventListener(this);
-						try {
-							addTiNature(project);
-							project.refreshLocal(IProject.DEPTH_INFINITE, new NullProgressMonitor());
-						} catch (CoreException e) {
-							e.printStackTrace();
-						}
-					}
-				}
-			});
+			tiShadowRunner.runTiShadow(this);
+			//launch.getProcesses()[0].getStreamsProxy().write("com.test.app");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -111,5 +93,16 @@ public class TiShadowAppWizard extends BasicNewProjectResourceWizard implements 
 		Map<String, String> envVariables = new HashMap<String, String>();
 		envVariables.put("PATH", pathVariable);
 		return envVariables;
+	}
+
+	@Override
+	public void onRunnerTishadowFinish(Object response) {
+		try {
+			addTiNature(getNewProject());
+			getNewProject().refreshLocal(IProject.DEPTH_INFINITE, new NullProgressMonitor());
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
+		
 	}
 }

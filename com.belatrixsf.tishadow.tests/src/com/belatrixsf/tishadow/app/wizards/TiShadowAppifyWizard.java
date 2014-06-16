@@ -4,7 +4,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.externaltools.internal.IExternalToolConstants;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResourceStatus;
@@ -15,13 +14,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.debug.core.DebugEvent;
-import org.eclipse.debug.core.DebugPlugin;
-import org.eclipse.debug.core.IDebugEventSetListener;
-import org.eclipse.debug.core.ILaunch;
-import org.eclipse.debug.core.ILaunchConfigurationType;
-import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.ui.INewWizard;
@@ -37,11 +29,15 @@ import org.eclipse.ui.statushandlers.StatusManager;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 
 import com.belatrixsf.tishadow.LaunchUtils;
+import com.belatrixsf.tishadow.preferences.page.Helper;
 import com.belatrixsf.tishadow.preferences.page.PreferenceValues;
+import com.belatrixsf.tishadow.runner.Constants;
+import com.belatrixsf.tishadow.runner.IRunnerCallback;
+import com.belatrixsf.tishadow.runner.TiShadowRunner;
 
 @SuppressWarnings("restriction")
 public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
-		implements INewWizard {
+		implements INewWizard, IRunnerCallback {
 
 	TiShadowAppifyWizardPage wizardPage = null;
 	private WizardNewProjectReferencePage referencePage = null;
@@ -62,96 +58,56 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
 	 */
 	public boolean performFinish() {
 		boolean finished = performSuperFinish();
-
-		IProject project = getNewProject();
-
-		if (project != null) {
-			createTiProject(project);
+		if (getNewProject() != null) {
+			createTiProject();
 		}
-
 		return finished;
 	}
 
-	private void createTiProject(final IProject project) {
-
-		String arguments;
-		String inputFolder;
-		String outputFolder;
-		String host;
-		String port;
-		String room = "";
-		TiShadowAppifyWizardPage propertiesPage;
-
+	private void createTiProject() {
+		String inputFolder = wizardPage.getSelectedBaseProjectPath();
+		String arguments = getArguments();
 		try {
-			ILaunchManager launchManager = DebugPlugin.getDefault()
-					.getLaunchManager();
-			ILaunchConfigurationType type = DebugPlugin
-					.getDefault()
-					.getLaunchManager()
-					.getLaunchConfigurationType(
-							"org.eclipse.ui.externaltools.ProgramLaunchConfigurationType");
-			ILaunchConfigurationWorkingCopy workingCopy = type.newInstance(
-					null, launchManager
-							.generateLaunchConfigurationName("tishadow appify"));
-
-			inputFolder = wizardPage.getSelectedBaseProjectPath();
-			
-			outputFolder = getOutputFolderPath();
-			host = wizardPage.getHostFieldValue();
-			port = wizardPage.getPortFieldValue();
-			room = wizardPage.getRoomFieldValue();
-
-			/**
-			 * TiShadow appify command:
-			 * 
-			 * tishadow appify -d <dest_directory> -o <host> -p <port> -r <room> 
-			 */
-			arguments = "appify -d " + outputFolder;
-
-			// host, port and room flags are optional. If they are empty default
-			// values will be used.
-			// + " -o " + host + " -p " + port;
-			arguments = host.isEmpty() ? arguments : (arguments + " -o '" + host + "'");
-			arguments = port.isEmpty() ? arguments : (arguments + " -p '" + port + "'");
-			arguments = room.isEmpty() ? arguments : (arguments + " -r '" + room + "'");
-
-			workingCopy.setAttribute(IExternalToolConstants.ATTR_LOCATION,
-					PreferenceValues.getTishadowDirectory());
-			workingCopy.setAttribute(IExternalToolConstants.ATTR_SHOW_CONSOLE,
-					true);
-			workingCopy.setAttribute(
-					IExternalToolConstants.ATTR_TOOL_ARGUMENTS, arguments);
-			workingCopy.setAttribute(
-					IExternalToolConstants.ATTR_WORKING_DIRECTORY, inputFolder);
-			workingCopy.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES,
-					LaunchUtils.getEnvVars());
-
-			ILaunch launch = workingCopy.launch(ILaunchManager.RUN_MODE,
-					new NullProgressMonitor());
-
-			DebugPlugin.getDefault().addDebugEventListener(
-					new IDebugEventSetListener() {
-						@Override
-						public void handleDebugEvents(DebugEvent[] events) {
-
-							if (events.length > 0
-									&& (events[0].getKind() == DebugEvent.TERMINATE)) {
-								DebugPlugin.getDefault()
-										.removeDebugEventListener(this);
-								try {
-									addTiNature(project);
-									project.refreshLocal(
-											IProject.DEPTH_INFINITE,
-											new NullProgressMonitor());
-								} catch (CoreException e) {
-									e.printStackTrace();
-								}
-							}
-						}
-					});
+			appifyProject(arguments, inputFolder);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private String getArguments() {
+		String outputFolder = getOutputFolderPath();
+		String host = wizardPage.getHostFieldValue();
+		String port = wizardPage.getPortFieldValue();
+		String room = wizardPage.getRoomFieldValue();
+		/**
+		 * TiShadow appify command:
+		 * 
+		 * tishadow appify -d <dest_directory> -o <host> -p <port> -r <room> 
+		 */
+		String arguments = "appify -d " + outputFolder;
+		// host, port and room flags are optional. If they are empty default
+		// values will be used.
+		// + " -o " + host + " -p " + port;
+		arguments = host.isEmpty() ? arguments : (arguments + " -o '" + host + "'");
+		arguments = port.isEmpty() ? arguments : (arguments + " -p '" + port + "'");
+		arguments = room.isEmpty() ? arguments : (arguments + " -r '" + room + "'");
+		return arguments;
+	}
+	
+
+	private void appifyProject(String arguments, String inputFolder)
+			throws Exception {
+		String configurationName = "TiShadow Appify";
+		TiShadowRunner tishadowRunner = new TiShadowRunner(configurationName);
+		tishadowRunner
+				.setAttribute(Constants.TISHADOW_LOCATION,
+						PreferenceValues.getTishadowDirectory())
+				.setAttribute(Constants.TISHADOW_SHOW_CONSOLE, true)
+				.setAttribute(Constants.TISHADOW_TOOL_ARGUMENTS, arguments)
+				.setAttribute(Constants.TISHADOW_WORKING_DIRECTORY, inputFolder)
+				.setAttribute(Constants.TISHADOW_ENVIRONMENT_VARIABLES,
+						Helper.getEnvVars());
+		tishadowRunner.runTiShadow(this);
 	}
 
 	/**
@@ -160,6 +116,7 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
 	 * @param outputFolder
 	 * @param wizardPage
 	 */
+	
 	private String getOutputFolderPath() {
 		String outputFolderPath;
 		outputFolderPath = wizardPage.getOutputFolderLocation();
@@ -179,9 +136,8 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
 			System.arraycopy(natures, 0, newNatures, 0, natures.length);
 			newNatures[natures.length] = "com.appcelerator.titanium.mobile.nature";
 			newNatures[natures.length + 1] = "com.aptana.projects.webnature";
-			IStatus status = ResourcesPlugin.getWorkspace().validateNatureSet(newNatures);
 			// check the status and decide what to do
-		    if (status.getCode() == IStatus.OK) {
+		    if (TiShadowRunner.isValidNature(newNatures)) {
 		    	description.setNatureIds(newNatures);
 				project.setDescription(description, new NullProgressMonitor());
 		    }
@@ -324,5 +280,17 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
 	 */
 	public IProject getNewProject() {
 		return newProject;
+	}
+
+	@Override
+	public void onRunnerTishadowFinish(Object response) {
+		try {
+			IProject newProject = getNewProject();
+			addTiNature(newProject);
+			newProject.refreshLocal(IProject.DEPTH_INFINITE,
+					new NullProgressMonitor());
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
 	}
 }

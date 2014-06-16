@@ -15,7 +15,8 @@ Require-Bundle: org.eclipse.ui,
  org.apache.commons.lang,
  org.eclipse.jface,
  org.eclipse.core.resources,
- com.belatrixsf.tishadow.preferences;bundle-version="0.0.1"
+ com.belatrixsf.tishadow.preferences;bundle-version="0.0.1",
+ com.belatrixsf.tishadow.runner;bundle-version="0.0.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
