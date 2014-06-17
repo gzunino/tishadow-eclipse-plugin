@@ -37,7 +37,7 @@ import org.eclipse.ui.internal.ide.IIDEHelpContextIds;
 import org.eclipse.ui.internal.ide.dialogs.ProjectContentsLocationArea;
 import org.eclipse.ui.internal.ide.dialogs.ProjectContentsLocationArea.IErrorMessageReporter;
 
-import com.belatrixsf.tishadow.preferences.page.*;
+import com.belatrixsf.tishadow.preferences.page.PreferenceValues;
 
 /**
  * Standard main page for a wizard that is creates a project resource.
