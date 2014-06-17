@@ -57,9 +57,7 @@ public class TiShadowAppWizard extends BasicNewProjectResourceWizard implements
 							project.getParent().getLocation().toOSString())
 					.setAttribute(Constants.TISHADOW_ENVIRONMENT_VARIABLES,
 							LaunchUtils.getEnvVars());
-
-			tiShadowRunner.runTiShadow(this);
-			//launch.getProcesses()[0].getStreamsProxy().write("com.test.app");
+			tiShadowRunner.runTiShadow(this, "com.test.app");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

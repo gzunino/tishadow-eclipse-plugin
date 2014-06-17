@@ -45,9 +45,18 @@ public class TiShadowRunner {
 	/** Run command 
 	 * @throws Exception */
 	public void runTiShadow(final IRunnerCallback callback) throws Exception {
+		runTiShadow(callback, null);
+	}
+	
+	/** Run command with input
+	 * @throws Exception */
+	public void runTiShadow(final IRunnerCallback callback, String input) throws Exception {
 		try {
 			ILaunch launch = workingCopy.launch(ILaunchManager.RUN_MODE, 
 					new NullProgressMonitor());
+			if(input != null){
+				launch.getProcesses()[0].getStreamsProxy().write(input);
+			}
 			addDebugEventListener(launch, callback);
 		} catch (CoreException e) {
 			throw new Exception(e.getCause());
@@ -83,6 +92,8 @@ public class TiShadowRunner {
 		IStatus status = ResourcesPlugin.getWorkspace().validateNatureSet(newNatures);
 		return status.isOK();
 	}
+	
+	
 	
 	private void addDebugEventListener(final ILaunch launch, final IRunnerCallback callback) {
 		setObjectToReturn(launch);
