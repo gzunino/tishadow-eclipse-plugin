@@ -5,9 +5,7 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
@@ -57,9 +55,7 @@ public class TiShadowAppWizard extends BasicNewProjectResourceWizard implements
 							project.getParent().getLocation().toOSString())
 					.setAttribute(Constants.TISHADOW_ENVIRONMENT_VARIABLES,
 							LaunchUtils.getEnvVars());
-
-			tiShadowRunner.runTiShadow(this);
-			//launch.getProcesses()[0].getStreamsProxy().write("com.test.app");
+			tiShadowRunner.runTiShadow(this, "com.test.app");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -74,9 +70,7 @@ public class TiShadowAppWizard extends BasicNewProjectResourceWizard implements
 			System.arraycopy(natures, 0, newNatures, 0, natures.length);
 			newNatures[natures.length] = "com.appcelerator.titanium.mobile.nature";
 			newNatures[natures.length + 1] = "com.aptana.projects.webnature";
-			IStatus status = ResourcesPlugin.getWorkspace().validateNatureSet(newNatures);
-			// check the status and decide what to do
-		    if (status.getCode() == IStatus.OK) {
+		    if (TiShadowRunner.isValidNature(newNatures)) {
 		    	description.setNatureIds(newNatures);
 				project.setDescription(description, new NullProgressMonitor());
 		    }

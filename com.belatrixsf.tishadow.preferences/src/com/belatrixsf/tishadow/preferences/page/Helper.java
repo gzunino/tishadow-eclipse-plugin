@@ -81,7 +81,7 @@ public class Helper implements IRunnerCallback{
 		TiShadowRunner tishadowRunner = new TiShadowRunner(configurationName);
 		tishadowRunner
 				.setAttribute(Constants.TISHADOW_TOOL_ARGUMENTS, " " + command)
-				.setAttribute(Constants.TISHADOW_SHOW_CONSOLE, true)
+				.setAttribute(Constants.TISHADOW_SHOW_CONSOLE, false)
 				.setAttribute(Constants.TISHADOW_LOCATION,
 						path)
 				.setAttribute(Constants.TISHADOW_WORKING_DIRECTORY,

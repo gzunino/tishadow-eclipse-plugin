@@ -1,11 +1,10 @@
 package com.belatrixsf.tishadow.runner;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.core.externaltools.internal.IExternalToolConstants;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugPlugin;
@@ -16,7 +15,6 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.IStreamListener;
 import org.eclipse.debug.core.model.IStreamMonitor;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 
 
 /**
@@ -47,9 +45,18 @@ public class TiShadowRunner {
 	/** Run command 
 	 * @throws Exception */
 	public void runTiShadow(final IRunnerCallback callback) throws Exception {
+		runTiShadow(callback, null);
+	}
+	
+	/** Run command with input
+	 * @throws Exception */
+	public void runTiShadow(final IRunnerCallback callback, String input) throws Exception {
 		try {
 			ILaunch launch = workingCopy.launch(ILaunchManager.RUN_MODE, 
 					new NullProgressMonitor());
+			if(input != null){
+				launch.getProcesses()[0].getStreamsProxy().write(input);
+			}
 			addDebugEventListener(launch, callback);
 		} catch (CoreException e) {
 			throw new Exception(e.getCause());
@@ -80,6 +87,13 @@ public class TiShadowRunner {
 		workingCopy.setAttribute(attribute, value);
 		return this;
 	}
+	
+	public static boolean isValidNature(String[] newNatures){
+		IStatus status = ResourcesPlugin.getWorkspace().validateNatureSet(newNatures);
+		return status.isOK();
+	}
+	
+	
 	
 	private void addDebugEventListener(final ILaunch launch, final IRunnerCallback callback) {
 		setObjectToReturn(launch);
