@@ -251,7 +251,21 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 	private void openResourcesDialog(Shell shell) {
 		IResource[] resourcesArray = ResourcesPlugin.getWorkspace().getRoot()
 				.getProjects();
-		dialog = new ResourceListSelectionDialog(shell, resourcesArray);
+		dialog = new ResourceListSelectionDialog(shell, resourcesArray) {
+			@Override
+			protected String adjustPattern() {
+				String text = super.adjustPattern();
+				if ("".equals(text)) {
+					text = "*";
+				}
+				return text;
+			}
+			@Override
+			public void create() {
+				super.create();
+				super.refresh(true);
+			}
+		};
 		dialog.setTitle("Resource Selection");
 	}
 

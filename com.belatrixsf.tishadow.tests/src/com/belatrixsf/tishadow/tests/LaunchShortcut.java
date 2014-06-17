@@ -101,19 +101,46 @@ public class LaunchShortcut implements ILaunchShortcut {
     	String tiShadowProjectName;
     	ArrayList<IProject> tiShadowProjectsList;
     	tiShadowProjectsList = getTiShadowProjectsList();
+    	IProject tiShadowProjectSelected = null;
     	
     	if (tiShadowProjectsList.isEmpty()){
     		MessageDialog.openError(null, "No TiShadow projects found", "To run tests from a Titanium module it's necessary to have at least one TiShadow project to run on.");
     	} else {
-    		tiShadowProjectName = getSelectedProject(tiShadowProjectsList);
-	    	if (! tiShadowProjectName.isEmpty()){
+    		tiShadowProjectSelected = getSelectedProject(tiShadowProjectsList);
+	    	if (! tiShadowProjectSelected.getName().isEmpty()){
+	    		tiShadowProjectName = getAppifyedBaseProjectName(tiShadowProjectSelected);
 	    		return " -T " + tiShadowProjectName;
 	    	}
     	}
     	return "";
     }
     
-    /**
+    private String getAppifyedBaseProjectName(IProject tiShadowProjectSelected) {
+    	IFile appJs = tiShadowProjectSelected.getFolder("Resources").getFile("app.js");
+    	if (appJs.exists()) {
+            BufferedReader in = null;
+            try {
+                in = new BufferedReader(new InputStreamReader(appJs.getContents()));
+            } catch (CoreException e) {
+                e.printStackTrace();
+            }
+            try {
+                String inputLine;
+				while ((inputLine = in.readLine()) != null) {
+                    if (inputLine.contains("TiShadow.Appify")){
+                    	//TiShadow.Appify = "ProjectName";
+                        return inputLine.substring(inputLine.indexOf("\"")+1, inputLine.lastIndexOf("\""));
+                    }
+                }
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+                e.printStackTrace();
+            }
+    	}
+    	return "";
+    }
+
+	/**
      * Detects if the selected project is a Titanium Module
      * @param project
      * @return
@@ -131,7 +158,7 @@ public class LaunchShortcut implements ILaunchShortcut {
      * @param projectsList
      * @return the selected project name
      */
-    private String getSelectedProject(ArrayList<IProject> projectsList) {
+    private IProject getSelectedProject(ArrayList<IProject> projectsList) {
     	
     	ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(Display.getCurrent().getActiveShell(), new WorkbenchLabelProvider(), new BaseWorkbenchContentProvider() {
     		@SuppressWarnings("unchecked")
@@ -149,9 +176,9 @@ public class LaunchShortcut implements ILaunchShortcut {
     	dialog.setInput(projectsList);
     	dialog.open();
     	if(dialog.getReturnCode() == 0){ //0 is OK
-    		return dialog.getFirstResult().toString().substring(2);
+    		return (IProject)dialog.getFirstResult();
     	} else {
-    		return "";
+    		return null;
     	}  
     }
 
