@@ -209,10 +209,12 @@ public class TiShadowAppifyWizardPage extends WizardPage {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				dialog.open();
-				selectedBaseProject = (IProject) dialog.getResult()[0];
-				selectedBaseProject.getLocation().toOSString();
-				getProjectResourceInput().setText(
-						dialog.getResult()[0].toString().substring(2));
+				if (dialog.getResult() != null){
+					selectedBaseProject = (IProject) dialog.getResult()[0];
+					selectedBaseProject.getLocation().toOSString();
+					getProjectResourceInput().setText(
+							dialog.getResult()[0].toString().substring(2));
+				}
 			}
 		});
 	}

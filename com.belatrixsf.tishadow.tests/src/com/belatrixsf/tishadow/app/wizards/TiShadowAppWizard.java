@@ -7,6 +7,10 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.debug.core.DebugPlugin;
+import org.eclipse.debug.core.ILaunchConfigurationType;
+import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
@@ -25,6 +29,13 @@ public class TiShadowAppWizard extends BasicNewProjectResourceWizard implements
 		super.addPages();
 		
 		((WizardNewProjectCreationPage) getPage("basicNewProjectPage")).setInitialProjectName("tishadowapp");
+		/*
+		wizardPage = new AppifyProjectWizardPage("Properties Page");
+		wizardPage.setTitle("Project");
+		wizardPage.setDescription("Settings");
+
+		this.addPage(wizardPage);
+		 * */
 	}
 	
 	/*
@@ -51,7 +62,7 @@ public class TiShadowAppWizard extends BasicNewProjectResourceWizard implements
 					.setAttribute(Constants.TISHADOW_SHOW_CONSOLE, true)
 					.setAttribute(Constants.TISHADOW_TOOL_ARGUMENTS,
 							"app -d " + project.getLocation().toOSString())
-					.setAttribute(Constants.TISHADOW_LOCATION,
+					.setAttribute(Constants.TISHADOW_WORKING_DIRECTORY,
 							project.getParent().getLocation().toOSString())
 					.setAttribute(Constants.TISHADOW_ENVIRONMENT_VARIABLES,
 							LaunchUtils.getEnvVars());

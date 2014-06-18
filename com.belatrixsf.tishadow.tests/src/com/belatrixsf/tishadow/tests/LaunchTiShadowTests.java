@@ -92,7 +92,7 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 			final boolean spec_touch = touchSpecFiles(project,monitor);
 
 			if(spec_touch) {
-				if(!LaunchUtils.serverLaunched()) {
+				if(LaunchUtils.isServerLaunched()) {
 
 					final IFolder folder = getTiShadowResultFolder(projectLoc);
 					removeOldResults(monitor, folder);

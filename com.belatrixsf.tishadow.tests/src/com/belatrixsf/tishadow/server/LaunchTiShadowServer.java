@@ -26,7 +26,7 @@ public class LaunchTiShadowServer implements ILaunchConfigurationDelegate {
 
 	@Override
 	public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
-		if(!LaunchUtils.serverLaunched()) {
+		if(LaunchUtils.isServerLaunched()) {
 			MessageDialog.openError(null, "Error", "An instance of the server is already running.");
 			return;
 		}

@@ -41,13 +41,13 @@ public class LaunchUtils {
 		}
 	}
 
-	public static boolean serverLaunched() {
+	public static boolean isServerLaunched() {
 		try {
 	        Socket sock = new Socket(PreferenceValues.getTishadowHost(), PreferenceValues.getTishadowPort());
 	        sock.close();
-	        return false;
-	    } catch (Exception e) {         
 	        return true;
+	    } catch (Exception e) {         
+	    	return false;
 	    }
 	}
 }
