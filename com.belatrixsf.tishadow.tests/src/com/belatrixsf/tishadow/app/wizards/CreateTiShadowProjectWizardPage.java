@@ -4,7 +4,6 @@
 package com.belatrixsf.tishadow.app.wizards;
 
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.swt.widgets.Composite;
 
 /**
  * @author vvillegas
