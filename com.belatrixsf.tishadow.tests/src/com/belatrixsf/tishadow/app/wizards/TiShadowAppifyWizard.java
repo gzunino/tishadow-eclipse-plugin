@@ -15,10 +15,13 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.dialogs.WizardNewProjectReferencePage;
+import org.eclipse.ui.dialogs.WorkingSetGroup;
 import org.eclipse.ui.ide.undo.CreateProjectOperation;
 import org.eclipse.ui.ide.undo.WorkspaceUndoUtil;
 import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
@@ -39,17 +42,17 @@ import com.belatrixsf.tishadow.runner.TiShadowRunner;
 public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
 		implements INewWizard, IRunnerCallback {
 
-	TiShadowAppifyWizardPage wizardPage = null;
+	AppifyProjectWizardPage wizardPage = null;
 	private WizardNewProjectReferencePage referencePage = null;
 	// cache of newly-created project
 	private IProject newProject;
-
+	private WorkingSetGroup workingSetGroup;
+	
 	@Override
 	public void addPages() {
-		wizardPage = new TiShadowAppifyWizardPage("Properties Page");
+		wizardPage = new AppifyProjectWizardPage("Properties Page");
 		wizardPage.setTitle("Project");
 		wizardPage.setDescription("Settings");
-
 		this.addPage(wizardPage);
 	}
 
@@ -65,7 +68,7 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
 	}
 
 	private void createTiProject() {
-		String inputFolder = wizardPage.getSelectedBaseProjectPath();
+		String inputFolder = wizardPage.getSelectedBaseProject().getLocation().toOSString();
 		String arguments = getArguments();
 		try {
 			appifyProject(arguments, inputFolder);
@@ -76,9 +79,9 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
 
 	private String getArguments() {
 		String outputFolder = getOutputFolderPath();
-		String host = wizardPage.getHostFieldValue();
-		String port = wizardPage.getPortFieldValue();
-		String room = wizardPage.getRoomFieldValue();
+		String host = wizardPage.getHost();
+		String port = wizardPage.getPort();
+		String room = wizardPage.getRoom();
 		/**
 		 * TiShadow appify command:
 		 * 
@@ -119,8 +122,8 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
 	
 	private String getOutputFolderPath() {
 		String outputFolderPath;
-		outputFolderPath = wizardPage.getOutputFolderLocation();
-		if (wizardPage.useDefaults()) {
+		outputFolderPath = wizardPage.getOutputFolder().getProjectLocation();
+		if (wizardPage.getOutputFolder().isDefault()) {
 			outputFolderPath += "/" + wizardPage.getProjectName();
 		}
 		return outputFolderPath;
@@ -168,12 +171,13 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
 		}
 
 		// get a project handle
-		final IProject newProjectHandle = wizardPage.getProjectHandle();
+		final IProject newProjectHandle = ResourcesPlugin.getWorkspace().getRoot()
+				.getProject(wizardPage.getProjectName());
 
 		// get a project descriptor
 		URI location = null;
-		if (!wizardPage.useDefaults()) {
-			location = wizardPage.getLocationURI();
+		if (!wizardPage.getOutputFolder().isDefault()) {
+			location = wizardPage.getOutputFolder().getProjectLocationURI();
 		}
 
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -263,7 +267,7 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
 			return false;
 		}
 
-		IWorkingSet[] workingSets = wizardPage.getSelectedWorkingSets();
+		IWorkingSet[] workingSets = getSelectedWorkingSets();
 		getWorkbench().getWorkingSetManager().addToWorkingSets(newProject,
 				workingSets);
 
@@ -281,7 +285,42 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
 	public IProject getNewProject() {
 		return newProject;
 	}
+	/*
+	 * Return the selected working sets, if any. If this page is not configured
+	 * to interact with working sets this will be an empty array.
+	 * 
+	 * @return the selected working sets
+	 * @since 3.4
+	 */
+	public IWorkingSet[] getSelectedWorkingSets() {
+		return workingSetGroup == null ? new IWorkingSet[0] : workingSetGroup
+				.getSelectedWorkingSets();
+	}
 
+	/**
+	 * Create a working set group for this page. This method can only be called
+	 * once.
+	 * 
+	 * @param composite
+	 *            the composite in which to create the group
+	 * @param selection
+	 *            the current workbench selection
+	 * @param supportedWorkingSetTypes
+	 *            an array of working set type IDs that will restrict what types
+	 *            of working sets can be chosen in this group
+	 * @return the created group. If this method has been called previously the
+	 *         original group will be returned.
+	 * @since 3.4
+	 */
+	public WorkingSetGroup createWorkingSetGroup(Composite composite,
+			IStructuredSelection selection, String[] supportedWorkingSetTypes) {
+		if (workingSetGroup != null)
+			return workingSetGroup;
+		workingSetGroup = new WorkingSetGroup(composite, selection,
+				supportedWorkingSetTypes);
+		return workingSetGroup;
+	}
+	
 	@Override
 	public void onRunnerTishadowFinish(Object response) {
 		try {
