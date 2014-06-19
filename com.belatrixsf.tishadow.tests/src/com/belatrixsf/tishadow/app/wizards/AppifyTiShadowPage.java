@@ -33,7 +33,7 @@ import com.belatrixsf.tishadow.preferences.page.PreferenceValues;
  * 
  */
 @SuppressWarnings("restriction")
-public class AppifyProjectWizardPage extends TiShadowWizardPage {
+public class AppifyTiShadowPage extends TiShadowPage {
 
 	private Text port;
 	private Text room;
@@ -47,7 +47,7 @@ public class AppifyProjectWizardPage extends TiShadowWizardPage {
 	private IProject selectedBaseProject;
 
 	/** Constructor */
-	protected AppifyProjectWizardPage(String pageName) {
+	protected AppifyTiShadowPage(String pageName) {
 		super(pageName);
 		setPageComplete(false);
 	}
@@ -72,7 +72,6 @@ public class AppifyProjectWizardPage extends TiShadowWizardPage {
 		super.addSeparator();
 
 		addRoomField(extraFieldsGrid);
-		setControl(composite);
 
 		baseProjectName.addListener(SWT.Modify, inputFolderModifyListener);
 	}
@@ -89,12 +88,9 @@ public class AppifyProjectWizardPage extends TiShadowWizardPage {
 		return host.getText();
 	}
 
-	public ProjectContentsLocationArea getOutputFolder() {
-		return outputFolder;
-	}
-
-	public IProject getSelectedBaseProject() {
-		return selectedBaseProject;
+	@Override
+	String getWorkingDirectory() {
+		return selectedBaseProject.getLocation().toOSString();
 	}
 
 	/**

@@ -9,18 +9,24 @@ import org.eclipse.jface.resource.ImageDescriptor;
  * @author vvillegas
  * 
  */
-public class CreateTiShadowProjectWizardPage extends TiShadowWizardPage{
+public class ApplicationTiShadowPage extends TiShadowPage{
 
-	protected CreateTiShadowProjectWizardPage(String pageName, String title,
-			ImageDescriptor titleImage) {
-		super(pageName, title, titleImage);
-		// TODO Auto-generated constructor stub
+	/**Constructor*/
+	protected ApplicationTiShadowPage(String pageName) {
+		super(pageName);
+		setPageComplete(false);
 	}
-
+	
 	@Override
 	void addExtraFields() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	String getWorkingDirectory() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	

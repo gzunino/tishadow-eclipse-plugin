@@ -42,7 +42,7 @@ import com.belatrixsf.tishadow.runner.TiShadowRunner;
 public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
 		implements INewWizard, IRunnerCallback {
 
-	AppifyProjectWizardPage wizardPage = null;
+	AppifyTiShadowPage wizardPage = null;
 	private WizardNewProjectReferencePage referencePage = null;
 	// cache of newly-created project
 	private IProject newProject;
@@ -50,7 +50,7 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
 	
 	@Override
 	public void addPages() {
-		wizardPage = new AppifyProjectWizardPage("Properties Page");
+		wizardPage = new AppifyTiShadowPage("Properties Page");
 		wizardPage.setTitle("Project");
 		wizardPage.setDescription("Settings");
 		this.addPage(wizardPage);
@@ -60,15 +60,15 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
 	 * (non-Javadoc) Method declared on IWizard.
 	 */
 	public boolean performFinish() {
-		boolean finished = performSuperFinish();
+		boolean finished = isFinished();
 		if (getNewProject() != null) {
-			createTiProject();
+			createTiShadowProject();
 		}
 		return finished;
 	}
 
-	private void createTiProject() {
-		String inputFolder = wizardPage.getSelectedBaseProject().getLocation().toOSString();
+	private void createTiShadowProject() {
+		String inputFolder = wizardPage.getWorkingDirectory();
 		String arguments = getArguments();
 		try {
 			appifyProject(arguments, inputFolder);
@@ -260,7 +260,7 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
 	/*
 	 * (non-Javadoc) Method declared on IWizard.
 	 */
-	public boolean performSuperFinish() {
+	public boolean isFinished() {
 		createNewProject();
 
 		if (newProject == null) {

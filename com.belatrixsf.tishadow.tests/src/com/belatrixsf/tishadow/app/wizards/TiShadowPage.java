@@ -23,7 +23,7 @@ import org.eclipse.ui.internal.ide.dialogs.ProjectContentsLocationArea;
 import org.eclipse.ui.internal.ide.dialogs.ProjectContentsLocationArea.IErrorMessageReporter;
 
 @SuppressWarnings("restriction")
-public abstract class TiShadowWizardPage extends WizardPage {
+public abstract class TiShadowPage extends WizardPage {
 
 	protected ProjectContentsLocationArea outputFolder;
 	protected String initialProjectFieldValue;
@@ -33,13 +33,7 @@ public abstract class TiShadowWizardPage extends WizardPage {
 	private Text projectNameField;
 
 	/** Constructor */
-	protected TiShadowWizardPage(String pageName, String title,
-			ImageDescriptor titleImage) {
-		super(pageName, title, titleImage);
-	}
-
-	/** Constructor */
-	protected TiShadowWizardPage(String pageName) {
+	protected TiShadowPage(String pageName) {
 		super(pageName);
 	}
 
@@ -67,8 +61,12 @@ public abstract class TiShadowWizardPage extends WizardPage {
 		addSeparator();
 		addOutputFolderField();
 		addExtraFields();
+		setControl(composite);
 	}
 
+	public ProjectContentsLocationArea getOutputFolder() {
+		return outputFolder;
+	}
 
 	// initial value stores
 	private Listener nameModifyListener = new Listener() {
@@ -92,7 +90,9 @@ public abstract class TiShadowWizardPage extends WizardPage {
 	}
 
 	abstract void addExtraFields();
-
+	
+	abstract String getWorkingDirectory();
+	
 	private void addOutputFolderField() {
 		Label l = new Label(composite, SWT.NONE);
 		l.setText("Output folder:");
