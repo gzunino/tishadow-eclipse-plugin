@@ -35,20 +35,23 @@ public class LaunchTiShadowServer implements ILaunchConfigurationDelegate {
 		mon.beginTask("Starting server", IProgressMonitor.UNKNOWN);
 
 		final String projectLoc = configuration.getAttribute(IExternalToolConstants.ATTR_WORKING_DIRECTORY, "");
-		ILaunchConfigurationType type = DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurationType("org.eclipse.ui.externaltools.ProgramLaunchConfigurationType");
 
-		final ILaunchConfigurationWorkingCopy workingCopy = type.newInstance( null, "TiShadow Server");
+		@SuppressWarnings("unchecked")
 		final Map<String, String> envVars = configuration.getAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, new HashMap<String, String>());
 		final String location = configuration.getAttribute(IExternalToolConstants.ATTR_LOCATION, "");
 		final boolean showConsole = configuration.getAttribute(IExternalToolConstants.ATTR_SHOW_CONSOLE, false);
 		String toolArguments = configuration.getAttribute(IExternalToolConstants.ATTR_TOOL_ARGUMENTS, "");
 
+		ILaunchConfigurationType type = DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurationType("org.eclipse.ui.externaltools.ProgramLaunchConfigurationType");
+		final ILaunchConfigurationWorkingCopy workingCopy = type.newInstance( null, "TiShadow Server");
 		workingCopy.setAttribute(IExternalToolConstants.ATTR_LOCATION, location);
 		workingCopy.setAttribute(IExternalToolConstants.ATTR_SHOW_CONSOLE, showConsole);
 		workingCopy.setAttribute(IExternalToolConstants.ATTR_TOOL_ARGUMENTS, toolArguments);
 		workingCopy.setAttribute(IExternalToolConstants.ATTR_WORKING_DIRECTORY, projectLoc);
 		workingCopy.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, envVars);
 		workingCopy.launch(mode, mon);
+		
+		mon.done();
 	}
 
 	public static String getLaunchDir(IProject project) {
