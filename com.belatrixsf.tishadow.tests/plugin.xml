@@ -85,18 +85,18 @@
       <wizard
             canFinishEarly="false"
             category="com.belatrixsf.tishadow.app"
-            class="com.belatrixsf.tishadow.app.wizards.TiShadowAppWizard"
+            class="com.belatrixsf.tishadow.app.wizards.ApplicationTiShadowWizard"
             icon="icons/tishadow.png"
-            id="com.belatrixsf.tishadow.app.wizards.TiShadowAppWizard"
+            id="com.belatrixsf.tishadow.app.wizards.BaseProjectWizardController"
             name="TiShadow App Creation"
             project="true">
       </wizard>
       <wizard
             canFinishEarly="false"
             category="com.belatrixsf.tishadow.app"
-            class="com.belatrixsf.tishadow.app.wizards.TiShadowAppifyWizard"
+            class="com.belatrixsf.tishadow.app.wizards.AppifyTiShadowWizard"
             icon="icons/tishadow.png"
-            id="com.belatrixsf.tishadow.app.wizards.TiShadowAppifyWizard"
+            id="com.belatrixsf.tishadow.app.wizards.AppifyWizardController"
             name="TiShadow Appify Creation (Creates a TI app)"
             project="true">
       </wizard>
