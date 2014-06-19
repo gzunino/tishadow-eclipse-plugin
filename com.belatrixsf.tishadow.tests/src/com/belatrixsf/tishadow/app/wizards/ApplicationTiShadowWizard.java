@@ -4,9 +4,9 @@ public class ApplicationTiShadowWizard extends TiShadowWizard {
 
 	@Override
 	public void addPages() {
-		wizardPage = new ApplicationTiShadowPage("Base Project Creation");
-		wizardPage.setTitle("Project");
-		wizardPage.setDescription("Settings");
+		wizardPage = new ApplicationTiShadowPage("TiShadow Wizard");
+		wizardPage.setTitle("TiShadow Project");
+		wizardPage.setDescription("Create a TiShadow project.");
 		this.addPage(wizardPage);
 	}
 

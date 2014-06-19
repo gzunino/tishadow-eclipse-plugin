@@ -4,9 +4,9 @@ public class AppifyTiShadowWizard extends TiShadowWizard {
 	
 	@Override
 	public void addPages() {
-		wizardPage = new AppifyTiShadowPage("Properties Page");
-		wizardPage.setTitle("Project");
-		wizardPage.setDescription("Settings");
+		wizardPage = new AppifyTiShadowPage("TiShadow Wizard");
+		wizardPage.setTitle("Appify Project");
+		wizardPage.setDescription("Select a project to generate an appify.");
 		this.addPage(wizardPage);
 	}
 
