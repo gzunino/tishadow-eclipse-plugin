@@ -17,7 +17,7 @@ public class ApplicationTiShadowWizard extends TiShadowWizard {
 
 	@Override
 	String getArguments() {
-		return "app -d " + getNewProject().getLocation().toOSString();
+		return "app -d " + getOutputFolderPath();
 	}
 
 	@Override
