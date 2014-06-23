@@ -29,8 +29,8 @@ public abstract class TiShadowPage extends WizardPage {
 	protected String initialProjectFieldValue;
 	protected Composite composite;
 	protected Composite compositeParent;
+	protected Text projectNameField;
 	private GridData data;
-	private Text projectNameField;
 
 	/** Constructor */
 	protected TiShadowPage(String pageName) {
@@ -101,6 +101,7 @@ public abstract class TiShadowPage extends WizardPage {
 		if (initialProjectFieldValue != null) {
 			outputFolder.updateProjectName(initialProjectFieldValue);
 		}
+		projectNameField.notifyListeners(SWT.Modify, new Event());
 	}
 	
 	private void openFolderDialog(Composite composite) {
@@ -145,6 +146,7 @@ public abstract class TiShadowPage extends WizardPage {
 		l.setLayoutData(data);
 		l.pack();
 		projectNameField = new Text(composite, SWT.SINGLE | SWT.BORDER);
+		projectNameField.setText("TiShadowApplication");
 		projectNameField.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		projectNameField.addListener(SWT.Modify, nameModifyListener);
 	}

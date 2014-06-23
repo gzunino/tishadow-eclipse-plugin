@@ -139,11 +139,15 @@ public class AppifyTiShadowPage extends TiShadowPage {
 	private Listener inputFolderModifyListener = new Listener() {
 		@Override
 		public void handleEvent(Event event) {
+			projectNameField.setText(getStandardProjectName());
 			boolean valid = validatePage();
 			setPageComplete(valid);
 		}
 	};
 
+	private String getStandardProjectName() {
+		return baseProjectName.getText() + "Appified";
+	}
 	/**
 	 * 
 	 * @param shell
@@ -230,8 +234,10 @@ public class AppifyTiShadowPage extends TiShadowPage {
 		baseProjectName.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		baseProjectName.setEnabled(false);
 		if (getCurrentProject() != null) {
+			String projectName = getCurrentProject().getName().toString();
 			selectedBaseProject = getCurrentProject();
-			baseProjectName.setText(getCurrentProject().getName().toString());
+			baseProjectName.setText(projectName);
+			super.projectNameField.setText(getStandardProjectName());
 		} else {
 			baseProjectName.setMessage("The project to be appifyied");
 		}
