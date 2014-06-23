@@ -5,10 +5,6 @@ package com.belatrixsf.tishadow.app.wizards;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 
-/**
- * @author vvillegas
- * 
- */
 public class ApplicationTiShadowPage extends TiShadowPage{
 
 	/**Constructor*/
