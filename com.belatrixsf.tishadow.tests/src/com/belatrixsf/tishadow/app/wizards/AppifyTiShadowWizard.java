@@ -37,6 +37,7 @@ public class AppifyTiShadowWizard extends TiShadowWizard {
 				: (arguments + " -p '" + port + "'");
 		arguments = room.isEmpty() ? arguments
 				: (arguments + " -r '" + room + "'");
+		arguments = (arguments + " -m");
 		return arguments;
 	}
 
@@ -49,5 +50,4 @@ public class AppifyTiShadowWizard extends TiShadowWizard {
 	String getInputForRunTiShadowCommand() {
 		return null;
 	}
-
 }

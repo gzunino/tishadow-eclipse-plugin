@@ -27,7 +27,7 @@ public class ApplicationTiShadowWizard extends TiShadowWizard {
 
 	@Override
 	String getInputForRunTiShadowCommand() {
-		return "com.test.app";
+		return wizardPage.getProjectName();
 	}
 
 }
