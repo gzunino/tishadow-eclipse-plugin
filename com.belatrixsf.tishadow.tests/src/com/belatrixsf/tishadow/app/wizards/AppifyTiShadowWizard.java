@@ -1,6 +1,6 @@
 package com.belatrixsf.tishadow.app.wizards;
 
-public class AppifyTiShadowWizard extends TiShadowWizard {
+public class AppifyTiShadowWizard extends AbstractTiShadowWizard {
 	
 	@Override
 	public void addPages() {

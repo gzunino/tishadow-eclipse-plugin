@@ -39,10 +39,10 @@ import com.belatrixsf.tishadow.runner.IRunnerCallback;
 import com.belatrixsf.tishadow.runner.TiShadowRunner;
 
 @SuppressWarnings("restriction")
-public abstract class TiShadowWizard extends
+public abstract class AbstractTiShadowWizard extends
 		BasicNewProjectResourceWizard implements INewWizard, IRunnerCallback {
 
-	protected TiShadowPage wizardPage;
+	protected AbstractTiShadowPage wizardPage;
 	private WizardNewProjectReferencePage referencePage = null;
 	private IProject newProject;
 	private WorkingSetGroup workingSetGroup;

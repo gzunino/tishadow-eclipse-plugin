@@ -23,7 +23,7 @@ import org.eclipse.ui.internal.ide.dialogs.ProjectContentsLocationArea;
 import org.eclipse.ui.internal.ide.dialogs.ProjectContentsLocationArea.IErrorMessageReporter;
 
 @SuppressWarnings("restriction")
-public abstract class TiShadowPage extends WizardPage {
+public abstract class AbstractTiShadowPage extends WizardPage {
 
 	protected ProjectContentsLocationArea outputFolder;
 	protected String initialProjectFieldValue;
@@ -33,7 +33,7 @@ public abstract class TiShadowPage extends WizardPage {
 	private GridData data;
 
 	/** Constructor */
-	protected TiShadowPage(String pageName) {
+	protected AbstractTiShadowPage(String pageName) {
 		super(pageName);
 	}
 

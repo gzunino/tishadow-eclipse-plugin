@@ -29,7 +29,7 @@ import org.eclipse.ui.internal.ide.dialogs.ProjectContentsLocationArea;
 import com.belatrixsf.tishadow.preferences.page.PreferenceValues;
 
 @SuppressWarnings("restriction")
-public class AppifyTiShadowPage extends TiShadowPage {
+public class AppifyTiShadowPage extends AbstractTiShadowPage {
 
 	private Text port;
 	private Text room;
