@@ -37,7 +37,7 @@ public class AppifyTiShadowWizard extends TiShadowWizard {
 				: (arguments + " -p '" + port + "'");
 		arguments = room.isEmpty() ? arguments
 				: (arguments + " -r '" + room + "'");
-		arguments = (arguments + " -m");
+		arguments = (arguments + " -m"); 
 		return arguments;
 	}
 
