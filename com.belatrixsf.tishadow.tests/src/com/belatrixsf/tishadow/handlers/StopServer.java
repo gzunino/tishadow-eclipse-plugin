@@ -11,7 +11,7 @@ import com.belatrixsf.tishadow.runner.Constants;
 import com.belatrixsf.tishadow.runner.IRunnerCallback;
 import com.belatrixsf.tishadow.runner.TiShadowRunner;
 
-public class RunServer extends AbstractHandler implements IRunnerCallback {
+public class StopServer extends AbstractHandler implements IRunnerCallback {
 	
 	boolean isServerLaunched = false;
 	@Override
@@ -19,26 +19,9 @@ public class RunServer extends AbstractHandler implements IRunnerCallback {
 		
 		isServerLaunched = LaunchUtils.isServerLaunched();
 		if (isServerLaunched) {
-			MessageDialog.openError(null, "Error",
-					"An instance of the server is already running.");
-		} else {
-			try {
-				TiShadowRunner tishadowRunner = new TiShadowRunner("Server");
-				tishadowRunner
-						.setAttribute(Constants.TISHADOW_WORKING_DIRECTORY,
-								"")
-						.setAttribute(Constants.TISHADOW_TOOL_ARGUMENTS,
-								"server")
-						.setAttribute(Constants.TISHADOW_SHOW_CONSOLE, true)
-						.setAttribute(Constants.TISHADOW_ENVIRONMENT_VARIABLES,
-								LaunchUtils.getEnvVars())
-						.setAttribute(Constants.TISHADOW_LOCATION,
-								PreferenceValues.getTishadowDirectory());
-				tishadowRunner.runTiShadow(this);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+			MessageDialog.openError(null, "Stop",
+					"Fuck");
+		} 
 		return null;
 	}
 

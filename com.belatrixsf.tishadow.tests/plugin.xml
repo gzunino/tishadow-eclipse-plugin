@@ -112,9 +112,32 @@
             <command
                   commandId="com.belatrixsf.tishadow.tests.runServer"
                   icon="icons/tishadow-server_16.png"
-                  label="TS server"
+                  label="TS start server"
                   style="push"
                   tooltip="Starts the TiShadow server on the configured port.">
+               <visibleWhen
+                     checkEnabled="false">
+                  <test
+                        forcePluginActivation="false"
+                        property="com.belatrixsf.tishadow.tests.serverRunning"
+                        value="false">
+                  </test>
+               </visibleWhen>
+            </command>
+            <command
+                  commandId="com.belatrixsf.tishadow.tests.stopServer"
+                  icon="icons/tishadow-server_16.png"
+                  label="TS stop server"
+                  style="push"
+                  tooltip="Stops the TiShadow server on the configured port.">
+               <visibleWhen
+                     checkEnabled="false">
+                  <test
+                        forcePluginActivation="true"
+                        property="com.belatrixsf.tishadow.tests.serverRunning"
+                        value="true">
+                  </test>
+               </visibleWhen>
             </command>
             <command
                   commandId="com.belatrixsf.tishadow.tests.runTest"
@@ -138,6 +161,16 @@
             id="com.belatrixsf.tishadow.tests.runTest"
             name="Run TiShadow Tests">
       </command>
+   </extension>
+   <extension
+         point="org.eclipse.core.expressions.propertyTesters">
+      <propertyTester
+            class="com.belatrixsf.tishadow.tests.tester.ServerTester"
+            id="com.belatrixsf.tishadow.tests.serverTester"
+            namespace="com.belatrixsf.tishadow.tests"
+            properties="serverRunning"
+            type="java.lang.Object">
+      </propertyTester>
    </extension>
 
 </plugin>
