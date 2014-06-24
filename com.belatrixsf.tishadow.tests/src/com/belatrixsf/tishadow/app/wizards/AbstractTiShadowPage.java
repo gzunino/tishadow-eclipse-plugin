@@ -23,23 +23,17 @@ import org.eclipse.ui.internal.ide.dialogs.ProjectContentsLocationArea;
 import org.eclipse.ui.internal.ide.dialogs.ProjectContentsLocationArea.IErrorMessageReporter;
 
 @SuppressWarnings("restriction")
-public abstract class TiShadowWizardPage extends WizardPage {
+public abstract class AbstractTiShadowPage extends WizardPage {
 
 	protected ProjectContentsLocationArea outputFolder;
 	protected String initialProjectFieldValue;
 	protected Composite composite;
 	protected Composite compositeParent;
+	protected Text projectNameField;
 	private GridData data;
-	private Text projectNameField;
 
 	/** Constructor */
-	protected TiShadowWizardPage(String pageName, String title,
-			ImageDescriptor titleImage) {
-		super(pageName, title, titleImage);
-	}
-
-	/** Constructor */
-	protected TiShadowWizardPage(String pageName) {
+	protected AbstractTiShadowPage(String pageName) {
 		super(pageName);
 	}
 
@@ -67,8 +61,12 @@ public abstract class TiShadowWizardPage extends WizardPage {
 		addSeparator();
 		addOutputFolderField();
 		addExtraFields();
+		setControl(composite);
 	}
 
+	public ProjectContentsLocationArea getOutputFolder() {
+		return outputFolder;
+	}
 
 	// initial value stores
 	private Listener nameModifyListener = new Listener() {
@@ -92,7 +90,9 @@ public abstract class TiShadowWizardPage extends WizardPage {
 	}
 
 	abstract void addExtraFields();
-
+	
+	abstract String getWorkingDirectory();
+	
 	private void addOutputFolderField() {
 		Label l = new Label(composite, SWT.NONE);
 		l.setText("Output folder:");
@@ -101,6 +101,7 @@ public abstract class TiShadowWizardPage extends WizardPage {
 		if (initialProjectFieldValue != null) {
 			outputFolder.updateProjectName(initialProjectFieldValue);
 		}
+		projectNameField.notifyListeners(SWT.Modify, new Event());
 	}
 	
 	private void openFolderDialog(Composite composite) {
@@ -145,6 +146,7 @@ public abstract class TiShadowWizardPage extends WizardPage {
 		l.setLayoutData(data);
 		l.pack();
 		projectNameField = new Text(composite, SWT.SINGLE | SWT.BORDER);
+		projectNameField.setText("TiShadowApplication");
 		projectNameField.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		projectNameField.addListener(SWT.Modify, nameModifyListener);
 	}

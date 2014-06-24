@@ -28,12 +28,8 @@ import org.eclipse.ui.internal.ide.dialogs.ProjectContentsLocationArea;
 
 import com.belatrixsf.tishadow.preferences.page.PreferenceValues;
 
-/**
- * @author vvillegas
- * 
- */
 @SuppressWarnings("restriction")
-public class AppifyProjectWizardPage extends TiShadowWizardPage {
+public class AppifyTiShadowPage extends AbstractTiShadowPage {
 
 	private Text port;
 	private Text room;
@@ -47,7 +43,7 @@ public class AppifyProjectWizardPage extends TiShadowWizardPage {
 	private IProject selectedBaseProject;
 
 	/** Constructor */
-	protected AppifyProjectWizardPage(String pageName) {
+	protected AppifyTiShadowPage(String pageName) {
 		super(pageName);
 		setPageComplete(false);
 	}
@@ -72,7 +68,6 @@ public class AppifyProjectWizardPage extends TiShadowWizardPage {
 		super.addSeparator();
 
 		addRoomField(extraFieldsGrid);
-		setControl(composite);
 
 		baseProjectName.addListener(SWT.Modify, inputFolderModifyListener);
 	}
@@ -89,12 +84,9 @@ public class AppifyProjectWizardPage extends TiShadowWizardPage {
 		return host.getText();
 	}
 
-	public ProjectContentsLocationArea getOutputFolder() {
-		return outputFolder;
-	}
-
-	public IProject getSelectedBaseProject() {
-		return selectedBaseProject;
+	@Override
+	String getWorkingDirectory() {
+		return selectedBaseProject.getLocation().toOSString();
 	}
 
 	/**
@@ -143,11 +135,15 @@ public class AppifyProjectWizardPage extends TiShadowWizardPage {
 	private Listener inputFolderModifyListener = new Listener() {
 		@Override
 		public void handleEvent(Event event) {
+			projectNameField.setText(getStandardProjectName());
 			boolean valid = validatePage();
 			setPageComplete(valid);
 		}
 	};
 
+	private String getStandardProjectName() {
+		return baseProjectName.getText() + "Appified";
+	}
 	/**
 	 * 
 	 * @param shell
@@ -234,8 +230,10 @@ public class AppifyProjectWizardPage extends TiShadowWizardPage {
 		baseProjectName.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		baseProjectName.setEnabled(false);
 		if (getCurrentProject() != null) {
+			String projectName = getCurrentProject().getName().toString();
 			selectedBaseProject = getCurrentProject();
-			baseProjectName.setText(getCurrentProject().getName().toString());
+			baseProjectName.setText(projectName);
+			super.projectNameField.setText(getStandardProjectName());
 		} else {
 			baseProjectName.setMessage("The project to be appifyied");
 		}

@@ -16,11 +16,6 @@ import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.IStreamListener;
 import org.eclipse.debug.core.model.IStreamMonitor;
 
-
-/**
- * @author vvillegas
- * 
- */
 public class TiShadowRunner {
 	private ILaunchConfigurationWorkingCopy workingCopy;
 	private Object objectToReturn;
