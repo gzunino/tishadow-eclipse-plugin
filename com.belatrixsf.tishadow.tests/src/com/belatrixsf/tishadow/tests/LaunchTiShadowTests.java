@@ -1,7 +1,6 @@
 package com.belatrixsf.tishadow.tests;
 
 import java.io.File;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -287,10 +286,11 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 			if (!folder.exists()) {
 				folder.create(true, true, new NullProgressMonitor());
 			}
-			folder = folder.getFolder("tishadow");
-			if (!folder.exists()) {
-				folder.create(false, true, new NullProgressMonitor());
+			folder = folder.getFolder("tishadow");			
+			if (folder.exists()) {
+				folder.delete(true, new NullProgressMonitor());
 			}
+			folder.create(false, true, new NullProgressMonitor());
 		} catch (CoreException e) {
 		}
 		return folder;
