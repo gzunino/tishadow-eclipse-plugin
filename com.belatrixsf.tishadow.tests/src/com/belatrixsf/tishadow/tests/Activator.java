@@ -1,6 +1,9 @@
 package com.belatrixsf.tishadow.tests;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
+import org.eclipse.debug.core.ILaunch;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -37,10 +40,18 @@ public class Activator extends AbstractUIPlugin {
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
-		//DebugPlugin.getDefault().getLaunchManager().getLaunches().terminateall
-		
+		stopTiShadowServer();
 		plugin = null;
 		super.stop(context);
+	}
+
+	private void stopTiShadowServer() throws CoreException, DebugException {
+		ILaunch[] launches = DebugPlugin.getDefault().getLaunchManager().getLaunches();
+		for (ILaunch iLaunch : launches) {
+			if (iLaunch.getLaunchConfiguration().getType().getIdentifier().equals("com.belatrixsf.tishadow.server.launchTiShadowServer")){
+				iLaunch.terminate();
+			}
+		}
 	}
 
 	/**
