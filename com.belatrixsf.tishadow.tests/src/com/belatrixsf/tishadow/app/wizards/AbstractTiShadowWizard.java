@@ -15,10 +15,13 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.dialogs.WizardNewProjectReferencePage;
+import org.eclipse.ui.dialogs.WorkingSetGroup;
 import org.eclipse.ui.ide.undo.CreateProjectOperation;
 import org.eclipse.ui.ide.undo.WorkspaceUndoUtil;
 import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
@@ -36,79 +39,98 @@ import com.belatrixsf.tishadow.runner.IRunnerCallback;
 import com.belatrixsf.tishadow.runner.TiShadowRunner;
 
 @SuppressWarnings("restriction")
-public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
-		implements INewWizard, IRunnerCallback {
+public abstract class AbstractTiShadowWizard extends
+		BasicNewProjectResourceWizard implements INewWizard, IRunnerCallback {
 
-	TiShadowAppifyWizardPage wizardPage = null;
+	protected AbstractTiShadowPage wizardPage;
 	private WizardNewProjectReferencePage referencePage = null;
-	// cache of newly-created project
 	private IProject newProject;
+	private WorkingSetGroup workingSetGroup;
 
+	abstract String getArguments();
+	
+	abstract String getTiShadowCommandName();
+	
+	public IProject getNewProject() {
+		return newProject;
+	}
+	
 	@Override
-	public void addPages() {
-		wizardPage = new TiShadowAppifyWizardPage("Properties Page");
-		wizardPage.setTitle("Project");
-		wizardPage.setDescription("Settings");
-
-		this.addPage(wizardPage);
+	public void onRunnerTishadowFinish(Object response) {
+		try {
+			addTiNature(newProject);
+			newProject.refreshLocal(IProject.DEPTH_INFINITE,
+					new NullProgressMonitor());
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
 	}
 
+	/**
+	 * Create a working set group for this page. This method can only be called
+	 * once.
+	 * 
+	 * @param composite
+	 *            the composite in which to create the group
+	 * @param selection
+	 *            the current workbench selection
+	 * @param supportedWorkingSetTypes
+	 *            an array of working set type IDs that will restrict what types
+	 *            of working sets can be chosen in this group
+	 * @return the created group. If this method has been called previously the
+	 *         original group will be returned.
+	 * @since 3.4
+	 */
+	public WorkingSetGroup createWorkingSetGroup(Composite composite,
+			IStructuredSelection selection, String[] supportedWorkingSetTypes) {
+		if (workingSetGroup != null)
+			return workingSetGroup;
+		workingSetGroup = new WorkingSetGroup(composite, selection,
+				supportedWorkingSetTypes);
+		return workingSetGroup;
+	}
+
+	
 	/*
 	 * (non-Javadoc) Method declared on IWizard.
 	 */
 	public boolean performFinish() {
-		boolean finished = performSuperFinish();
-		if (getNewProject() != null) {
-			createTiProject();
+		createNewProject();
+		if (newProject == null) {
+			return false;
 		}
-		return finished;
+		createTiShadowProject();
+		return true;
 	}
 
-	private void createTiProject() {
-		String inputFolder = wizardPage.getSelectedBaseProjectPath();
+	private void createTiShadowProject() {
 		String arguments = getArguments();
 		try {
-			appifyProject(arguments, inputFolder);
+			executeTiShadowCommands(getTiShadowCommandName(), arguments);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	private String getArguments() {
-		String outputFolder = getOutputFolderPath();
-		String host = wizardPage.getHostFieldValue();
-		String port = wizardPage.getPortFieldValue();
-		String room = wizardPage.getRoomFieldValue();
-		/**
-		 * TiShadow appify command:
-		 * 
-		 * tishadow appify -d <dest_directory> -o <host> -p <port> -r <room> 
-		 */
-		String arguments = "appify -d " + outputFolder;
-		// host, port and room flags are optional. If they are empty default
-		// values will be used.
-		// + " -o " + host + " -p " + port;
-		arguments = host.isEmpty() ? arguments : (arguments + " -o '" + host + "'");
-		arguments = port.isEmpty() ? arguments : (arguments + " -p '" + port + "'");
-		arguments = room.isEmpty() ? arguments : (arguments + " -r '" + room + "'");
-		return arguments;
-	}
-	
-
-	private void appifyProject(String arguments, String inputFolder)
+	private void executeTiShadowCommands(String configurationName, String arguments)
 			throws Exception {
-		String configurationName = "TiShadow Appify";
+		
 		TiShadowRunner tishadowRunner = new TiShadowRunner(configurationName);
 		tishadowRunner
 				.setAttribute(Constants.TISHADOW_LOCATION,
 						PreferenceValues.getTishadowDirectory())
 				.setAttribute(Constants.TISHADOW_SHOW_CONSOLE, true)
 				.setAttribute(Constants.TISHADOW_TOOL_ARGUMENTS, arguments)
-				.setAttribute(Constants.TISHADOW_WORKING_DIRECTORY, inputFolder)
+				.setAttribute(Constants.TISHADOW_WORKING_DIRECTORY, getWorkingDirectory())
 				.setAttribute(Constants.TISHADOW_ENVIRONMENT_VARIABLES,
 						Helper.getEnvVars());
-		tishadowRunner.runTiShadow(this);
+		tishadowRunner.runTiShadow(this, getInputForRunTiShadowCommand());
 	}
+
+	abstract String getWorkingDirectory();
+	
+	/**This is an optional parameter for Run TiShadow command, it can be null or any string*/
+	abstract String getInputForRunTiShadowCommand();
 
 	/**
 	 * Adds the correct folder name if default location is selected
@@ -116,11 +138,11 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
 	 * @param outputFolder
 	 * @param wizardPage
 	 */
-	
-	private String getOutputFolderPath() {
+
+	protected String getOutputFolderPath() {
 		String outputFolderPath;
-		outputFolderPath = wizardPage.getOutputFolderLocation();
-		if (wizardPage.useDefaults()) {
+		outputFolderPath = wizardPage.getOutputFolder().getProjectLocation();
+		if (wizardPage.getOutputFolder().isDefault()) {
 			outputFolderPath += "/" + wizardPage.getProjectName();
 		}
 		return outputFolderPath;
@@ -137,10 +159,10 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
 			newNatures[natures.length] = "com.appcelerator.titanium.mobile.nature";
 			newNatures[natures.length + 1] = "com.aptana.projects.webnature";
 			// check the status and decide what to do
-		    if (TiShadowRunner.isValidNature(newNatures)) {
-		    	description.setNatureIds(newNatures);
+			if (TiShadowRunner.isValidNature(newNatures)) {
+				description.setNatureIds(newNatures);
 				project.setDescription(description, new NullProgressMonitor());
-		    }
+			}
 		} catch (CoreException e) {
 			LaunchUtils.handleError("Cannot add Ti project nature", e);
 		}
@@ -168,12 +190,13 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
 		}
 
 		// get a project handle
-		final IProject newProjectHandle = wizardPage.getProjectHandle();
+		final IProject newProjectHandle = ResourcesPlugin.getWorkspace()
+				.getRoot().getProject(wizardPage.getProjectName());
 
 		// get a project descriptor
 		URI location = null;
-		if (!wizardPage.useDefaults()) {
-			location = wizardPage.getLocationURI();
+		if (!wizardPage.getOutputFolder().isDefault()) {
+			location = wizardPage.getOutputFolder().getProjectLocationURI();
 		}
 
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -253,44 +276,4 @@ public class TiShadowAppifyWizard extends BasicNewProjectResourceWizard
 		return newProject;
 	}
 
-	/*
-	 * (non-Javadoc) Method declared on IWizard.
-	 */
-	public boolean performSuperFinish() {
-		createNewProject();
-
-		if (newProject == null) {
-			return false;
-		}
-
-		IWorkingSet[] workingSets = wizardPage.getSelectedWorkingSets();
-		getWorkbench().getWorkingSetManager().addToWorkingSets(newProject,
-				workingSets);
-
-		updatePerspective();
-		selectAndReveal(newProject);
-
-		return true;
-	}
-
-	/**
-	 * Returns the newly created project.
-	 * 
-	 * @return the created project, or <code>null</code> if project not created
-	 */
-	public IProject getNewProject() {
-		return newProject;
-	}
-
-	@Override
-	public void onRunnerTishadowFinish(Object response) {
-		try {
-			IProject newProject = getNewProject();
-			addTiNature(newProject);
-			newProject.refreshLocal(IProject.DEPTH_INFINITE,
-					new NullProgressMonitor());
-		} catch (CoreException e) {
-			e.printStackTrace();
-		}
-	}
 }

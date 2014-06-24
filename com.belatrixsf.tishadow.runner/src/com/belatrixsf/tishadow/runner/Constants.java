@@ -6,10 +6,6 @@ package com.belatrixsf.tishadow.runner;
 import org.eclipse.core.externaltools.internal.IExternalToolConstants;
 import org.eclipse.debug.core.ILaunchManager;
 
-/**
- * @author vvillegas
- *
- */
 public class Constants {
 	
 	/**IExternalToolConstants.ATTR_LOCATION*/
