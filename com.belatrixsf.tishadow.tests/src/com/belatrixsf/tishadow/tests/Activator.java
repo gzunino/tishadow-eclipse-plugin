@@ -9,6 +9,9 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
+import com.belatrixsf.tishadow.LaunchUtils;
+import com.belatrixsf.tishadow.runner.Constants;
+
 /**
  * The activator class controls the plug-in life cycle
  */
@@ -40,20 +43,12 @@ public class Activator extends AbstractUIPlugin {
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
-		stopTiShadowServer();
+		LaunchUtils.stopTiShadowServer();
 		plugin = null;
 		super.stop(context);
 	}
 
-	private void stopTiShadowServer() throws CoreException, DebugException {
-		ILaunch[] launches = DebugPlugin.getDefault().getLaunchManager().getLaunches();
-		for (ILaunch iLaunch : launches) {
-			if (iLaunch.getLaunchConfiguration().getType().getIdentifier().equals("com.belatrixsf.tishadow.server.launchTiShadowServer")){
-				iLaunch.terminate();
-			}
-		}
-	}
-
+	
 	/**
 	 * Returns the shared instance
 	 *

@@ -60,21 +60,6 @@
             </contextLabel>
          </contextualLaunch>
       </shortcut>
-      <shortcut
-            class="com.belatrixsf.tishadow.server.LaunchServerShortcut"
-            description="Starts the tiShadow server in order to be able to run the tests on the devices"
-            icon="icons/tishadow-server_16.png"
-            id="com.belatrixsf.tishadow.server.launchTiShadowServerShortcut"
-            label="TiShadow Server"
-            modes="run">
-         <contextualLaunch>
-            <enablement></enablement>
-            <contextLabel
-                  label="Run TiShadow Server"
-                  mode="run">
-            </contextLabel>
-         </contextualLaunch>
-      </shortcut>
    </extension>
    <extension
          point="org.eclipse.ui.newWizards">
@@ -111,22 +96,22 @@
                label="TiShadow Toolbar">
             <command
                   commandId="com.belatrixsf.tishadow.tests.runServer"
-                  icon="icons/tishadow-server_16.png"
+                  icon="icons/tishadow-server-run_16.png"
                   label="TS start server"
                   style="push"
                   tooltip="Starts the TiShadow server on the configured port.">
                <visibleWhen
                      checkEnabled="false">
                   <test
-                        forcePluginActivation="false"
+                        forcePluginActivation="true"
                         property="com.belatrixsf.tishadow.tests.serverRunning"
                         value="false">
                   </test>
                </visibleWhen>
             </command>
             <command
-                  commandId="com.belatrixsf.tishadow.tests.stopServer"
-                  icon="icons/tishadow-server_16.png"
+                  commandId="com.belatrixsf.tishadow.tests.runServer"
+                  icon="icons/tishadow-server-stop_16.png"
                   label="TS stop server"
                   style="push"
                   tooltip="Stops the TiShadow server on the configured port.">
@@ -138,13 +123,6 @@
                         value="true">
                   </test>
                </visibleWhen>
-            </command>
-            <command
-                  commandId="com.belatrixsf.tishadow.tests.runTest"
-                  icon="icons/tishadow.png"
-                  label="Run TiShadow Tests"
-                  style="pulldown"
-                  tooltip="Runs the TiShadow Specs on the selected project.">
             </command>
          </toolbar>
       </menuContribution>

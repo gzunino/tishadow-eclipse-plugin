@@ -43,7 +43,6 @@ public class LaunchTiShadowServer implements ILaunchConfigurationDelegate {
 		final boolean showConsole = configuration.getAttribute(IExternalToolConstants.ATTR_SHOW_CONSOLE, false);
 		String toolArguments = configuration.getAttribute(IExternalToolConstants.ATTR_TOOL_ARGUMENTS, "");
 
-//
 		ILaunchConfigurationType type = DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurationType("org.eclipse.ui.externaltools.ProgramLaunchConfigurationType");
 		final ILaunchConfigurationWorkingCopy workingCopy = type.newInstance( null, "TiShadow Server");
 		workingCopy.setAttribute(IExternalToolConstants.ATTR_LOCATION, location);
@@ -52,23 +51,6 @@ public class LaunchTiShadowServer implements ILaunchConfigurationDelegate {
 		workingCopy.setAttribute(IExternalToolConstants.ATTR_WORKING_DIRECTORY, projectLoc);
 		workingCopy.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, envVars);
 		workingCopy.launch(mode, mon);
-		
-//		try {
-//			TiShadowRunner tishadowRunner = new TiShadowRunner("TiShadow Server");
-//			tishadowRunner
-//					.setAttribute(Constants.TISHADOW_WORKING_DIRECTORY,
-//							projectLoc)
-//					.setAttribute(Constants.TISHADOW_TOOL_ARGUMENTS,
-//							toolArguments)
-//					.setAttribute(Constants.TISHADOW_SHOW_CONSOLE, showConsole)
-//					.setAttribute(Constants.TISHADOW_ENVIRONMENT_VARIABLES,
-//							envVars)
-//					.setAttribute(Constants.TISHADOW_LOCATION,
-//							location);
-//			tishadowRunner.runTiShadow(this);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
 		
 		mon.done();
 	}

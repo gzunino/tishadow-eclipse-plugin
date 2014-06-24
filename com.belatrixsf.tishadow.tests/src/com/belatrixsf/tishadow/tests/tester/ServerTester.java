@@ -12,10 +12,11 @@ public class ServerTester extends PropertyTester {
 	@Override
 	public boolean test(Object receiver, String property, Object[] args,
 			Object expectedValue) {
-		if (LaunchUtils.isServerLaunched()){
-		return false;
+		if (!"serverRunning".equals(property)){
+			return false;
 		}
-		return true;
+		System.out.println("ServerTester >> isServerLaunched: " + LaunchUtils.isServerLaunched());
+		return expectedValue.equals(LaunchUtils.isServerLaunched());
 	}
-
+	
 }

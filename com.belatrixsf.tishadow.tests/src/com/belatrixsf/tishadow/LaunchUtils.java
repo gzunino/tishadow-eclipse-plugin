@@ -6,9 +6,14 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.debug.core.DebugException;
+import org.eclipse.debug.core.DebugPlugin;
+import org.eclipse.debug.core.ILaunch;
 import org.eclipse.jface.dialogs.MessageDialog;
 
 import com.belatrixsf.tishadow.preferences.page.PreferenceValues;
+import com.belatrixsf.tishadow.runner.Constants;
 
 public class LaunchUtils {
 	public static Map<String, String> getEnvVars() {
@@ -49,5 +54,18 @@ public class LaunchUtils {
 	    } catch (Exception e) {         
 	    	return false;
 	    }
+	}
+	
+	public static void stopTiShadowServer() throws CoreException, DebugException {
+		ILaunch[] launches = DebugPlugin.getDefault().getLaunchManager().getLaunches();
+		for (ILaunch iLaunch : launches) {
+			if (iLaunch.canTerminate() 
+					&& "com.belatrixsf.tishadow.server.launchTiShadowServer".equals(iLaunch.getLaunchConfiguration().getType().getIdentifier())
+					|| "org.eclipse.ui.externaltools.ProgramLaunchConfigurationType".equals(iLaunch.getLaunchConfiguration().getType().getIdentifier())
+							&& iLaunch.getLaunchConfiguration().getAttribute(Constants.TISHADOW_LOCATION, "").contains("tishadow"))
+			{
+				iLaunch.terminate();
+			}
+		}
 	}
 }
