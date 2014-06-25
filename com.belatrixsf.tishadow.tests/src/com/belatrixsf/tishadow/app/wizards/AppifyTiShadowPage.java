@@ -100,7 +100,7 @@ public class AppifyTiShadowPage extends AbstractTiShadowPage {
 		if(!super.validatePage()){
 			return false;
 		}
-		if (baseProjectName.getText().equals("")) {
+		if (baseProjectName != null && baseProjectName.getText().equals("")) {
 			setErrorMessage(null);
 			setMessage("Base Project to appify must me specified");
 			return false;

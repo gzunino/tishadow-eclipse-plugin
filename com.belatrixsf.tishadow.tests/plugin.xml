@@ -60,21 +60,6 @@
             </contextLabel>
          </contextualLaunch>
       </shortcut>
-      <shortcut
-            class="com.belatrixsf.tishadow.server.LaunchServerShortcut"
-            description="Starts the tiShadow server in order to be able to run the tests on the devices"
-            icon="icons/tishadow-server_16.png"
-            id="com.belatrixsf.tishadow.server.launchTiShadowServerShortcut"
-            label="TiShadow Server"
-            modes="run">
-         <contextualLaunch>
-            <enablement></enablement>
-            <contextLabel
-                  label="Run TiShadow Server"
-                  mode="run">
-            </contextLabel>
-         </contextualLaunch>
-      </shortcut>
    </extension>
    <extension
          point="org.eclipse.ui.newWizards">
@@ -100,6 +85,70 @@
             name="TiShadow Appify Creation (Creates a TI app)"
             project="true">
       </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="true"
+            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+         <toolbar
+               id="com.belatrixsf.tishadow.tests.tishadowToolbar"
+               label="TiShadow Toolbar">
+            <command
+                  commandId="com.belatrixsf.tishadow.tests.runServer"
+                  icon="icons/tishadow-server-run_16.png"
+                  label="TS start server"
+                  style="push"
+                  tooltip="Starts the TiShadow server on the configured port.">
+               <visibleWhen
+                     checkEnabled="false">
+                  <test
+                        forcePluginActivation="true"
+                        property="com.belatrixsf.tishadow.tests.serverRunning"
+                        value="false">
+                  </test>
+               </visibleWhen>
+            </command>
+            <command
+                  commandId="com.belatrixsf.tishadow.tests.runServer"
+                  icon="icons/tishadow-server-stop_16.png"
+                  label="TS stop server"
+                  style="push"
+                  tooltip="Stops the TiShadow server on the configured port.">
+               <visibleWhen
+                     checkEnabled="false">
+                  <test
+                        forcePluginActivation="true"
+                        property="com.belatrixsf.tishadow.tests.serverRunning"
+                        value="true">
+                  </test>
+               </visibleWhen>
+            </command>
+         </toolbar>
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="com.belatrixsf.tishadow.handlers.RunServer"
+            id="com.belatrixsf.tishadow.tests.runServer"
+            name="Run TiShadow Server">
+      </command>
+      <command
+            defaultHandler="com.belatrixsf.tishadow.handlers.RunTest"
+            id="com.belatrixsf.tishadow.tests.runTest"
+            name="Run TiShadow Tests">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.core.expressions.propertyTesters">
+      <propertyTester
+            class="com.belatrixsf.tishadow.tests.tester.ServerTester"
+            id="com.belatrixsf.tishadow.tests.serverTester"
+            namespace="com.belatrixsf.tishadow.tests"
+            properties="serverRunning"
+            type="java.lang.Object">
+      </propertyTester>
    </extension>
 
 </plugin>
