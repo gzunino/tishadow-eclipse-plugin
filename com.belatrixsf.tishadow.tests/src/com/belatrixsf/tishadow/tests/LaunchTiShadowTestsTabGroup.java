@@ -14,34 +14,33 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.externaltools.internal.program.launchConfigurations.ProgramMainTab;
 
-@SuppressWarnings("restriction")
 public class LaunchTiShadowTestsTabGroup extends
 		AbstractLaunchConfigurationTabGroup {
-
+		
 	public LaunchTiShadowTestsTabGroup() {
 	}
 
+	TiShadowTab tishadowTab = new TiShadowTab();
+	
+	@Override
+	public void createTabs(ILaunchConfigurationDialog dialog, String mode) {
+		ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[] {
+				tishadowTab, new CommonTab() };
+		setTabs(tabs);
+	}
+	
 	@Override
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
 		IResource context = getContext();
 		try {
-			LaunchTiShadowTests.setLaunchAttributes(configuration, context, "");
+			LaunchTiShadowTests.setLaunchAttributesWithArguments(configuration, context, tishadowTab.getArguments());
 		} catch (CoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		super.setDefaults(configuration);
-	}
-
-
-	@Override
-	public void createTabs(ILaunchConfigurationDialog dialog, String mode) {
-		ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[] {
-				new ProgramMainTab(), new CommonTab() };
-		setTabs(tabs);
 	}
 
 	protected IResource getContext() {
