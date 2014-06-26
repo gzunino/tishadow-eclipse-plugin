@@ -16,6 +16,8 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
+import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -104,7 +106,7 @@ final class TiShadowTab extends ProgramMainTab {
 		return argumentsString;
 	}
 	
-	public String argumentsToString(String[] args){
+	private String argumentsToString(String[] args){
 		String returnValue = "spec ";
 		String[] argumentsNames = {"-u","-l","","-o","","-p","","-r","","-t","","-c","-j","-x","-P","","-s","-D"};
 		
@@ -150,7 +152,7 @@ final class TiShadowTab extends ProgramMainTab {
 		}
 	}
 	
-	public void createCheckbox(final String parameter, String name, final boolean hasText, String toolTipText){
+	private void createCheckbox(final String parameter, String name, final boolean hasText, String toolTipText){
 		final Button argCheckbox = new Button(group, SWT.CHECK);
 		checkBoxMap.put(parameter, argCheckbox);
 		final Text argTextBox;
@@ -165,10 +167,6 @@ final class TiShadowTab extends ProgramMainTab {
 		}else{
 			argTextBox = null;
 			argCheckbox.setText(parameter +", --"+ name);
-		}
-		
-		if(argumentsString.contains(parameter)){
-			argCheckbox.setSelection(true);
 		}
 		
 		argCheckbox.setToolTipText(toolTipText);
@@ -211,8 +209,17 @@ final class TiShadowTab extends ProgramMainTab {
 	    		argTextBox.setEnabled(false);
 	    	}
 			
+	        //Forbid the space character
+	        argTextBox.addVerifyListener(new VerifyListener() {
+				@Override
+				public void verifyText(final VerifyEvent event) {
+					if (event.keyCode == SWT.SPACE) {
+						event.doit = false; // disallow the action
+					}
+				}
+			});
+	        
 	        argTextBox.addModifyListener(new ModifyListener() {
-	           
 					@Override
 					public void modifyText(ModifyEvent e) {
 						// TODO Auto-generated method stub

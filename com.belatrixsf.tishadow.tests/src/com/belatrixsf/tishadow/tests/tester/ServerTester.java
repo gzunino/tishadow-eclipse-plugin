@@ -15,7 +15,6 @@ public class ServerTester extends PropertyTester {
 		if (!"serverRunning".equals(property)){
 			return false;
 		}
-		System.out.println("ServerTester >> isServerLaunched: " + LaunchUtils.isServerLaunched());
 		return expectedValue.equals(LaunchUtils.isServerLaunched());
 	}
 	
