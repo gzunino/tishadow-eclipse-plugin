@@ -22,6 +22,7 @@ import com.belatrixsf.tishadow.LaunchUtils;
 import com.belatrixsf.tishadow.preferences.page.PreferenceValues;
 import com.belatrixsf.tishadow.runner.Constants;
 import com.belatrixsf.tishadow.runner.TiShadowRunner;
+import com.belatrixsf.tishadow.tests.LaunchTiShadowTests;
 
 @SuppressWarnings("restriction")
 public class LaunchTiShadowServer implements ILaunchConfigurationDelegate {
@@ -59,15 +60,14 @@ public class LaunchTiShadowServer implements ILaunchConfigurationDelegate {
 		return project.getLocation().toPortableString();
 	}
 
-	public static void setLaunchAttributes(ILaunchConfigurationWorkingCopy configuration, IResource context) throws CoreException {
-		configuration.setAttribute(IExternalToolConstants.ATTR_LOCATION, PreferenceValues.getTishadowDirectory());
-
+	public static void setLaunchAttributesWithArguments(ILaunchConfigurationWorkingCopy configuration, IResource context, String arguments)  throws CoreException {
+		configuration.setAttribute(IExternalToolConstants.ATTR_LOCATION,PreferenceValues.getTishadowDirectory());
 		String project = null;
 		if (context != null) {
-			project = LaunchTiShadowServer.getLaunchDir(context.getProject());
+			project = LaunchTiShadowTests.getLaunchDir(context.getProject());
 		}
 		configuration.setAttribute(IExternalToolConstants.ATTR_WORKING_DIRECTORY, project);
-		configuration.setAttribute(IExternalToolConstants.ATTR_TOOL_ARGUMENTS, "server");
+		configuration.setAttribute(IExternalToolConstants.ATTR_TOOL_ARGUMENTS, arguments);
 		configuration.setAttribute(IExternalToolConstants.ATTR_SHOW_CONSOLE, true);
 		configuration.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, LaunchUtils.getEnvVars());
 	}

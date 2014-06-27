@@ -29,6 +29,8 @@ import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 
+import com.belatrixsf.tishadow.common.ArgsBuilder;
+
 @SuppressWarnings("restriction")
 public class LaunchShortcut implements ILaunchShortcut {
     
@@ -82,9 +84,10 @@ public class LaunchShortcut implements ILaunchShortcut {
 	    		return null;
 	    	}
 	    }
+	    	    
 	    try {
 	        ILaunchConfigurationWorkingCopy launch = type.newInstance(null, launchManager.generateLaunchConfigurationName(project.getName()));
-	        LaunchTiShadowTests.setLaunchAttributes(launch, project, selectedTarget);
+	        LaunchTiShadowTests.setLaunchAttributesWithArguments(launch, project, new ArgsBuilder().getSpecDefaultsString() + selectedTarget);
 	        return launch.doSave();
 	    }
 	    catch (CoreException e) {

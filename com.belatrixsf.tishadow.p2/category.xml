@@ -3,6 +3,9 @@
    <feature url="features/com.belatrixsf.tishadow.feature_0.0.1.qualifier.jar" id="com.belatrixsf.tishadow.feature" version="0.0.1.qualifier">
       <category name="com.belatrixsf.tishadow.category"/>
    </feature>
+   <feature url="features/net.mihai-nita.ansicon_1.3.0.201404020252.jar" id="net.mihai-nita.ansicon" version="1.3.0.201404020252">
+      <category name="com.belatrixsf.tishadow.category"/>
+   </feature>
    <category-def name="com.belatrixsf.tishadow.category" label="TiShadow">
       <description>
          Plugin to run TiShadow tests and display results on JUnit View (Requires Kepler Update site enabled)

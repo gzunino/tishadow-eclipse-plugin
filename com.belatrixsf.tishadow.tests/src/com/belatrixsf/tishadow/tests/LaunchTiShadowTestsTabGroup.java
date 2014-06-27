@@ -15,18 +15,20 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
+import com.belatrixsf.tishadow.common.TiShadowTab;
+
 public class LaunchTiShadowTestsTabGroup extends
 		AbstractLaunchConfigurationTabGroup {
 		
 	public LaunchTiShadowTestsTabGroup() {
 	}
 
-	TiShadowTab tishadowTab = new TiShadowTab();
+	TiShadowTab tishadowSpecTab = new TiShadowSpecTab();
 	
 	@Override
 	public void createTabs(ILaunchConfigurationDialog dialog, String mode) {
 		ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[] {
-				tishadowTab, new CommonTab() };
+				tishadowSpecTab, new CommonTab() };
 		setTabs(tabs);
 	}
 	
@@ -34,7 +36,7 @@ public class LaunchTiShadowTestsTabGroup extends
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
 		IResource context = getContext();
 		try {
-			LaunchTiShadowTests.setLaunchAttributesWithArguments(configuration, context, tishadowTab.getArguments());
+			LaunchTiShadowTests.setLaunchAttributesWithArguments(configuration, context, tishadowSpecTab.getArguments());
 		} catch (CoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

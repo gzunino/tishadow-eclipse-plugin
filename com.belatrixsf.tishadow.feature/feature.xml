@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="com.belatrixsf.tishadow.feature"
-      label="TiShadow Feature"
+      label="TiShadow Plugin"
       version="0.0.1.qualifier"
       provider-name="BELATRIXSF">
 
@@ -19,8 +19,16 @@ display results on JUnit View.
    </license>
 
    <url>
+      <update label="TiShadow Plugin" url="http://gzunino.github.io/tishadow-eclipse-plugin/p2/"/>
       <discovery label="Kepler Update Site" url="http://download.eclipse.org/releases/kepler"/>
    </url>
+
+   <includes
+         id="net.mihai-nita.ansicon"
+         version="0.0.0"
+         name="Ansi Console (adds colors to console output)"
+         optional="true"
+         search-location="both"/>
 
    <requires>
       <import plugin="org.eclipse.ui"/>

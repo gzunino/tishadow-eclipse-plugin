@@ -16,6 +16,8 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.externaltools.internal.program.launchConfigurations.ProgramMainTab;
 
+import com.belatrixsf.tishadow.common.TiShadowTab;
+
 @SuppressWarnings("restriction")
 public class LaunchTiShadowServerTabGroup extends
 		AbstractLaunchConfigurationTabGroup {
@@ -23,13 +25,14 @@ public class LaunchTiShadowServerTabGroup extends
 	public LaunchTiShadowServerTabGroup() {
 	}
 	
+	TiShadowTab tishadowServerTab = new TiShadowServerTab();
+	
 	@Override
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
 		IResource context = getContext();
 		try {
-			LaunchTiShadowServer.setLaunchAttributes(configuration, context);
+			LaunchTiShadowServer.setLaunchAttributesWithArguments(configuration, context, tishadowServerTab.getArguments());
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -39,7 +42,7 @@ public class LaunchTiShadowServerTabGroup extends
 	@Override
 	public void createTabs(ILaunchConfigurationDialog dialog, String mode) {
 		ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[] {
-				new ProgramMainTab(), new CommonTab() };
+				tishadowServerTab, new CommonTab() };
 		setTabs(tabs);
 	}
 

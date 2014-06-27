@@ -17,6 +17,8 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 
+import com.belatrixsf.tishadow.common.ArgsBuilder;
+
 @SuppressWarnings("restriction")
 public class LaunchServerShortcut implements ILaunchShortcut {
 
@@ -61,7 +63,7 @@ public class LaunchServerShortcut implements ILaunchShortcut {
 		
 		try {
 			ILaunchConfigurationWorkingCopy launch = type.newInstance(null, launchManager.generateLaunchConfigurationName(project.getName()));
-			LaunchTiShadowServer.setLaunchAttributes(launch, project);
+			LaunchTiShadowServer.setLaunchAttributesWithArguments(launch, project,  new ArgsBuilder().getServerDefaultsString());
 			return launch.doSave();
 		} catch (CoreException e) {
 			e.printStackTrace();

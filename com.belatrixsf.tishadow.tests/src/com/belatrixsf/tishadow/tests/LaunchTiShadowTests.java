@@ -330,8 +330,4 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 		configuration.setAttribute(IExternalToolConstants.ATTR_SHOW_CONSOLE, true);
 		configuration.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, LaunchUtils.getEnvVars());
 	}
-	
-	public static void setLaunchAttributes(ILaunchConfigurationWorkingCopy configuration, IResource context, String selectedTarget) throws CoreException {
-		setLaunchAttributesWithArguments(configuration, context, "spec -u -x" + selectedTarget);
-	}
 }
