@@ -24,7 +24,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISelectionService;
 import org.eclipse.ui.dialogs.ResourceListSelectionDialog;
 import org.eclipse.ui.internal.Workbench;
-import org.eclipse.ui.internal.ide.dialogs.ProjectContentsLocationArea;
 
 import com.belatrixsf.tishadow.preferences.page.PreferenceValues;
 
@@ -228,7 +227,7 @@ public class AppifyTiShadowPage extends AbstractTiShadowPage {
 		projectLocationLabel.pack();
 		this.baseProjectName = new Text(composite, SWT.SINGLE | SWT.BORDER);
 		baseProjectName.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		baseProjectName.setEnabled(false);
+		baseProjectName.setEditable(false);
 		if (getCurrentProject() != null) {
 			String projectName = getCurrentProject().getName().toString();
 			selectedBaseProject = getCurrentProject();

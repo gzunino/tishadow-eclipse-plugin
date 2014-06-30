@@ -88,6 +88,28 @@
    </extension>
    <extension
          point="org.eclipse.ui.menus">
+         <menuContribution
+            locationURI="popup:common.new.menu?before=new">
+            <command
+                  commandId="com.belatrixsf.tishadow.tests.appify"
+                  label="TiShadow Appify">
+                  <visibleWhen>
+	               <with
+	                     variable="selection">
+	                  <iterate
+	                        ifEmpty="false">
+	                     <instanceof
+	                           value="org.eclipse.core.resources.IResource">
+	                     </instanceof>
+	                     <test
+	                           property="org.eclipse.core.resources.projectNature"
+	                           value="com.appcelerator.titanium.mobile.nature">
+	                     </test>
+	                  </iterate>
+	               </with>
+	            </visibleWhen>
+	            </command>
+      </menuContribution>
       <menuContribution
             allPopups="true"
             locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
@@ -124,6 +146,13 @@
                   </test>
                </visibleWhen>
             </command>
+            <command
+                  commandId="com.belatrixsf.tishadow.tests.runTest"
+                  icon="icons/tishadow.png"
+                  label="TS run tests"
+                  style="push"
+                  tooltip="Run tests on the selected project">
+            </command>
          </toolbar>
       </menuContribution>
    </extension>
@@ -138,6 +167,11 @@
             defaultHandler="com.belatrixsf.tishadow.handlers.RunTest"
             id="com.belatrixsf.tishadow.tests.runTest"
             name="Run TiShadow Tests">
+      </command>
+      <command
+            defaultHandler="com.belatrixsf.tishadow.handlers.TiShadowAppifyCreation"
+            id="com.belatrixsf.tishadow.tests.appify"
+            name="TiShadow Appify Creation">
       </command>
    </extension>
    <extension
