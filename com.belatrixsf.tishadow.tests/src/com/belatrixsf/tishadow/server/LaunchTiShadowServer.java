@@ -20,8 +20,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 
 import com.belatrixsf.tishadow.LaunchUtils;
 import com.belatrixsf.tishadow.preferences.page.PreferenceValues;
-import com.belatrixsf.tishadow.runner.Constants;
-import com.belatrixsf.tishadow.runner.TiShadowRunner;
 import com.belatrixsf.tishadow.tests.LaunchTiShadowTests;
 
 @SuppressWarnings("restriction")
@@ -29,7 +27,7 @@ public class LaunchTiShadowServer implements ILaunchConfigurationDelegate {
 
 	@Override
 	public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
-		if(LaunchUtils.isServerLaunched()) {
+		if(LaunchUtils.isServerLaunched(true)) {
 			MessageDialog.openError(null, "Error", "An instance of the server is already running.");
 			return;
 		}
@@ -39,6 +37,7 @@ public class LaunchTiShadowServer implements ILaunchConfigurationDelegate {
 
 		final String projectLoc = configuration.getAttribute(IExternalToolConstants.ATTR_WORKING_DIRECTORY, "");
 
+		@SuppressWarnings("unchecked")
 		final Map<String, String> envVars = configuration.getAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, new HashMap<String, String>());
 		final String location = configuration.getAttribute(IExternalToolConstants.ATTR_LOCATION, "");
 		final boolean showConsole = configuration.getAttribute(IExternalToolConstants.ATTR_SHOW_CONSOLE, false);

@@ -1,5 +1,6 @@
 package com.belatrixsf.tishadow;
 
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +17,9 @@ import com.belatrixsf.tishadow.preferences.page.PreferenceValues;
 import com.belatrixsf.tishadow.runner.Constants;
 
 public class LaunchUtils {
+	
+	static Boolean isServerLaunched = null;
+	
 	public static Map<String, String> getEnvVars() {
 		// Get current value for PATH environment variable
 		String pathVariable = System.getenv("PATH");
@@ -46,14 +50,22 @@ public class LaunchUtils {
 		}
 	}
 
-	public static boolean isServerLaunched() {
+	public static boolean isServerLaunched(boolean forceSocketTest) {
+		if (forceSocketTest || isServerLaunched == null) {
+			testSocket();
+		}
+		return isServerLaunched;
+	}
+
+	protected static void testSocket() {
 		try {
-	        Socket sock = new Socket(PreferenceValues.getTishadowHost(), PreferenceValues.getTishadowPort());
-	        sock.close();
-	        return true;
-	    } catch (Exception e) {         
-	    	return false;
-	    }
+			Socket socket = new Socket();
+			socket.connect(new InetSocketAddress(PreferenceValues.getTishadowHost(), PreferenceValues.getTishadowPort()), 500);
+			socket.close();
+			isServerLaunched = true;
+		} catch (Exception e) {
+			isServerLaunched = false;
+		}
 	}
 	
 	public static void stopTiShadowServer() throws CoreException, DebugException {

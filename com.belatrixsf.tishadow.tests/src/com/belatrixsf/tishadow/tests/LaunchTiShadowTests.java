@@ -112,11 +112,11 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 			final ILaunchConfigurationWorkingCopy workingCopy,
 			final boolean spec_touch) throws CoreException {
 		if(spec_touch) {
-			if(LaunchUtils.isServerLaunched()) {
+			if(LaunchUtils.isServerLaunched(true)) {
 
 				final IFolder folder = getTiShadowResultFolder(projectLoc);
 				removeOldResults(monitor, folder);
-				workingCopy.launch(mode, monitor);
+				ILaunch launch = workingCopy.launch(mode, monitor);
 				
 				monitor.subTask("Running tests...");
 				
@@ -159,7 +159,7 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 					
 				});
 				
-				while (!finished.get()) {
+				while (!finished.get() && !monitor.isCanceled()) {
 					Random r = new Random();
 					monitor.worked((int) (Math.max(1, Math.min(10, (int) 2 + r.nextGaussian() * 20))));
 					try {
@@ -169,7 +169,10 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 					}
 				}
 				if (job != null) {
-					job.done(Status.OK_STATUS);
+					job.done(monitor.isCanceled() ? Status.CANCEL_STATUS : Status.OK_STATUS);
+				}
+				if (monitor.isCanceled() && launch.canTerminate()) {
+					launch.terminate();
 				}
 			}
 			else {

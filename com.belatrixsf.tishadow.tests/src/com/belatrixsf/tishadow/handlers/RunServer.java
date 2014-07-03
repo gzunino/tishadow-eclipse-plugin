@@ -44,7 +44,7 @@ public class RunServer extends AbstractHandler implements IRunnerCallback {
 						}
 					}
 				});
-		isServerLaunched = LaunchUtils.isServerLaunched();
+		isServerLaunched = LaunchUtils.isServerLaunched(true);
 		try {
 			if (isServerLaunched) {
 				LaunchUtils.stopTiShadowServer();
