@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -24,7 +26,8 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.IDebugEventSetListener;
@@ -53,12 +56,11 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 	boolean created_tiapp = false;
 
 	@Override
-	public void launch(ILaunchConfiguration configuration, String mode,
+	public void launch(ILaunchConfiguration configuration, final String mode,
 			ILaunch launch, final IProgressMonitor monitor) throws CoreException {
-		final SubMonitor mon = SubMonitor.convert(monitor);
-		mon.beginTask("Running Tests", IProgressMonitor.UNKNOWN);
+		monitor.beginTask("Running Tests", 950);
 		showWizard();
-
+		
 		final String projectLoc = configuration.getAttribute(IExternalToolConstants.ATTR_WORKING_DIRECTORY, "");
 		final IProject project = LaunchUtils.getProject(projectLoc);
 
@@ -66,16 +68,17 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 			Display.getDefault().asyncExec(new Runnable() {
 				@Override
 				public void run() {
-					MessageDialog.openError(null, "Error", "Project " + ((project != null) ? project.getName() : "" )+" is closed or doesn't exists");
-					mon.done();
+					MessageDialog.openError(null, "Error", "Project " + ((project != null) ? project.getName() : "" )+" is closed or doesn't exist");
+					monitor.done();
 				}
 			});
 			return;
 		}
-
+		
 		ILaunchConfigurationType type = DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurationType("org.eclipse.ui.externaltools.ProgramLaunchConfigurationType");
 
 		final ILaunchConfigurationWorkingCopy workingCopy = type.newInstance(null, "TiShadow Spec");
+		@SuppressWarnings("unchecked")
 		final Map<String, String> envVars = configuration.getAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, new HashMap<String, String>());
 		final String location = configuration.getAttribute(IExternalToolConstants.ATTR_LOCATION,"");
 		final boolean showConsole = configuration.getAttribute(IExternalToolConstants.ATTR_SHOW_CONSOLE, false);
@@ -86,60 +89,94 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 		workingCopy.setAttribute(IExternalToolConstants.ATTR_TOOL_ARGUMENTS, toolArguments);
 		workingCopy.setAttribute(IExternalToolConstants.ATTR_WORKING_DIRECTORY, projectLoc);
 		workingCopy.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, envVars);
-
+		
 		try {
-			final boolean spec_touch = touchSpecFiles(project,monitor);
-
-			if(spec_touch) {
-				if(LaunchUtils.isServerLaunched()) {
-
-					final IFolder folder = getTiShadowResultFolder(projectLoc);
-					removeOldResults(monitor, folder);
-					workingCopy.launch(mode, mon);
-
-					// wait for termination and show results
-					DebugPlugin.getDefault().addDebugEventListener(new IDebugEventSetListener() {
-						@Override
-						public void handleDebugEvents(DebugEvent[] events) {
-							if (events.length > 0 && (events[0].getKind() == DebugEvent.TERMINATE)) {
-								DebugPlugin.getDefault().removeDebugEventListener(this);
-
-								Display.getDefault().asyncExec(new Runnable() {
-									@Override
-									public void run() {
-										try {
-											workingCopy.delete();
-										} catch (CoreException e) {
-											e.printStackTrace();
-										}
-
-										final ArrayList<IPath> junitXMLResources = getXmlResults(mon, folder);
-										if (junitXMLResources.isEmpty()) {
-											MessageDialog.openError(null, "Error", "Cannot find JUnit XML results for TiShadow run. Check the console logs.");
-											return;
-										}
-
-										JUnitViewEditorLauncher junit = new JUnitViewEditorLauncher();
-										String mergedXml = folder.getLocation().toOSString() + "/fullTestSuite.xml";
-										mergeXMLFiles(junitXMLResources, mergedXml);
-										refreshProject(project);
-										junit.open(new Path(mergedXml));
-										mon.done();
-									}
-								});
-							}
-						}
-					});
+			final boolean spec_touch = touchSpecFiles(configuration, project,monitor);
+			
+			launchTests(mode, monitor, projectLoc, project,
+					workingCopy, spec_touch);
+			
+		}
+		catch (final Exception ex) {
+			Display.getDefault().asyncExec(new Runnable() {
+				@Override
+				public void run() {
+					MessageDialog.openError(null, "Error", ex.getMessage());
 				}
-				else {
-					MessageDialog.openError(null, "Error", "TiShadow Server is not running");
-					return;
+			});
+	    }
+	}
+
+	protected void launchTests(String mode,
+			final IProgressMonitor monitor, final String projectLoc, final IProject project,
+			final ILaunchConfigurationWorkingCopy workingCopy,
+			final boolean spec_touch) throws CoreException {
+		if(spec_touch) {
+			if(LaunchUtils.isServerLaunched()) {
+
+				final IFolder folder = getTiShadowResultFolder(projectLoc);
+				removeOldResults(monitor, folder);
+				workingCopy.launch(mode, monitor);
+				
+				monitor.subTask("Running tests...");
+				
+				final Job job = Job.getJobManager().currentJob();
+				final AtomicBoolean finished = new AtomicBoolean(false);
+				
+				// wait for termination and show results
+				DebugPlugin.getDefault().addDebugEventListener(new IDebugEventSetListener() {
+					@Override
+					public void handleDebugEvents(DebugEvent[] events) {
+						if (events.length > 0 && (events[0].getKind() == DebugEvent.TERMINATE)) {
+							DebugPlugin.getDefault().removeDebugEventListener(this);
+
+							Display.getDefault().asyncExec(new Runnable() {
+								@Override
+								public void run() {
+									try {
+										workingCopy.delete();
+									} catch (CoreException e) {
+										e.printStackTrace();
+									}
+
+									final ArrayList<IPath> junitXMLResources = getXmlResults(monitor, folder);
+									if (junitXMLResources.isEmpty()) {
+										showError("Error", "Cannot find JUnit XML results for TiShadow run. Check the console logs.");
+										return;
+									}
+
+									JUnitViewEditorLauncher junit = new JUnitViewEditorLauncher();
+									String mergedXml = folder.getLocation().toOSString() + "/fullTestSuite.xml";
+									mergeXMLFiles(junitXMLResources, mergedXml);
+									refreshProject(project);
+									junit.open(new Path(mergedXml));
+									monitor.done();
+									finished.set(true);
+								}
+							});
+						}
+					}
+					
+				});
+				
+				while (!finished.get()) {
+					Random r = new Random();
+					monitor.worked((int) (Math.max(1, Math.min(10, (int) 2 + r.nextGaussian() * 20))));
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				if (job != null) {
+					job.done(Status.OK_STATUS);
 				}
 			}
+			else {
+				showError("Error", "TiShadow Server is not running");
+			}
 		}
-		catch (Exception ex) {
-			MessageDialog.openError(null, "Error", ex.getMessage());
-	    }
+		return;
 	}
 
 	private void removeOldResults(final IProgressMonitor monitor,final IFolder folder) throws CoreException {
@@ -175,7 +212,7 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 		}
 	}
 
-	private boolean touchSpecFiles(IProject project,IProgressMonitor monitor) {
+	private boolean touchSpecFiles(ILaunchConfiguration configuration, IProject project,IProgressMonitor monitor) {
 		try {
 			IFolder folder = project.getFolder(Path.fromOSString("spec/"));
 			if(folder.exists()) {
@@ -188,18 +225,35 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 						break;
 					}
 				}
-
 				return enter;
 			}
 			else {
-				MessageDialog.openError(null, "Error", "Spec folder doesn't exist");
+				showError("Error", "Project not testeable, spec folder doesn't exist");
+				try {
+					configuration.delete();
+				} catch (CoreException e) {
+					e.printStackTrace();
+				}
 				return false;
 			}
 		}
 		catch (Exception ex) {
-			MessageDialog.openError(null, "Error", "Spec folder error");
+			showError("Error", "Spec folder error");
 			ex.printStackTrace();
 			return false;
+		}
+	}
+
+	protected void showError(final String title, final String message) {
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				MessageDialog.openError(null, title, message);
+			}
+		});
+		final Job job = Job.getJobManager().currentJob();
+		if (job != null) {
+			job.done(Status.OK_STATUS);
 		}
 	}
 
@@ -254,8 +308,8 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 		        	((Element)importedNode).setAttribute("name", deviceName + " - " + namePreviousValue);
 		        	testSuitesElement.appendChild(importedNode);
 		        }
-			} catch (Exception e) {
-				MessageDialog.openError(null, "Error merging results", e.toString() + "\n" + e.getLocalizedMessage().toString());
+			} catch (final Exception e) {
+				showError("Error merging results", e.toString() + "\n" + e.getLocalizedMessage().toString());
 				e.printStackTrace();
 			}
 		}
@@ -270,9 +324,9 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 			DOMSource source = new DOMSource(mergedDocument);
 	        StreamResult result = new StreamResult(mergedFileName);
 	        transformer.transform(source, result);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			LaunchUtils.handleError("Error merging results", e);
-			MessageDialog.openError(null, "Error merging results", e.toString() + "\n" + e.getLocalizedMessage().toString());
+			showError("Error merging results", e.toString() + "\n" + e.getLocalizedMessage().toString());
 			e.printStackTrace();
 		}
 		

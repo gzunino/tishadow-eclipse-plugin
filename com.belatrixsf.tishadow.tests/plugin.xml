@@ -39,7 +39,7 @@
       </launchConfigurationTypeImage>
       <launchConfigurationTypeImage
             configTypeID="com.belatrixsf.tishadow.server.launchTiShadowServer"
-            icon="icons/tishadow-server_16.png"
+            icon="icons/tishadow-server-run_16.png"
             id="com.belatrixsf.tishadow.server.launchTiShadowServerImage">
       </launchConfigurationTypeImage>
    </extension>
@@ -148,7 +148,7 @@
             </command>
             <command
                   commandId="com.belatrixsf.tishadow.tests.runTest"
-                  icon="icons/tishadow.png"
+                  icon="icons/tishadow-spec_16.png"
                   label="TS run tests"
                   style="push"
                   tooltip="Run tests on the selected project">

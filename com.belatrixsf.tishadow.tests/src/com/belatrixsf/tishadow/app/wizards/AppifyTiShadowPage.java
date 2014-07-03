@@ -3,6 +3,12 @@
  */
 package com.belatrixsf.tishadow.app.wizards;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Collections;
+import java.util.Enumeration;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -184,7 +190,19 @@ public class AppifyTiShadowPage extends AbstractTiShadowPage {
 		hostLabel.setText("Host:");
 		this.host = new Text(composite, SWT.SINGLE | SWT.BORDER);
 		this.host.setToolTipText("Sets the host for tiShadow.\n*Optional*");
-		this.host.setText(PreferenceValues.getTishadowHost());
+		
+		String myIp="";
+		try {
+			myIp = this.getMyIp();
+		} catch (SocketException e1) {
+			e1.printStackTrace();
+		}
+		
+		if (PreferenceValues.getTishadowHost().equals("localhost") && !myIp.isEmpty()) {
+			this.host.setText(myIp);
+		} else {
+			this.host.setText(PreferenceValues.getTishadowHost());
+		}
 		this.host.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 	}
 
@@ -260,4 +278,32 @@ public class AppifyTiShadowPage extends AbstractTiShadowPage {
 		}
 		return project;
 	}
+	
+	private String getMyIp() throws SocketException {
+	    Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces();
+	    
+	    for (NetworkInterface netint : Collections.list(ifaces)){
+    		if (!(netint.isLoopback())){
+	    		if (netint != null && !netint.getDisplayName().contains("vbox")) {
+			        Enumeration<InetAddress> iplist = netint.getInetAddresses();
+			        InetAddress addr = null;
+			        while (iplist.hasMoreElements()) {
+			            InetAddress ad = iplist.nextElement();
+			            byte bs[] = ad.getAddress();
+			            if (bs.length == 4 && bs[0] != 127) {
+			                addr = ad;
+			                // You could also display the host name here, to 
+			                // see the whole list, and remove the break.
+			                break;
+			            }
+			        }
+			        if (addr != null) {
+			        	return addr.getCanonicalHostName();
+			        }
+			    }
+	    	}
+	    }
+		return "";
+	}
+	
 }

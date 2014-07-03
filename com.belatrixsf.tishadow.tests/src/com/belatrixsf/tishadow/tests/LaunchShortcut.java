@@ -11,7 +11,9 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
@@ -47,14 +49,23 @@ public class LaunchShortcut implements ILaunchShortcut {
         } 
     }
 
-    private void searchAndLaunch(IProject project, String mode) {
-        ILaunchConfiguration launch = getExistingLaunch(project);
+    private void searchAndLaunch(IProject project, final String mode) {
+        final ILaunchConfiguration launch = getExistingLaunch(project);
         if (launch != null) {
-            try {
-                launch.launch(mode, new NullProgressMonitor());
-            } catch (CoreException e) {
-                e.printStackTrace();
-            }
+            Job job = new Job("TiShadow Tests") {
+				@Override
+				protected IStatus run(IProgressMonitor monitor) {
+					this.setThread(Thread.currentThread());
+					try {
+						launch.launch(mode, monitor);
+					} catch (CoreException e) {
+						e.printStackTrace();
+					}
+					return ASYNC_FINISH;
+				}
+			};
+			job.setUser(true);
+			job.schedule();
         }
     }
 
