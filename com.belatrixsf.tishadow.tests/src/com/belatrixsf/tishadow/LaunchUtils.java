@@ -11,6 +11,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
+import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.jface.dialogs.MessageDialog;
 
 import com.belatrixsf.tishadow.preferences.page.PreferenceValues;
@@ -19,6 +20,7 @@ import com.belatrixsf.tishadow.runner.Constants;
 public class LaunchUtils {
 	
 	static Boolean isServerLaunched = null;
+	static ILaunchConfiguration launchConfiguration = null;
 	
 	public static Map<String, String> getEnvVars() {
 		// Get current value for PATH environment variable
@@ -79,5 +81,13 @@ public class LaunchUtils {
 				iLaunch.terminate();
 			}
 		}
+	}
+	
+	public void setLaunchConfiguration(ILaunchConfiguration lConfig){
+		launchConfiguration = lConfig;
+	}
+	
+	public ILaunchConfiguration getLaunchConfiguration(){
+		return launchConfiguration;
 	}
 }

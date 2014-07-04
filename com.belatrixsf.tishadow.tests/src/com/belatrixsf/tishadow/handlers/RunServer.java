@@ -30,6 +30,7 @@ public class RunServer extends AbstractHandler implements IRunnerCallback {
 						if (events.length > 0
 								&& (events[0].getKind() == DebugEvent.CREATE || events[0]
 										.getKind() == DebugEvent.TERMINATE)) {
+							DebugPlugin.getDefault().removeDebugEventListener(this);
 							try {
 								// In order to refresh the plugin button we need
 								// to wait some time to wait for the server to
@@ -38,9 +39,8 @@ public class RunServer extends AbstractHandler implements IRunnerCallback {
 							} catch (InterruptedException e) {
 								e.printStackTrace();
 							}
+							LaunchUtils.isServerLaunched(true);
 							requestRefresh();
-							DebugPlugin.getDefault().removeDebugEventListener(
-									this);
 						}
 					}
 				});

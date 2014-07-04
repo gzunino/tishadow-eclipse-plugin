@@ -52,6 +52,7 @@ import com.belatrixsf.tishadow.preferences.page.PreferenceValues;
 @SuppressWarnings("restriction")
 public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 
+	private ILaunchConfiguration previousTestConfig = null;
 	private static final String RESULT_XML = "_result.xml";
 	boolean created_tiapp = false;
 
@@ -91,10 +92,16 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 		workingCopy.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, envVars);
 		
 		try {
+			
+			ILaunchConfiguration newConfiguration = configuration;
+			
 			final boolean spec_touch = touchSpecFiles(configuration, project,monitor);
 			
+			/*LaunchUtils launchUtils = new LaunchUtils();
+			launchUtils.setLaunchConfiguration(newConfiguration);*/
+			
 			launchTests(mode, monitor, projectLoc, project,
-					workingCopy, spec_touch);
+					workingCopy, spec_touch, newConfiguration);
 			
 		}
 		catch (final Exception ex) {
@@ -110,7 +117,8 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 	protected void launchTests(String mode,
 			final IProgressMonitor monitor, final String projectLoc, final IProject project,
 			final ILaunchConfigurationWorkingCopy workingCopy,
-			final boolean spec_touch) throws CoreException {
+			final boolean spec_touch, final ILaunchConfiguration configuration) throws CoreException {
+		
 		if(spec_touch) {
 			if(LaunchUtils.isServerLaunched(true)) {
 
@@ -138,6 +146,11 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 									} catch (CoreException e) {
 										e.printStackTrace();
 									}
+									
+									previousTestConfig = configuration;
+
+									LaunchUtils launchUtils = new LaunchUtils();
+									launchUtils.setLaunchConfiguration(configuration);
 
 									final ArrayList<IPath> junitXMLResources = getXmlResults(monitor, folder);
 									if (junitXMLResources.isEmpty()) {
@@ -151,6 +164,7 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 									refreshProject(project);
 									junit.open(new Path(mergedXml));
 									monitor.done();
+									
 									finished.set(true);
 								}
 							});
@@ -176,6 +190,10 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 				}
 			}
 			else {
+
+				LaunchUtils launchUtils = new LaunchUtils();
+				launchUtils.setLaunchConfiguration(previousTestConfig);
+				
 				showError("Error", "TiShadow Server is not running");
 			}
 		}
@@ -229,9 +247,13 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 					}
 				}
 				return enter;
-			}
-			else {
+			} else {
+				
+				LaunchUtils launchUtils = new LaunchUtils();
+				launchUtils.setLaunchConfiguration(previousTestConfig);
+				
 				showError("Error", "Project not testeable, spec folder doesn't exist");
+				
 				try {
 					configuration.delete();
 				} catch (CoreException e) {
@@ -241,7 +263,12 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 			}
 		}
 		catch (Exception ex) {
+			
+			LaunchUtils launchUtils = new LaunchUtils();
+			launchUtils.setLaunchConfiguration(previousTestConfig);
+			
 			showError("Error", "Spec folder error");
+			
 			ex.printStackTrace();
 			return false;
 		}
@@ -312,7 +339,12 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 		        	testSuitesElement.appendChild(importedNode);
 		        }
 			} catch (final Exception e) {
+
+				LaunchUtils launchUtils = new LaunchUtils();
+				launchUtils.setLaunchConfiguration(previousTestConfig);
+				
 				showError("Error merging results", e.toString() + "\n" + e.getLocalizedMessage().toString());
+				
 				e.printStackTrace();
 			}
 		}
@@ -328,8 +360,13 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 	        StreamResult result = new StreamResult(mergedFileName);
 	        transformer.transform(source, result);
 		} catch (final Exception e) {
+			
+			LaunchUtils launchUtils = new LaunchUtils();
+			launchUtils.setLaunchConfiguration(previousTestConfig);
+			
 			LaunchUtils.handleError("Error merging results", e);
 			showError("Error merging results", e.toString() + "\n" + e.getLocalizedMessage().toString());
+			
 			e.printStackTrace();
 		}
 		

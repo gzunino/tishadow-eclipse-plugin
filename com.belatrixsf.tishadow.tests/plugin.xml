@@ -155,6 +155,16 @@
             </command>
          </toolbar>
       </menuContribution>
+      <menuContribution
+            allPopups="false"
+            locationURI="toolbar:org.eclipse.jdt.junit.ResultView?after=additions">
+         <command
+               commandId="com.belatrixsf.tishadow.tests.reRunTest"
+               icon="icons/tishadow-spec-rerun_16.png"
+               style="push"
+               tooltip="Re-run tishadow tests">
+         </command>
+      </menuContribution>
    </extension>
    <extension
          point="org.eclipse.ui.commands">
@@ -173,6 +183,10 @@
             id="com.belatrixsf.tishadow.tests.appify"
             name="TiShadow Appify Creation">
       </command>
+      <command
+            id="com.belatrixsf.tishadow.tests.reRunTest"
+            name="Re-Run TiShadow Tests">
+      </command>
    </extension>
    <extension
          point="org.eclipse.core.expressions.propertyTesters">
@@ -183,6 +197,27 @@
             properties="serverRunning"
             type="java.lang.Object">
       </propertyTester>
+      <propertyTester
+            class="com.belatrixsf.tishadow.tests.tester.ReRunTester"
+            id="com.belatrixsf.tishadow.tests.reRunTester"
+            namespace="com.belatrixsf.tishadow.tests"
+            properties="hasPreviousLaunch"
+            type="java.lang.Object">
+      </propertyTester>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="com.belatrixsf.tishadow.handlers.ReRunTest"
+            commandId="com.belatrixsf.tishadow.tests.reRunTest">
+         <enabledWhen>
+            <test
+                  forcePluginActivation="true"
+                  property="com.belatrixsf.tishadow.tests.hasPreviousLaunch"
+                  value="true">
+            </test>
+         </enabledWhen>
+      </handler>
    </extension>
 
 </plugin>
