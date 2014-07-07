@@ -34,7 +34,7 @@
          point="org.eclipse.debug.ui.launchConfigurationTypeImages">
       <launchConfigurationTypeImage
             configTypeID="com.belatrixsf.tishadow.tests.launchTiShadowTests"
-            icon="icons/tishadow_16.png"
+            icon="icons/tishadow-spec_16.png"
             id="com.belatrixsf.tishadow.tests.launchTiShadowTestsImage">
       </launchConfigurationTypeImage>
       <launchConfigurationTypeImage

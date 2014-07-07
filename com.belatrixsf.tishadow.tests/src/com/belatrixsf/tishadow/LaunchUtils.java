@@ -16,6 +16,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 
 import com.belatrixsf.tishadow.preferences.page.PreferenceValues;
 import com.belatrixsf.tishadow.runner.Constants;
+import com.belatrixsf.tishadow.server.TiShadowSocketClient;
 
 public class LaunchUtils {
 	
@@ -57,6 +58,12 @@ public class LaunchUtils {
 			testSocket();
 		}
 		return isServerLaunched;
+	}
+	
+	public static boolean isADeviceConnected() {
+		
+		TiShadowSocketClient socket = new TiShadowSocketClient();
+		return socket.isADeviceConnected();
 	}
 
 	protected static void testSocket() {

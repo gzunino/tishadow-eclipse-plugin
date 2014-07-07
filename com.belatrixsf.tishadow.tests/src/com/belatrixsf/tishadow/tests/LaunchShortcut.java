@@ -51,7 +51,7 @@ public class LaunchShortcut implements ILaunchShortcut {
 
     private void searchAndLaunch(IProject project, final String mode) {
         final ILaunchConfiguration launch = getExistingLaunch(project);
-        if (launch != null) {
+       if (launch != null) {
             Job job = new Job("TiShadow Tests") {
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {

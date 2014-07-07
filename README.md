@@ -13,3 +13,6 @@ Changelog
 	    Bug in which Titanium freezes after changing the Tishadow IP preference fixed.
 
 2014-07-04: A button was added to the JUnit perspective to re-run the last TiShadow test configuration.
+
+2014-07-07: A validation was added to run the tests only if there is at least one device connected to the 
+	    TiShadow server.

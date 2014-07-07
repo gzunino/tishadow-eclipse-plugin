@@ -109,6 +109,7 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 				@Override
 				public void run() {
 					MessageDialog.openError(null, "Error", ex.getMessage());
+					ex.printStackTrace();
 				}
 			});
 	    }
@@ -118,78 +119,82 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 			final IProgressMonitor monitor, final String projectLoc, final IProject project,
 			final ILaunchConfigurationWorkingCopy workingCopy,
 			final boolean spec_touch, final ILaunchConfiguration configuration) throws CoreException {
-		
 		if(spec_touch) {
 			if(LaunchUtils.isServerLaunched(true)) {
-
-				final IFolder folder = getTiShadowResultFolder(projectLoc);
-				removeOldResults(monitor, folder);
-				ILaunch launch = workingCopy.launch(mode, monitor);
-				
-				monitor.subTask("Running tests...");
-				
-				final Job job = Job.getJobManager().currentJob();
-				final AtomicBoolean finished = new AtomicBoolean(false);
-				
-				// wait for termination and show results
-				DebugPlugin.getDefault().addDebugEventListener(new IDebugEventSetListener() {
-					@Override
-					public void handleDebugEvents(DebugEvent[] events) {
-						if (events.length > 0 && (events[0].getKind() == DebugEvent.TERMINATE)) {
-							DebugPlugin.getDefault().removeDebugEventListener(this);
-
-							Display.getDefault().asyncExec(new Runnable() {
-								@Override
-								public void run() {
-									try {
-										workingCopy.delete();
-									} catch (CoreException e) {
-										e.printStackTrace();
+				if(LaunchUtils.isADeviceConnected()){
+					final IFolder folder = getTiShadowResultFolder(projectLoc);
+					removeOldResults(monitor, folder);
+					ILaunch launch = workingCopy.launch(mode, monitor);
+					
+					monitor.subTask("Running tests...");
+					
+					final Job job = Job.getJobManager().currentJob();
+					final AtomicBoolean finished = new AtomicBoolean(false);
+					
+					// wait for termination and show results
+					DebugPlugin.getDefault().addDebugEventListener(new IDebugEventSetListener() {
+						@Override
+						public void handleDebugEvents(DebugEvent[] events) {
+							if (events.length > 0 && (events[0].getKind() == DebugEvent.TERMINATE)) {
+								DebugPlugin.getDefault().removeDebugEventListener(this);
+	
+								Display.getDefault().asyncExec(new Runnable() {
+									@Override
+									public void run() {
+										try {
+											workingCopy.delete();
+										} catch (CoreException e) {
+											e.printStackTrace();
+										}
+										
+										previousTestConfig = configuration;
+	
+										LaunchUtils launchUtils = new LaunchUtils();
+										launchUtils.setLaunchConfiguration(configuration);
+	
+										final ArrayList<IPath> junitXMLResources = getXmlResults(monitor, folder);
+										if (junitXMLResources.isEmpty()) {
+											showError("Error", "Cannot find JUnit XML results for TiShadow run. Check the console logs.");
+											return;
+										}
+	
+										JUnitViewEditorLauncher junit = new JUnitViewEditorLauncher();
+										String mergedXml = folder.getLocation().toOSString() + "/fullTestSuite.xml";
+										mergeXMLFiles(junitXMLResources, mergedXml);
+										refreshProject(project);
+										junit.open(new Path(mergedXml));
+										monitor.done();
+										
+										finished.set(true);
 									}
-									
-									previousTestConfig = configuration;
-
-									LaunchUtils launchUtils = new LaunchUtils();
-									launchUtils.setLaunchConfiguration(configuration);
-
-									final ArrayList<IPath> junitXMLResources = getXmlResults(monitor, folder);
-									if (junitXMLResources.isEmpty()) {
-										showError("Error", "Cannot find JUnit XML results for TiShadow run. Check the console logs.");
-										return;
-									}
-
-									JUnitViewEditorLauncher junit = new JUnitViewEditorLauncher();
-									String mergedXml = folder.getLocation().toOSString() + "/fullTestSuite.xml";
-									mergeXMLFiles(junitXMLResources, mergedXml);
-									refreshProject(project);
-									junit.open(new Path(mergedXml));
-									monitor.done();
-									
-									finished.set(true);
-								}
-							});
+								});
+							}
+						}
+						
+					});
+					
+					while (!finished.get() && !monitor.isCanceled()) {
+						Random r = new Random();
+						monitor.worked((int) (Math.max(1, Math.min(10, (int) 2 + r.nextGaussian() * 20))));
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
 						}
 					}
-					
-				});
-				
-				while (!finished.get() && !monitor.isCanceled()) {
-					Random r = new Random();
-					monitor.worked((int) (Math.max(1, Math.min(10, (int) 2 + r.nextGaussian() * 20))));
-					try {
-						Thread.sleep(100);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+					if (job != null) {
+						job.done(monitor.isCanceled() ? Status.CANCEL_STATUS : Status.OK_STATUS);
 					}
+					if (monitor.isCanceled() && launch.canTerminate()) {
+						launch.terminate();
+					}
+				} else {
+					LaunchUtils launchUtils = new LaunchUtils();
+					launchUtils.setLaunchConfiguration(previousTestConfig);
+					
+					showError("Error", "There are no devices connected");
 				}
-				if (job != null) {
-					job.done(monitor.isCanceled() ? Status.CANCEL_STATUS : Status.OK_STATUS);
-				}
-				if (monitor.isCanceled() && launch.canTerminate()) {
-					launch.terminate();
-				}
-			}
-			else {
+			} else {
 
 				LaunchUtils launchUtils = new LaunchUtils();
 				launchUtils.setLaunchConfiguration(previousTestConfig);
@@ -275,7 +280,7 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 	}
 
 	protected void showError(final String title, final String message) {
-		Display.getDefault().asyncExec(new Runnable() {
+		Display.getDefault().syncExec(new Runnable() {
 			@Override
 			public void run() {
 				MessageDialog.openError(null, title, message);
