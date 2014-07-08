@@ -2,6 +2,7 @@ package com.belatrixsf.tishadow;
 
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,7 +22,7 @@ import com.belatrixsf.tishadow.server.TiShadowSocketClient;
 public class LaunchUtils {
 	
 	static Boolean isServerLaunched = null;
-	static ILaunchConfiguration launchConfiguration = null;
+    static ArrayList<ILaunchConfiguration> launchConfigurations = new ArrayList<ILaunchConfiguration>();
 	
 	public static Map<String, String> getEnvVars() {
 		// Get current value for PATH environment variable
@@ -91,10 +92,23 @@ public class LaunchUtils {
 	}
 	
 	public void setLaunchConfiguration(ILaunchConfiguration lConfig){
-		launchConfiguration = lConfig;
+		if (launchConfigurations.contains(lConfig)){
+			launchConfigurations.remove(lConfig);
+			launchConfigurations.add(lConfig);
+		} else {
+			launchConfigurations.add(lConfig);
+		}
 	}
 	
 	public ILaunchConfiguration getLaunchConfiguration(){
-		return launchConfiguration;
+		if(launchConfigurations.isEmpty()){
+			return null;
+		} else {
+			return launchConfigurations.get(launchConfigurations.size()-1);
+		}
+	}
+	
+	public ArrayList<ILaunchConfiguration> getLaunchConfigurations(){
+		return launchConfigurations;
 	}
 }

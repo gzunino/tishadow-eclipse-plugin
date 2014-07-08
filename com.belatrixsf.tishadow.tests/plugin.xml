@@ -149,8 +149,9 @@
             <command
                   commandId="com.belatrixsf.tishadow.tests.runTest"
                   icon="icons/tishadow-spec_16.png"
+                  id="com.belatrixsf.tishadow.tests.runTest.pulldown"
                   label="TS run tests"
-                  style="push"
+                  style="pulldown"
                   tooltip="Run tests on the selected project">
             </command>
          </toolbar>
@@ -165,6 +166,14 @@
                tooltip="Re-run tishadow tests">
          </command>
       </menuContribution>
+      <menuContribution
+            allPopups="true"
+            locationURI="menu:com.belatrixsf.tishadow.tests.runTest.pulldown">
+         <dynamic
+               class="com.belatrixsf.tishadow.tests.RunTestPulldown"
+               id="com.belatrixsf.tishadow.tests.runTestPulldown">
+         </dynamic>
+      </menuContribution>
    </extension>
    <extension
          point="org.eclipse.ui.commands">
@@ -177,6 +186,11 @@
             defaultHandler="com.belatrixsf.tishadow.handlers.RunTest"
             id="com.belatrixsf.tishadow.tests.runTest"
             name="Run TiShadow Tests">
+         <commandParameter
+               id="com.belatrixsf.tishadow.tests.config"
+               name="runConfig"
+               optional="true">
+         </commandParameter>
       </command>
       <command
             defaultHandler="com.belatrixsf.tishadow.handlers.TiShadowAppifyCreation"

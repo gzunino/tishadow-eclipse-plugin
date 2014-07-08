@@ -16,3 +16,6 @@ Changelog
 
 2014-07-07: A validation was added to run the tests only if there is at least one device connected to the 
 	    TiShadow server.
+
+2014-07-08: A pulldown menu was added next to the Run TiShadow Tests button on the TiShadow Toolbar, which
+	    allows to run any of the existing TiShadow Tests run configurations at any time.

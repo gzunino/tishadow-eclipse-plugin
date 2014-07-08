@@ -386,15 +386,29 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 				folder.create(true, true, new NullProgressMonitor());
 			}
 			folder = folder.getFolder("tishadow");			
-			if (folder.exists()) {
-				folder.delete(true, new NullProgressMonitor());
-			}
-			folder.create(false, true, new NullProgressMonitor());
+			deleteXMLFiles(folder);
+			
 		} catch (CoreException e) {
 		}
 		return folder;
 	}
 	
+	private boolean deleteXMLFiles(IFolder folder) throws CoreException {
+		// Lists all files in folder
+		IResource fList[] = folder.members();
+		boolean success = false;
+		// Searchs .xml
+		for (int i = 0; i < fList.length; i++) {
+			IResource file = fList[i];
+		    if (file.getName().endsWith(".xml")) {
+		        // and deletes
+		        success = (new File(fList[i].getName()).delete());
+		    }
+		}
+		return success;
+		
+	}
+
 	private ArrayList<IPath> getXmlResults(final IProgressMonitor monitor, IFolder folder) {
 		ArrayList<IPath> jUnitResources = new ArrayList<IPath>();
 		if (folder.exists()) {
