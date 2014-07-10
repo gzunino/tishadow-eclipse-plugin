@@ -19,3 +19,5 @@ Changelog
 
 2014-07-08: A pulldown menu was added next to the Run TiShadow Tests button on the TiShadow Toolbar, which
 	    allows to run any of the existing TiShadow Tests run configurations at any time.
+
+2014-07-10: A TiShadow help file was added to the help contents.

@@ -1,0 +1,42 @@
+p=. !./images/logo_scaled_underlined.png!
+
+h1{color:blue}. Running Tests with TiShadow
+
+h2. Appify your project
+
+p. First you have to "appify" the project you want to test, which will create a new app that is basically the same but with the TiShadow libraries included.
+
+# Go to New.. TiShadow.. TiShadow Appify Creation (Or, right click on the project > New > TiShadow Appify)
+# Enter the name of the appified project and select location of the  project you want to test (base project).
+# Select the location where the appified app will be created (output folder) if you don't want the default location.
+# Enter the port and host in which the TiShadow server will run.
+# Click Finish.
+
+!./images/1.png!
+
+<br></br>
+
+h2. Start the TiShadow server
+
+Then, you need to start the TiShadow server in order to access its services. So, do the following:
+
+# Click the run server button on the TiShadow toolbar; or, right click on the appified project that you just created, Run As, Run TiShadow Server.
+
+!./images/2.png!
+
+<br></br>
+    
+h2. Run the appified project
+
+After that, you need to run the appified project on a device or emulator the same way you would run the original project.
+
+Example: On Genymotion (emulator):
+# Open Genymotion.
+# Start your preferred device.
+# Start the appified project.
+
+h2. Run the tests
+
+Finally, to run the tests, you need to do the following:
+
+# Right click on the appified project that you just created, Run As.. Run TiShadow Tests.

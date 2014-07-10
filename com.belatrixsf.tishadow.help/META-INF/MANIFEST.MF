@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: TiShadow Help
+Bundle-SymbolicName: com.belatrixsf.tishadow.help;singleton:=true
+Bundle-Version: 0.0.1.qualifier
+Bundle-Vendor: BELATRIXSF
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Require-Bundle: org.eclipse.help
