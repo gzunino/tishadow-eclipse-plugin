@@ -39,4 +39,4 @@ h2. Run the tests
 
 Finally, to run the tests, you need to do the following:
 
-# Right click on the appified project that you just created, Run As.. Run TiShadow Tests.
+# Right click on the original project, not the appified one, and then, Run As.. Run TiShadow Tests.

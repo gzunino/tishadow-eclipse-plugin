@@ -21,3 +21,6 @@ Changelog
 	    allows to run any of the existing TiShadow Tests run configurations at any time.
 
 2014-07-10: A TiShadow help file was added to the help contents.
+
+2014-07-11: A Bug in which CPU usage increased considerably when running tests was fixed. Error messages
+	    were corrected.

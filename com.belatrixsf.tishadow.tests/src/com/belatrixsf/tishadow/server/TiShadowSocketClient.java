@@ -27,44 +27,35 @@ public class TiShadowSocketClient implements Callable<Boolean> {
 			super.set(v);
 		}
 	}
-
-//	boolean devicesConnected = false;
 	
 	public boolean isADeviceConnected(){
 		Future future = new Future(this);
-		createSocket(future);
+		SocketIO socket = createSocket(future);
 		try {
 			return future.get(1, TimeUnit.SECONDS);
 		} catch (Exception e) {
+			if(socket != null){
+				socket.disconnect();
+			}
 			return false;
 		}
-//		try {
-//			Thread.sleep(200);
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		return devicesConnected;
 	}
 	
-	public void createSocket(final Future future){
+	public SocketIO createSocket(final Future future){
 		final JSONObject j = new JSONObject();
 		try {
 			j.put("name", "controller");
 		} catch (JSONException e2) {
-			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		}
 		
-		 try {
-			
+		try {
 			final SocketIO socket = new SocketIO("http://" + PreferenceValues.getTishadowHost() + ":" +PreferenceValues.getTishadowPort() + "/");
 			socket.connect(new IOCallback() {
 				@Override
 				public void on(String event, IOAcknowledge ack, Object... args) {
 					if (event.equals("device_connect")) {
 						future.set(Boolean.TRUE);
-//						devicesConnected = true;
 						socket.disconnect();
 					}
 				}
@@ -91,9 +82,11 @@ public class TiShadowSocketClient implements Callable<Boolean> {
 						IOAcknowledge arg1) {
 				}
 	        });
+			return socket;
 		} catch (MalformedURLException e1) {
 			e1.printStackTrace();
 		}
+		return null;
 	}
 
 	@Override

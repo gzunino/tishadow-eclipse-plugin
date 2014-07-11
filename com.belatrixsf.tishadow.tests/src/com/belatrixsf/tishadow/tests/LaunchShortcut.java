@@ -118,7 +118,7 @@ public class LaunchShortcut implements ILaunchShortcut {
     	IProject tiShadowProjectSelected = null;
     	
     	if (tiShadowProjectsList.isEmpty()){
-    		MessageDialog.openError(null, "No TiShadow projects found", "To run tests from a Titanium module it's necessary to have at least one TiShadow project to run on.");
+    		MessageDialog.openError(null, "No TiShadow appified projects found", "To run tests on a Titanium module, you need a Tishadow app to run on.");
     	} else {
     		tiShadowProjectSelected = getSelectedProject(tiShadowProjectsList);
 	    	if (! tiShadowProjectSelected.getName().isEmpty()){
@@ -186,7 +186,7 @@ public class LaunchShortcut implements ILaunchShortcut {
     		}
     	});
     	dialog.setTitle("Project Selection");
-    	dialog.setMessage("Select the TiShadow project from the list:");
+    	dialog.setMessage("Select the TiShadow project you want to test from the list:");
     	dialog.setInput(projectsList);
     	dialog.open();
     	if(dialog.getReturnCode() == 0){ //0 is OK
@@ -207,24 +207,26 @@ public class LaunchShortcut implements ILaunchShortcut {
         
         for (IProject project : projects) {
         	String inputLine;
+        	if(project.isSynchronized(IResource.DEPTH_ONE)){
+        		try {
+					project.refreshLocal(IResource.DEPTH_ONE, null);
+				} catch (CoreException e) {
+					e.printStackTrace();
+				}
+        	}
             IFile manifest = project.getFile("manifest");
 		
             if (manifest.exists()) {
                 BufferedReader in = null;
                 try {
                     in = new BufferedReader(new InputStreamReader(manifest.getContents()));
-                } catch (CoreException e) {
-                    e.printStackTrace();
-                }
-                try {
                     while ((inputLine = in.readLine()) != null) {
-                        if (inputLine.contains("appname:TiShadow")){
-                            getAllowedProjectsList().add(project);
-                            break;
-                        }
+                    	if (inputLine.contains("appname:TiShadow")){
+                    		getAllowedProjectsList().add(project);
+                    		break;
+                    	}
                     }
-                } catch (IOException e) {
-                    System.out.println(e.getMessage());
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }

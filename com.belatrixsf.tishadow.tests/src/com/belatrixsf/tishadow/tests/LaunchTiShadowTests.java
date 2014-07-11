@@ -59,7 +59,7 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 	@Override
 	public void launch(ILaunchConfiguration configuration, final String mode,
 			ILaunch launch, final IProgressMonitor monitor) throws CoreException {
-		monitor.beginTask("Running Tests", 950);
+		monitor.beginTask("Running Tests", 1100);
 		showWizard();
 		
 		final String projectLoc = configuration.getAttribute(IExternalToolConstants.ATTR_WORKING_DIRECTORY, "");
@@ -124,6 +124,12 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 				if(LaunchUtils.isADeviceConnected()){
 					final IFolder folder = getTiShadowResultFolder(projectLoc);
 					removeOldResults(monitor, folder);
+					
+					if(configuration != previousTestConfig){
+						String toolArguments = configuration.getAttribute(IExternalToolConstants.ATTR_TOOL_ARGUMENTS, "");
+						workingCopy.setAttribute(IExternalToolConstants.ATTR_TOOL_ARGUMENTS, toolArguments.replace("-u ", ""));
+					}
+					
 					ILaunch launch = workingCopy.launch(mode, monitor);
 					
 					monitor.subTask("Running tests...");
@@ -192,14 +198,14 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 					LaunchUtils launchUtils = new LaunchUtils();
 					launchUtils.setLaunchConfiguration(previousTestConfig);
 					
-					showError("Error", "There are no devices connected");
+					showError("Error", "There are no TiShadow apps running on a device and connected to the server.");
 				}
 			} else {
 
 				LaunchUtils launchUtils = new LaunchUtils();
 				launchUtils.setLaunchConfiguration(previousTestConfig);
 				
-				showError("Error", "TiShadow Server is not running");
+				showError("Error", "TiShadow Server is not running.");
 			}
 		}
 		return;
@@ -257,7 +263,7 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 				LaunchUtils launchUtils = new LaunchUtils();
 				launchUtils.setLaunchConfiguration(previousTestConfig);
 				
-				showError("Error", "Project not testeable, spec folder doesn't exist");
+				showError("Error", "Project not testeable, 'spec' folder doesn't exist.");
 				
 				try {
 					configuration.delete();
