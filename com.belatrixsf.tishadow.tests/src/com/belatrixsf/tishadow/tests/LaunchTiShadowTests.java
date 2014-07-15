@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -41,12 +42,14 @@ import org.eclipse.jdt.internal.junit.ui.JUnitViewEditorLauncher;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.belatrixsf.tishadow.LaunchUtils;
+import com.belatrixsf.tishadow.handlers.RunServer;
 import com.belatrixsf.tishadow.preferences.page.PreferenceValues;
 
 @SuppressWarnings("restriction")
@@ -205,12 +208,36 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 				LaunchUtils launchUtils = new LaunchUtils();
 				launchUtils.setLaunchConfiguration(previousTestConfig);
 				
-				showError("Error", "TiShadow Server is not running.");
+				showErrorWithOptions("Error", "TiShadow Server is not running. Would you like to start it?");
 			}
 		}
 		return;
 	}
 
+	protected void showErrorWithOptions(final String title, final String message) {
+		final Job job = Job.getJobManager().currentJob();
+		if (job != null) {
+			job.done(Status.OK_STATUS);
+		}
+		Display.getDefault().syncExec(new Runnable() {
+			@Override
+			public void run() {
+				Display display = Display.getCurrent();
+				Shell shell = display.getActiveShell();
+				boolean result = MessageDialog.openQuestion(shell, title, message);
+				if (result) {
+					RunServer runServer = new RunServer();
+					try {
+						runServer.startTiShadowServer();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					
+				}
+			}
+		});
+	}
+	
 	private void removeOldResults(final IProgressMonitor monitor,final IFolder folder) throws CoreException {
 		IResource[] members = folder.members();
 		try {
@@ -286,16 +313,16 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 	}
 
 	protected void showError(final String title, final String message) {
+		final Job job = Job.getJobManager().currentJob();
+		if (job != null) {
+			job.done(Status.OK_STATUS);
+		}
 		Display.getDefault().syncExec(new Runnable() {
 			@Override
 			public void run() {
 				MessageDialog.openError(null, title, message);
 			}
 		});
-		final Job job = Job.getJobManager().currentJob();
-		if (job != null) {
-			job.done(Status.OK_STATUS);
-		}
 	}
 
 	private void refreshProject (IProject project) {

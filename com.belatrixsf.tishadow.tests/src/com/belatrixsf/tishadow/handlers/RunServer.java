@@ -67,7 +67,6 @@ public class RunServer extends AbstractHandler implements IRunnerCallback {
 					public void run() {
 						evaluationService
 								.requestEvaluation("com.belatrixsf.tishadow.tests.serverRunning");
-						System.out.println("REFRESHED");
 					}
 				});
 			}
@@ -76,7 +75,7 @@ public class RunServer extends AbstractHandler implements IRunnerCallback {
 		}
 	}
 
-	private void startTiShadowServer() throws Exception {
+	public void startTiShadowServer() throws Exception {
 		TiShadowRunner tishadowRunner = new TiShadowRunner("Server");
 		tishadowRunner
 				.setAttribute(Constants.TISHADOW_WORKING_DIRECTORY, "")
@@ -91,7 +90,6 @@ public class RunServer extends AbstractHandler implements IRunnerCallback {
 
 	@Override
 	public void onRunnerTishadowFinish(Object response) {
-		System.out.println("TiShadow server started.");
 	}
 
 }

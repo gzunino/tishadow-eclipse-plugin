@@ -26,4 +26,5 @@ Changelog
 	    were corrected.
 
 2014-07-15: A progress indicator was added to the TiShadow Appify and App creation. A bug in wich an error
-	    message was displayed indicating the lack of the ".project" file was fixed.
+	    message was displayed indicating the lack of the ".project" file was fixed. An option to run the 
+	    server was added to the 'Server not running' message.
