@@ -1,9 +1,12 @@
 package com.belatrixsf.tishadow.runner;
 
 import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.debug.core.DebugEvent;
@@ -19,6 +22,7 @@ import org.eclipse.debug.core.model.IStreamMonitor;
 public class TiShadowRunner {
 	private ILaunchConfigurationWorkingCopy workingCopy;
 	private Object objectToReturn;
+	final AtomicBoolean finished = new AtomicBoolean(false);
 	
 	/** Constructor */
 	public TiShadowRunner(String configurationName) throws Exception {
@@ -40,19 +44,40 @@ public class TiShadowRunner {
 	/** Run command 
 	 * @throws Exception */
 	public void runTiShadow(final IRunnerCallback callback) throws Exception {
-		runTiShadow(callback, null);
+		runTiShadow(callback, null, new NullProgressMonitor());
+	}
+	
+	public void runTiShadow(final IRunnerCallback callback, final String input) throws Exception {
+		runTiShadow(callback, input, new NullProgressMonitor());
 	}
 	
 	/** Run command with input
 	 * @throws Exception */
-	public void runTiShadow(final IRunnerCallback callback, String input) throws Exception {
+	public void runTiShadow(final IRunnerCallback callback, final String input, IProgressMonitor monitor) throws Exception {
+		
 		try {
+			
+			if (monitor instanceof NullProgressMonitor){
+				finished.set(true);
+			}
+						
 			ILaunch launch = workingCopy.launch(ILaunchManager.RUN_MODE, 
 					new NullProgressMonitor());
 			if(input != null){
 				launch.getProcesses()[0].getStreamsProxy().write(input);
 			}
-			addDebugEventListener(launch, callback);
+			addDebugEventListener(launch, callback, monitor);
+			
+			while (!finished.get() && !monitor.isCanceled()) {
+				Random r = new Random();
+				monitor.worked((int) (Math.max(1, Math.min(10, (int) 2 + r.nextGaussian() * 20))));
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			
 		} catch (CoreException e) {
 			throw new Exception(e.getCause());
 		}
@@ -90,7 +115,7 @@ public class TiShadowRunner {
 	
 	
 	
-	private void addDebugEventListener(final ILaunch launch, final IRunnerCallback callback) {
+	private void addDebugEventListener(final ILaunch launch, final IRunnerCallback callback, final IProgressMonitor monitor) {
 		setObjectToReturn(launch);
 		DebugPlugin.getDefault().addDebugEventListener(
 			new IDebugEventSetListener() {
@@ -103,10 +128,13 @@ public class TiShadowRunner {
 						if(callback != null){
 							callback.onRunnerTishadowFinish(objectToReturn);
 						}
+						
+						monitor.done();
+						finished.set(true);
+						
 					}
 				}
-			});
-		
+		});
 	}
 
 	private void setObjectToReturn(final ILaunch launch) {

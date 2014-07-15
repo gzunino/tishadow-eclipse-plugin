@@ -1,16 +1,11 @@
 package com.belatrixsf.tishadow.tests;
 
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.debug.core.DebugException;
-import org.eclipse.debug.core.DebugPlugin;
-import org.eclipse.debug.core.ILaunch;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 import com.belatrixsf.tishadow.LaunchUtils;
-import com.belatrixsf.tishadow.runner.Constants;
 
 /**
  * The activator class controls the plug-in life cycle

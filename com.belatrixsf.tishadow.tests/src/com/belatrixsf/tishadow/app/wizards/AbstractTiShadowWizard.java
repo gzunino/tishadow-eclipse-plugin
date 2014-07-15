@@ -1,9 +1,14 @@
 package com.belatrixsf.tishadow.app.wizards;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResourceStatus;
@@ -14,12 +19,12 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.INewWizard;
-import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.dialogs.WizardNewProjectReferencePage;
 import org.eclipse.ui.dialogs.WorkingSetGroup;
 import org.eclipse.ui.ide.undo.CreateProjectOperation;
@@ -27,6 +32,7 @@ import org.eclipse.ui.ide.undo.WorkspaceUndoUtil;
 import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
 import org.eclipse.ui.internal.ide.StatusUtil;
 import org.eclipse.ui.internal.wizards.newresource.ResourceMessages;
+import org.eclipse.ui.statushandlers.IStatusAdapterConstants;
 import org.eclipse.ui.statushandlers.StatusAdapter;
 import org.eclipse.ui.statushandlers.StatusManager;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
@@ -46,6 +52,8 @@ public abstract class AbstractTiShadowWizard extends
 	private WizardNewProjectReferencePage referencePage = null;
 	private IProject newProject;
 	private WorkingSetGroup workingSetGroup;
+	private Job job = null;
+	File tempFile = null;
 
 	abstract String getArguments();
 	
@@ -58,10 +66,36 @@ public abstract class AbstractTiShadowWizard extends
 	@Override
 	public void onRunnerTishadowFinish(Object response) {
 		try {
+			if (job != null){
+				job.done(Status.OK_STATUS);
+			}
+			
+			recoverDotFile();
+			
 			addTiNature(newProject);
 			newProject.refreshLocal(IProject.DEPTH_INFINITE,
 					new NullProgressMonitor());
+			
 		} catch (CoreException e) {
+			e.printStackTrace();
+		}
+	}
+
+	protected void recoverDotFile() {
+		try {
+			File newDotProjectFile = new File(newProject.getLocation()+"/.project");
+			
+			FileInputStream fis = new FileInputStream(tempFile);
+		    byte[] data = new byte[(int)tempFile.length()];
+		    fis.read(data);
+		    fis.close();
+		    
+		    String s = new String(data, "UTF-8");
+		    
+			BufferedWriter bw = new BufferedWriter(new FileWriter(newDotProjectFile));
+			bw.write(s);
+			bw.close();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -95,12 +129,38 @@ public abstract class AbstractTiShadowWizard extends
 	 * (non-Javadoc) Method declared on IWizard.
 	 */
 	public boolean performFinish() {
-		createNewProject();
+		IProject project = createNewProject();
+		
+		backupDotProjectFile(project);
+		
 		if (newProject == null) {
 			return false;
 		}
+		
 		createTiShadowProject();
+		
 		return true;
+	}
+	
+	protected void backupDotProjectFile(IProject project){
+		try {
+			tempFile = File.createTempFile(".project", "tmp", null);
+			IFile dotProjectIFile = project.getFile(".project");
+			File dotProjectFile = dotProjectIFile.getLocation().toFile();
+			
+			FileInputStream fis = new FileInputStream(dotProjectFile);
+		    byte[] data = new byte[(int)dotProjectFile.length()];
+		    fis.read(data);
+		    fis.close();
+		    
+		    String s = new String(data, "UTF-8");
+		    
+			BufferedWriter bw = new BufferedWriter(new FileWriter(tempFile));
+			bw.write(s);
+			bw.close();
+		} catch (Exception e){
+			e.printStackTrace();
+		}
 	}
 
 	private void createTiShadowProject() {
@@ -115,7 +175,7 @@ public abstract class AbstractTiShadowWizard extends
 	private void executeTiShadowCommands(String configurationName, String arguments)
 			throws Exception {
 		
-		TiShadowRunner tishadowRunner = new TiShadowRunner(configurationName);
+		final TiShadowRunner tishadowRunner = new TiShadowRunner(configurationName);
 		tishadowRunner
 				.setAttribute(Constants.TISHADOW_LOCATION,
 						PreferenceValues.getTishadowDirectory())
@@ -124,7 +184,27 @@ public abstract class AbstractTiShadowWizard extends
 				.setAttribute(Constants.TISHADOW_WORKING_DIRECTORY, getWorkingDirectory())
 				.setAttribute(Constants.TISHADOW_ENVIRONMENT_VARIABLES,
 						Helper.getEnvVars());
-		tishadowRunner.runTiShadow(this, getInputForRunTiShadowCommand());
+		
+		final String inputForRunTiShadowCommand = getInputForRunTiShadowCommand();
+		
+		job = new Job("TiShadow App Creation") {
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
+				this.setThread(Thread.currentThread());
+				try {
+
+					monitor.beginTask("Creating TiShadow App..", 200);
+					tishadowRunner.runTiShadow(AbstractTiShadowWizard.this, inputForRunTiShadowCommand, monitor);
+										
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				return ASYNC_FINISH;
+			}
+		};
+		job.setUser(true);
+		job.schedule();
+		
 	}
 
 	abstract String getWorkingDirectory();
@@ -163,6 +243,7 @@ public abstract class AbstractTiShadowWizard extends
 				description.setNatureIds(newNatures);
 				project.setDescription(description, new NullProgressMonitor());
 			}
+			
 		} catch (CoreException e) {
 			LaunchUtils.handleError("Cannot add Ti project nature", e);
 		}
@@ -255,7 +336,7 @@ public abstract class AbstractTiShadowWizard extends
 							.getStatus().getSeverity(),
 							ResourceMessages.NewProject_errorMessage, cause));
 				}
-				status.setProperty(StatusAdapter.TITLE_PROPERTY,
+				status.setProperty(IStatusAdapterConstants.TITLE_PROPERTY,
 						ResourceMessages.NewProject_errorMessage);
 				StatusManager.getManager().handle(status, StatusManager.BLOCK);
 			} else {
@@ -263,7 +344,7 @@ public abstract class AbstractTiShadowWizard extends
 						IStatus.WARNING, IDEWorkbenchPlugin.IDE_WORKBENCH, 0,
 						NLS.bind(ResourceMessages.NewProject_internalError,
 								t.getMessage()), t));
-				status.setProperty(StatusAdapter.TITLE_PROPERTY,
+				status.setProperty(IStatusAdapterConstants.TITLE_PROPERTY,
 						ResourceMessages.NewProject_errorMessage);
 				StatusManager.getManager().handle(status,
 						StatusManager.LOG | StatusManager.BLOCK);
@@ -272,7 +353,10 @@ public abstract class AbstractTiShadowWizard extends
 		}
 
 		newProject = newProjectHandle;
-
+		/*
+		final Job job = Job.getJobManager().currentJob();
+		job.done(Status.OK_STATUS);*/
+		
 		return newProject;
 	}
 
