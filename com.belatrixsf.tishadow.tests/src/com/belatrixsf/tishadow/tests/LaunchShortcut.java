@@ -172,7 +172,7 @@ public class LaunchShortcut implements ILaunchShortcut {
      * @param projectsList
      * @return the selected project name
      */
-    private IProject getSelectedProject(ArrayList<IProject> projectsList) {
+    public IProject getSelectedProject(ArrayList<IProject> projectsList) {
     	
     	ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(Display.getCurrent().getActiveShell(), new WorkbenchLabelProvider(), new BaseWorkbenchContentProvider() {
     		@SuppressWarnings("unchecked")

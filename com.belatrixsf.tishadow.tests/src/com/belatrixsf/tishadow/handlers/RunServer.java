@@ -75,7 +75,7 @@ public class RunServer extends AbstractHandler implements IRunnerCallback {
 		}
 	}
 
-	public void startTiShadowServer() throws Exception {
+	private void startTiShadowServer() throws Exception {
 		TiShadowRunner tishadowRunner = new TiShadowRunner("Server");
 		tishadowRunner
 				.setAttribute(Constants.TISHADOW_WORKING_DIRECTORY, "")
@@ -86,6 +86,13 @@ public class RunServer extends AbstractHandler implements IRunnerCallback {
 				.setAttribute(Constants.TISHADOW_LOCATION,
 						PreferenceValues.getTishadowDirectory());
 		tishadowRunner.runTiShadow(this);
+	}
+	
+	public void startTiShadowServerUpdateToolbar() throws Exception{
+		startTiShadowServer();
+		Thread.sleep(1000);
+		LaunchUtils.isServerLaunched(true);
+		requestRefresh();
 	}
 
 	@Override

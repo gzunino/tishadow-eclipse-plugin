@@ -1,7 +1,10 @@
 package com.belatrixsf.tishadow.app.wizards;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
+
 public class AppifyTiShadowWizard extends AbstractTiShadowWizard {
-	
+		
 	@Override
 	public void addPages() {
 		wizardPage = new AppifyTiShadowPage("TiShadow Wizard");
@@ -49,5 +52,14 @@ public class AppifyTiShadowWizard extends AbstractTiShadowWizard {
 	@Override
 	String getInputForRunTiShadowCommand() {
 		return null;
+	}
+	
+	@Override
+	protected void setReferencedProjects(final IProjectDescription description,
+			IProject[] refProjects) {
+		IProject[] projects = new IProject[refProjects.length+1];
+		AppifyTiShadowPage appifyProjectWizardPage = (AppifyTiShadowPage)wizardPage;
+		projects[refProjects.length] = appifyProjectWizardPage.getSelectedBaseProject();
+		super.setReferencedProjects(description, projects);
 	}
 }

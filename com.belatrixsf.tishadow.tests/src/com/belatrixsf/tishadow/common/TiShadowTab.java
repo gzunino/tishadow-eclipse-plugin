@@ -109,7 +109,7 @@ public abstract class TiShadowTab extends ProgramMainTab {
 		}
 				
 		for(int i = 0; i < argumentsList.size(); i++){
-			if (argumentField.getText().contains(argumentsNames[i])){
+			if (argumentField.getText().contains(" "+argumentsNames[i])){
 				checkBoxMap.get(argumentsNames[i]).setSelection(true);
 				if(textBoxMap.get(argumentsNames[i]+"_textBox") != null){
 					textBoxMap.get(argumentsNames[i]+"_textBox").setEnabled(true);
@@ -197,8 +197,13 @@ public abstract class TiShadowTab extends ProgramMainTab {
 	
 	private String findParameterTextIndex(String parameter){
 		String s1 = argumentField.getText();
-		String s2 = s1.split(parameter)[1];
-		return s2.split(" ")[1];
+		try{
+			String s2 = s1.split(" "+parameter)[1];
+			String s3 = s2.split(" ")[1];
+			return s3.split(" ")[0];
+		}catch (ArrayIndexOutOfBoundsException e) {
+			return "";
+		}
 	}
 
 	protected void checkboxClicked(final String parameter,

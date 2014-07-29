@@ -25,7 +25,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.INewWizard;
-import org.eclipse.ui.dialogs.WizardNewProjectReferencePage;
 import org.eclipse.ui.dialogs.WorkingSetGroup;
 import org.eclipse.ui.ide.undo.CreateProjectOperation;
 import org.eclipse.ui.ide.undo.WorkspaceUndoUtil;
@@ -49,7 +48,6 @@ public abstract class AbstractTiShadowWizard extends
 		BasicNewProjectResourceWizard implements INewWizard, IRunnerCallback {
 
 	protected AbstractTiShadowPage wizardPage;
-	private WizardNewProjectReferencePage referencePage = null;
 	private IProject newProject;
 	private WorkingSetGroup workingSetGroup;
 	private Job job = null;
@@ -72,9 +70,9 @@ public abstract class AbstractTiShadowWizard extends
 			
 			recoverDotFile();
 			
-			addTiNature(newProject);
 			newProject.refreshLocal(IProject.DEPTH_INFINITE,
 					new NullProgressMonitor());
+			addTiNature(newProject);
 			
 		} catch (CoreException e) {
 			e.printStackTrace();
@@ -286,12 +284,8 @@ public abstract class AbstractTiShadowWizard extends
 		description.setLocationURI(location);
 
 		// update the referenced project if provided
-		if (referencePage != null) {
-			IProject[] refProjects = referencePage.getReferencedProjects();
-			if (refProjects.length > 0) {
-				description.setReferencedProjects(refProjects);
-			}
-		}
+		IProject[] refProjects = new IProject[0];
+		setReferencedProjects(description, refProjects);
 
 		// create the new project operation
 		IRunnableWithProgress op = new IRunnableWithProgress() {
@@ -358,6 +352,13 @@ public abstract class AbstractTiShadowWizard extends
 		job.done(Status.OK_STATUS);*/
 		
 		return newProject;
+	}
+
+	protected void setReferencedProjects(final IProjectDescription description,
+			IProject[] refProjects) {
+		if (refProjects.length > 0) {
+			description.setReferencedProjects(refProjects);
+		}
 	}
 
 }

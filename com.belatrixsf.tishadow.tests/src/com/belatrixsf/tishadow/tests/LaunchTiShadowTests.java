@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -41,14 +40,21 @@ import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 import org.eclipse.jdt.internal.junit.ui.JUnitViewEditorLauncher;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.ToolBar;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.belatrixsf.tishadow.LaunchUtils;
+import com.belatrixsf.tishadow.common.TiLaunchShortcuts;
 import com.belatrixsf.tishadow.handlers.RunServer;
 import com.belatrixsf.tishadow.preferences.page.PreferenceValues;
 
@@ -201,7 +207,7 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 					LaunchUtils launchUtils = new LaunchUtils();
 					launchUtils.setLaunchConfiguration(previousTestConfig);
 					
-					showError("Error", "There are no TiShadow apps running on a device and connected to the server.");
+					showErrorWithLaunchShortcuts("Error", "There are no TiShadow apps running on a device and connected to the server.\nYou can select a device from the list below to run the app.");
 				}
 			} else {
 
@@ -225,10 +231,10 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 				Display display = Display.getCurrent();
 				Shell shell = display.getActiveShell();
 				boolean result = MessageDialog.openQuestion(shell, title, message);
-				if (result) {
+				if (result && message.contains("Server is not running")) {
 					RunServer runServer = new RunServer();
 					try {
-						runServer.startTiShadowServer();
+						runServer.startTiShadowServerUpdateToolbar();
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -238,7 +244,48 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 		});
 	}
 	
+	protected void showErrorWithLaunchShortcuts(final String title, final String message) {
+		
+		Display.getDefault().syncExec(new Runnable() {
+			@Override
+			public void run() {
+				MessageDialog md = new MessageDialog(null, title, null, message, MessageDialog.ERROR, new String[] {"Cancel"}, 0) {
+					@Override
+					protected void createButtonsForButtonBar(Composite parent) {
+						createDropdown(parent);
+						super.createButtonsForButtonBar(parent);
+					}
+				};			
+				md.open();
+			}
+		});
+		final Job job = Job.getJobManager().currentJob();
+		if (job != null) {
+			job.done(Status.OK_STATUS);
+		}
+	}
+	
+	private ToolBar createDropdown(Composite parent) {
+        //Button button = super.createButton(parent, id, label, defaultButton);
+		((GridLayout) parent.getLayout()).numColumns++;
+        ToolBar toolbar = new ToolBar(parent, SWT.NONE);
+        
+        TiLaunchShortcuts tils = new TiLaunchShortcuts();
+        tils.createControl(toolbar);
+        
+        GridData data = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+//		int widthHint = MessageDialog.convertHorizontalDLUsToPixels(IDialogConstants.BUTTON_WIDTH);
+		Point minSize = toolbar.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
+		data.widthHint = minSize.x;
+		toolbar.setLayoutData(data);
+		
+        return toolbar;
+    }
+	
 	private void removeOldResults(final IProgressMonitor monitor,final IFolder folder) throws CoreException {
+		if (!folder.exists()){
+			return;
+		}
 		IResource[] members = folder.members();
 		try {
 			for (IResource iResource : members) {
@@ -427,6 +474,9 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 	}
 	
 	private boolean deleteXMLFiles(IFolder folder) throws CoreException {
+		if (!folder.exists()) {
+			return true;
+		}
 		// Lists all files in folder
 		IResource fList[] = folder.members();
 		boolean success = false;

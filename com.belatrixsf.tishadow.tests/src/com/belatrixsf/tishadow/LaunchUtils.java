@@ -14,6 +14,7 @@ import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 
 import com.belatrixsf.tishadow.preferences.page.PreferenceValues;
 import com.belatrixsf.tishadow.runner.Constants;
@@ -34,9 +35,15 @@ public class LaunchUtils {
 		return envVariables;
 	}
 	
-	public static void handleError(String msg, Exception e) {
-		MessageDialog.openError(null, msg, e.toString() + "\n" + e.getLocalizedMessage().toString());
+	public static void handleError(final String msg, final Exception e) {
 		e.printStackTrace();
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				MessageDialog.openError(null, msg, e.toString() + "\n" + e.getLocalizedMessage().toString());
+			}
+		});
+		
 	}
 
 	public static IProject getProject(final String projectLoc) {

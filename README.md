@@ -28,3 +28,7 @@ Changelog
 2014-07-15: A progress indicator was added to the TiShadow Appify and App creation. A bug in wich an error
 	    message was displayed indicating the lack of the ".project" file was fixed. An option to run the 
 	    server was added to the 'Server not running' message.
+
+2014-07-29: Launch app option added to the 'no apps connected to the server' error message. A bug in which
+	    the parameters field on run configurations wasn't being formed correctly was fixed. A bug about
+	    the server button on the toolbar not being updated correctly was fixed.

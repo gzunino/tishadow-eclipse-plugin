@@ -88,6 +88,10 @@ public class AppifyTiShadowPage extends AbstractTiShadowPage {
 	public String getHost() {
 		return host.getText();
 	}
+	
+	public IProject getSelectedBaseProject() {
+		return selectedBaseProject;
+	}
 
 	@Override
 	String getWorkingDirectory() {

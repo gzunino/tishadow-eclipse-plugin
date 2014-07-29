@@ -2,6 +2,9 @@ package com.belatrixsf.tishadow.tests;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchListener;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -10,7 +13,7 @@ import com.belatrixsf.tishadow.LaunchUtils;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends AbstractUIPlugin {
+public class Activator extends AbstractUIPlugin  implements IWorkbenchListener {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "com.belatrixsf.tishadow.tests"; //$NON-NLS-1$
@@ -29,6 +32,27 @@ public class Activator extends AbstractUIPlugin {
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(BundleContext context) throws Exception {
+		IWorkbench iwb = PlatformUI.getWorkbench();
+		IWorkbenchListener wbl = new IWorkbenchListener (){
+
+	        @Override
+	        public void postShutdown(IWorkbench w) {
+	        }
+
+	        @Override
+	        public boolean preShutdown(IWorkbench w, boolean b) {
+	            boolean exitEclipse = true;
+	            try {
+					LaunchUtils.stopTiShadowServer();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+	    		plugin = null;
+	            return exitEclipse;
+	        }
+	    };
+	    
+	    iwb.addWorkbenchListener(wbl);
 		super.start(context);
 		plugin = this;
 	}
@@ -66,5 +90,15 @@ public class Activator extends AbstractUIPlugin {
 
 	public IPreferenceStore getPreferenceStore() {
 		return super.getPreferenceStore();
+	}
+
+	@Override
+	public boolean preShutdown(IWorkbench workbench, boolean forced) {
+		return false;
+	}
+
+	@Override
+	public void postShutdown(IWorkbench workbench) {
+		
 	}
 }
