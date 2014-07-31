@@ -32,3 +32,5 @@ Changelog
 2014-07-29: Launch app option added to the 'no apps connected to the server' error message. A bug in which
 	    the parameters field on run configurations wasn't being formed correctly was fixed. A bug about
 	    the server button on the toolbar not being updated correctly was fixed.
+
+2014-07-31: A few bugs were fixed, that were related to problems when running tests on ti modules.

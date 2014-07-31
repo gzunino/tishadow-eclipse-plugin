@@ -69,7 +69,7 @@ public class LaunchShortcut implements ILaunchShortcut {
         }
     }
 
-    private ILaunchConfiguration getExistingLaunch(IProject project) {
+    public ILaunchConfiguration getExistingLaunch(IProject project) {
         ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
         ILaunchConfigurationType type = launchManager.getLaunchConfigurationType("com.belatrixsf.tishadow.tests.launchTiShadowTests");
         ILaunchConfiguration[] launchs;
@@ -129,7 +129,7 @@ public class LaunchShortcut implements ILaunchShortcut {
     	return "";
     }
     
-    private String getAppifyedBaseProjectName(IProject tiShadowProjectSelected) {
+    public String getAppifyedBaseProjectName(IProject tiShadowProjectSelected) {
     	IFile appJs = tiShadowProjectSelected.getFolder("Resources").getFile("app.js");
     	if (appJs.exists()) {
             BufferedReader in = null;

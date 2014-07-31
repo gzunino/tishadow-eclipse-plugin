@@ -8,11 +8,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugPlugin;
+import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.internal.ui.DebugUIPlugin;
@@ -22,9 +24,11 @@ import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.action.GroupMarker;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -45,6 +49,8 @@ import org.eclipse.ui.internal.Workbench;
 import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 
+import com.belatrixsf.tishadow.app.wizards.AppifyTiShadowWizard;
+import com.belatrixsf.tishadow.runner.Constants;
 import com.belatrixsf.tishadow.tests.LaunchShortcut;
 
 
@@ -235,12 +241,24 @@ private class MultipleLaunchShortcutsContributionItem extends
 					    } 
 					}
 					
+					IProject appifiedProject = null;
 					int appifiedCount = 0;
+					String baseProjectName = null;
+					
+					if (isTiModule(selectedProject)) {
+						baseProjectName = getBaseProjectName(selectedProject, projects);
+					} else {
+						baseProjectName = selectedProject.getName();
+					}
+					
 					try {
 						for (IProject project : projects) {
 							if ((project.getDescription().getReferencedProjects() != null) && (project.getDescription().getReferencedProjects().length > 0)) {
-								if (selectedProject.getName() == project.getDescription().getReferencedProjects()[0].getName()) {
-									appifiedCount+=1;
+								if (baseProjectName == project.getDescription().getReferencedProjects()[0].getName()) {
+									if (isTiApp(project)) {
+										appifiedCount+=1;
+										appifiedProject = project;
+									}
 								}
 							}
 						}
@@ -254,16 +272,46 @@ private class MultipleLaunchShortcutsContributionItem extends
 					
 					if (moreThanOneAppified) {
 						ElementTreeSelectionDialog dialog = createProjectsDialog(dialogShell);
-						if(dialog.getReturnCode() == 0){
+						if(dialog.getReturnCode() == 0){ //0 is OK
 							launchSelectedProject(dialog);
 							finish(TiLaunchShortcuts.LaunchShortcutContributionItem.this.extension);
 						} else {
 							finish(TiLaunchShortcuts.LaunchShortcutContributionItem.this.extension);
 						}
 					} else {
-						TiLaunchShortcuts.LaunchShortcutContributionItem.this.extension.launch(selection, ILaunchManager.RUN_MODE);
+						if (appifiedProject != null) {
+							ISelection fSelection = new StructuredSelection(appifiedProject);
+							TiLaunchShortcuts.LaunchShortcutContributionItem.this.extension.launch(fSelection, ILaunchManager.RUN_MODE);
+						} else {
+							if (isTiModule(selectedProject)) {
+								Display.getDefault().syncExec(new Runnable() {
+									@Override
+									public void run() {
+										MessageDialog.openError(null, "No TiShadow appified projects found", "To run tests on a Titanium module, you need a Tishadow app to run on.");
+									}
+								});
+							} else {
+								appifyProjectDialog();
+							}
+						}
 						finish(TiLaunchShortcuts.LaunchShortcutContributionItem.this.extension);
 					}
+				}
+
+				protected void appifyProjectDialog() {
+					Display.getDefault().syncExec(new Runnable() {
+						@Override
+						public void run() {
+							Display display = Display.getCurrent();
+							Shell shell = display.getActiveShell();
+							boolean result = MessageDialog.openQuestion(shell, "Error", "There are no appified versions of the project.\nWould you like to appify it?");
+							if (result) {
+								AppifyTiShadowWizard wizard = new AppifyTiShadowWizard();
+								WizardDialog w = new WizardDialog(shell, wizard);
+								w.open();
+							}
+						}
+					});
 				}
 
 				protected void launchSelectedProject(ElementTreeSelectionDialog dialog) {
@@ -297,6 +345,41 @@ private class MultipleLaunchShortcutsContributionItem extends
 			    	dialog.open();
 					return dialog;
 				}
+				
+				private boolean isTiModule(IProject project) {
+			    	IFile timodule = project.getFile("timodule.xml");
+			        if (timodule.exists()) {
+			        	return true;
+			    	}
+			        return false;
+			    }
+				
+				private boolean isTiApp(IProject project) {
+			    	IFile tiapp = project.getFile("tiapp.xml");
+			        if (tiapp.exists()) {
+			        	return true;
+			    	}
+			        return false;
+			    }
+				
+				private String getBaseProjectName(IProject selectedProject, IProject[] projects) {
+					LaunchShortcut ls = new LaunchShortcut();
+					ILaunchConfiguration lc = ls.getExistingLaunch(selectedProject);
+					String arguments = null;
+					try {
+						arguments = lc.getAttribute(Constants.TISHADOW_TOOL_ARGUMENTS, "");
+					} catch (CoreException e) {
+						e.printStackTrace();
+					}
+					
+					String baseProjectName = "";
+					for(IProject project : projects) {
+						if (arguments.contains(project.getName())) {
+							baseProjectName = project.getName();
+						}
+					}
+					return baseProjectName;
+			    }
 			});
 		}
 	}
