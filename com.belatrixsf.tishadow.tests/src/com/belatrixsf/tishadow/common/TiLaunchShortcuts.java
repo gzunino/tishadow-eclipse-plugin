@@ -308,7 +308,7 @@ private class MultipleLaunchShortcutsContributionItem extends
 			    		}
 			    	});
 			    	dialog.setTitle("Project Selection");
-			    	dialog.setMessage("Select the TiShadow project you want to test from the list:");
+			    	dialog.setMessage("To run tests on a Titanium module, you need a Tishadow app to run on. Please select one from the list:");
 			    	dialog.setInput(tiShadowProjectsList);
 			    	dialog.open();
 					return dialog;
