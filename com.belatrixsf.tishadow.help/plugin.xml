@@ -4,8 +4,8 @@
    <extension
          point="org.eclipse.help.toc">
       <toc
-            category="TiShadow"
-            file="TiShadow Plug-in User Guide-toc.xml"
+            category="TiShadow Plugin"
+            file="src/TiShadow Plug-in User Guide-toc.xml"
             primary="true">
       </toc>
    </extension>
