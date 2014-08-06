@@ -5,4 +5,7 @@ Bundle-SymbolicName: com.belatrixsf.tishadow.help;singleton:=true
 Bundle-Version: 0.0.1.qualifier
 Bundle-Vendor: BELATRIXSF
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Require-Bundle: org.eclipse.help
+Require-Bundle: org.eclipse.help,
+ org.eclipse.ui.cheatsheets,
+ com.belatrixsf.tishadow.runner;bundle-version="0.0.1";visibility:=reexport,
+ com.belatrixsf.tishadow.tests;bundle-version="0.0.1";visibility:=reexport
