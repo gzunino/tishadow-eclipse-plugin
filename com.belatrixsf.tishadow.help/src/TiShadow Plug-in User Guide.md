@@ -9,6 +9,14 @@ Installation instructions on <http://gzunino.github.io/tishadow-eclipse-plugin/>
 
 ---
 
+TiShadow essentially works by building and installing a single app on iOS and Android.  This acts as a host or controller on the device.  That client app connects to your TiShadow server which pushes your Titanium project source code and resources out to the device and runs it as if it was compiled into the client app.
+
+This plugin does a very good job on making the creation e installation as easy as possible to avoid using the OS (consoles) at all. For instance, to run the TiShadow server and run the tests without using this plugin, it is necessary to open 2 terminals. In this way, the user can use all the features the TiShadow provides in a transparent way.
+
+![](./images/consoles.jpg "TiShadow Plug-in")
+
+Using all the capabilities Eclipse provides, like wizards, shortcuts, among others,  it is possible to create a TiShadow base application, appify an existing Titanium project and one of the best features: the abitily to run tests and see the reports on junit format.
+
 # Running Tests with TiShadow
 
 ## Appify your project
@@ -22,7 +30,7 @@ First you have to "appify" the project you want to test, which will create a new
 4. Enter the port and host in which the TiShadow server will run.
 5. Click Finish.
 
-![](./images/1.png "TiShadow Plug-in")   
+![](./images/1.png "TiShadow Plug-in")
 
 
 ## Start the TiShadow server

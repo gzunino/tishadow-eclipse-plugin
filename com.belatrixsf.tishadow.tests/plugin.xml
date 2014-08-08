@@ -178,11 +178,13 @@
    <extension
          point="org.eclipse.ui.commands">
       <command
+            categoryId="com.belatrixsf.tishadow.tests.category"
             defaultHandler="com.belatrixsf.tishadow.handlers.RunServer"
             id="com.belatrixsf.tishadow.tests.runServer"
             name="Run TiShadow Server">
       </command>
       <command
+            categoryId="com.belatrixsf.tishadow.tests.category"
             defaultHandler="com.belatrixsf.tishadow.handlers.RunTest"
             id="com.belatrixsf.tishadow.tests.runTest"
             name="Run TiShadow Tests">
@@ -193,14 +195,20 @@
          </commandParameter>
       </command>
       <command
+            categoryId="com.belatrixsf.tishadow.tests.category"
             defaultHandler="com.belatrixsf.tishadow.handlers.TiShadowAppifyCreation"
             id="com.belatrixsf.tishadow.tests.appify"
             name="TiShadow Appify Creation">
       </command>
       <command
+            categoryId="com.belatrixsf.tishadow.tests.category"
             id="com.belatrixsf.tishadow.tests.reRunTest"
             name="Re-Run TiShadow Tests">
       </command>
+      <category
+            id="com.belatrixsf.tishadow.tests.category"
+            name="TiShadow">
+      </category>
    </extension>
    <extension
          point="org.eclipse.core.expressions.propertyTesters">

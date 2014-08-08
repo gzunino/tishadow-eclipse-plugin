@@ -14,7 +14,7 @@
       <cheatsheet
             category="com.belatrixsf.tishadow.help.category"
             composite="false"
-            contentFile="TiShadow Plug-in Cheat Sheet.xml"
+            contentFile="src/TiShadow Plug-in Cheat Sheet.xml"
             id="com.belatrixsf.tishadow.help.cheatsheet"
             name="Running Test with TiShadow">
       </cheatsheet>
