@@ -40,6 +40,7 @@ import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 import org.eclipse.jdt.internal.junit.ui.JUnitViewEditorLauncher;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
@@ -54,6 +55,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.belatrixsf.tishadow.LaunchUtils;
+import com.belatrixsf.tishadow.app.wizards.AppifyTiShadowWizard;
 import com.belatrixsf.tishadow.common.TiLaunchShortcuts;
 import com.belatrixsf.tishadow.handlers.RunServer;
 import com.belatrixsf.tishadow.preferences.page.PreferenceValues;
@@ -68,7 +70,7 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 	@Override
 	public void launch(ILaunchConfiguration configuration, final String mode,
 			ILaunch launch, final IProgressMonitor monitor) throws CoreException {
-		monitor.beginTask("Running Tests", 1100);
+		monitor.beginTask("Running Tests", 1500);
 		showWizard();
 		
 		final String projectLoc = configuration.getAttribute(IExternalToolConstants.ATTR_WORKING_DIRECTORY, "");
@@ -130,84 +132,94 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 			final boolean spec_touch, final ILaunchConfiguration configuration) throws CoreException {
 		if(spec_touch) {
 			if(LaunchUtils.isServerLaunched(true)) {
-				if(LaunchUtils.isADeviceConnected()){
-					final IFolder folder = getTiShadowResultFolder(projectLoc);
-					removeOldResults(monitor, folder);
-					
-					if(configuration != previousTestConfig){
-						String toolArguments = configuration.getAttribute(IExternalToolConstants.ATTR_TOOL_ARGUMENTS, "");
-						workingCopy.setAttribute(IExternalToolConstants.ATTR_TOOL_ARGUMENTS, toolArguments.replace("-u ", ""));
-					}
-					
-					ILaunch launch = workingCopy.launch(mode, monitor);
-					
-					monitor.subTask("Running tests...");
-					
-					final Job job = Job.getJobManager().currentJob();
-					final AtomicBoolean finished = new AtomicBoolean(false);
-					
-					// wait for termination and show results
-					DebugPlugin.getDefault().addDebugEventListener(new IDebugEventSetListener() {
-						@Override
-						public void handleDebugEvents(DebugEvent[] events) {
-							if (events.length > 0 && (events[0].getKind() == DebugEvent.TERMINATE)) {
-								DebugPlugin.getDefault().removeDebugEventListener(this);
-	
-								Display.getDefault().asyncExec(new Runnable() {
-									@Override
-									public void run() {
-										try {
-											workingCopy.delete();
-										} catch (CoreException e) {
-											e.printStackTrace();
-										}
-										
-										previousTestConfig = configuration;
-	
-										LaunchUtils launchUtils = new LaunchUtils();
-										launchUtils.setLaunchConfiguration(configuration);
-	
-										final ArrayList<IPath> junitXMLResources = getXmlResults(monitor, folder);
-										if (junitXMLResources.isEmpty()) {
-											showError("Error", "Cannot find JUnit XML results for TiShadow run. Check the console logs.");
-											return;
-										}
-	
-										JUnitViewEditorLauncher junit = new JUnitViewEditorLauncher();
-										String mergedXml = folder.getLocation().toOSString() + "/fullTestSuite.xml";
-										mergeXMLFiles(junitXMLResources, mergedXml);
-										refreshProject(project);
-										junit.open(new Path(mergedXml));
-										monitor.done();
-										
-										finished.set(true);
-									}
-								});
-							}
+				if(LaunchUtils.hasAppified(project)) {
+					if(LaunchUtils.isADeviceConnected()){
+						
+						final IFolder folder = getTiShadowResultFolder(projectLoc);
+						removeOldResults(monitor, folder);
+						
+						if(configuration != previousTestConfig){
+							String toolArguments = configuration.getAttribute(IExternalToolConstants.ATTR_TOOL_ARGUMENTS, "");
+							workingCopy.setAttribute(IExternalToolConstants.ATTR_TOOL_ARGUMENTS, toolArguments.replace("-u ", ""));
 						}
 						
-					});
-					
-					while (!finished.get() && !monitor.isCanceled()) {
-						Random r = new Random();
-						monitor.worked((int) (Math.max(1, Math.min(10, (int) 2 + r.nextGaussian() * 20))));
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
+						ILaunch launch = workingCopy.launch(mode, monitor);
+						
+						monitor.subTask("Running tests...");
+						
+						final Job job = Job.getJobManager().currentJob();
+						final AtomicBoolean finished = new AtomicBoolean(false);
+						
+						// wait for termination and show results
+						DebugPlugin.getDefault().addDebugEventListener(new IDebugEventSetListener() {
+							@Override
+							public void handleDebugEvents(DebugEvent[] events) {
+								if (events.length > 0 && (events[0].getKind() == DebugEvent.TERMINATE)) {
+									DebugPlugin.getDefault().removeDebugEventListener(this);
+		
+									Display.getDefault().asyncExec(new Runnable() {
+										@Override
+										public void run() {
+											try {
+												workingCopy.delete();
+											} catch (CoreException e) {
+												e.printStackTrace();
+											}
+											
+											previousTestConfig = configuration;
+		
+											LaunchUtils launchUtils = new LaunchUtils();
+											launchUtils.setLaunchConfiguration(configuration);
+		
+											final ArrayList<IPath> junitXMLResources = getXmlResults(monitor, folder);
+											if (junitXMLResources.isEmpty()) {
+												showError("Error", "Cannot find JUnit XML results for TiShadow run. Check the console logs.");
+												return;
+											}
+		
+											JUnitViewEditorLauncher junit = new JUnitViewEditorLauncher();
+											String mergedXml = folder.getLocation().toOSString() + "/fullTestSuite.xml";
+											mergeXMLFiles(junitXMLResources, mergedXml);
+											refreshProject(project);
+											junit.open(new Path(mergedXml));
+											monitor.done();
+											
+											finished.set(true);
+										}
+									});
+								}
+							}
+							
+						});
+						
+						while (!finished.get() && !monitor.isCanceled()) {
+							Random r = new Random();
+							monitor.worked((int) (Math.max(1, Math.min(10, (int) 2 + r.nextGaussian() * 20))));
+							try {
+								Thread.sleep(100);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
 						}
+						if (job != null) {
+							job.done(monitor.isCanceled() ? Status.CANCEL_STATUS : Status.OK_STATUS);
+						}
+						if (monitor.isCanceled() && launch.canTerminate()) {
+							launch.terminate();
+						}
+					} else {
+						LaunchUtils launchUtils = new LaunchUtils();
+						launchUtils.setLaunchConfiguration(previousTestConfig);
+						
+						showErrorWithLaunchShortcuts("Error", "There are no TiShadow apps running on a device and connected to the server.\nYou can select a device from the list below to run the app.");
 					}
-					if (job != null) {
-						job.done(monitor.isCanceled() ? Status.CANCEL_STATUS : Status.OK_STATUS);
-					}
-					if (monitor.isCanceled() && launch.canTerminate()) {
-						launch.terminate();
-					}
-				} else {
+				}else{
 					LaunchUtils launchUtils = new LaunchUtils();
 					launchUtils.setLaunchConfiguration(previousTestConfig);
 					
-					showErrorWithLaunchShortcuts("Error", "There are no TiShadow apps running on a device and connected to the server.\nYou can select a device from the list below to run the app.");
+					appifyIfNotTiModule(project);
+					
+//					showError("Error", "There are no appified versions of the project.");
 				}
 			} else {
 
@@ -218,6 +230,35 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 			}
 		}
 		return;
+	}
+
+	protected void appifyIfNotTiModule(final IProject project) {
+		if (LaunchUtils.isTiModule(project)) {
+			Display.getDefault().syncExec(new Runnable() {
+				@Override
+				public void run() {
+					MessageDialog.openError(null, "Error", "There are no appified versions of the base project.");
+				}
+			});
+		} else {
+			Display.getDefault().syncExec(new Runnable() {
+				@Override
+				public void run() {
+					Display display = Display.getDefault();
+					Shell shell = display.getActiveShell();
+					boolean result = MessageDialog.openQuestion(shell, "Error", "There are no appified versions of the project.\nWould you like to appify it?");
+					if (result) {
+						AppifyTiShadowWizard wizard = new AppifyTiShadowWizard();
+						WizardDialog w = new WizardDialog(shell, wizard);
+						w.open();
+					}
+				}
+			});
+		}
+		final Job job = Job.getJobManager().currentJob();
+		if (job != null) {
+			job.done(Status.OK_STATUS);
+		}
 	}
 
 	protected void showErrorWithOptions(final String title, final String message) {

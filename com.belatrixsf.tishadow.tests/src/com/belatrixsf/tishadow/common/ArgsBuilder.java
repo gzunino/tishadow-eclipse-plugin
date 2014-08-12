@@ -23,7 +23,11 @@ public class ArgsBuilder {
 	private Argument junitXml = new Argument("-x", "junit-xml", "Output report as JUnit XML", true,false);
 	private Argument platform = new Argument("-P", "platform", "Target platform", false,true);
 	private Argument skipAlloyCompile = new Argument("-s", "skip-alloy-compile", "Skip automatic alloy compilation", false,false);
-	private Argument includeDotFiles = new Argument("-D", "include-dot-files", "Includes dot files in the bundle (defaults to false)", false,false);
+	private Argument includeDotFiles = new Argument("-D", "include-dot-files", "Includes dot files in the bundle (defaults to false)", false, false);
+	private Argument target = new Argument("-T", "target", "target TiShadow app (defaults to name on tiapp.xml or moduleid on manifest)", false, true);
+	private Argument clearSpecFiles = new Argument("-C", "clear-spec-files", "Clears only the spec files from the cache", false, false);
+	private Argument coverage = new Argument("-c", "coverage", "Runs code coverage, for available report_types see https://github.com/gotwarlost/istanbul#the-report-command", false, true);
+	
 	
 public ArrayList<Argument> getServerDefaults(){
 		
@@ -54,6 +58,9 @@ public ArrayList<Argument> getServerDefaults(){
 		argumentsList.add(platform);
 		argumentsList.add(skipAlloyCompile);
 		argumentsList.add(includeDotFiles);
+		argumentsList.add(target);
+		argumentsList.add(clearSpecFiles);
+		argumentsList.add(coverage);
 		
 		return argumentsList;
 	}
@@ -88,6 +95,9 @@ public ArrayList<Argument> getServerDefaults(){
 		argumentsList.add(platform);
 		argumentsList.add(skipAlloyCompile);
 		argumentsList.add(includeDotFiles);
+		argumentsList.add(target);
+		argumentsList.add(clearSpecFiles);
+		argumentsList.add(coverage);
 		
 		return argumentsToString("spec", argumentsList);
 	}

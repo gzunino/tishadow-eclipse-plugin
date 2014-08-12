@@ -34,3 +34,7 @@ Changelog
 	    the server button on the toolbar not being updated correctly was fixed.
 
 2014-07-31: A few bugs were fixed, that were related to problems when running tests on ti modules.
+
+2014-08-12: A few bugs were fixed, that were related to problems when running tests on ti modules. An error
+	    message was added when the user wants to run tests on an app an there's not a corresponding 
+	    appified. Plus, an option was added to the error message to go to the appify wizard if desired.

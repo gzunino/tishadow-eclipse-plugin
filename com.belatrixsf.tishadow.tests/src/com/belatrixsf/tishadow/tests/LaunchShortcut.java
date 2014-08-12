@@ -90,7 +90,7 @@ public class LaunchShortcut implements ILaunchShortcut {
         
 	    String selectedTarget = "";
 	    if (isTiModule(project)){
-	    	selectedTarget = getSelectedTiShadowProject(project);
+	    	selectedTarget = getSelectedTiShadowProject();
 	    	if (selectedTarget.isEmpty()){
 	    		return null;
 	    	}
@@ -111,7 +111,7 @@ public class LaunchShortcut implements ILaunchShortcut {
      * Returns the -T command plus the project name for running specs on a TiShadow app.
      * @return selected TiShadow project name or empty String.
      */
-    private String getSelectedTiShadowProject(IProject project) {
+    private String getSelectedTiShadowProject() {
     	String tiShadowProjectName;
     	ArrayList<IProject> tiShadowProjectsList;
     	tiShadowProjectsList = getTiShadowProjectsList();
@@ -126,6 +126,7 @@ public class LaunchShortcut implements ILaunchShortcut {
 	    		return " -T " + tiShadowProjectName;
 	    	}
     	}
+    	
     	return "";
     }
     

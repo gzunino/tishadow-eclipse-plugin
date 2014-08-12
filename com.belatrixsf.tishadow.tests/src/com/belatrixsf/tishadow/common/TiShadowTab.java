@@ -143,7 +143,7 @@ public abstract class TiShadowTab extends ProgramMainTab {
 		argCheckbox.setLayoutData(gridData);
 		
 		if(hasText){
-			argTextBox = new Text(group, SWT.MULTI | SWT.BORDER);
+			argTextBox = new Text(group, SWT.SINGLE | SWT.BORDER);
 			textBoxMap.put(parameter+"_textBox",argTextBox);
 			argTextBox.setLayoutData(gridData);
 			argCheckbox.setText(parameter +", --"+ name +" "+ "<"+name+">");
