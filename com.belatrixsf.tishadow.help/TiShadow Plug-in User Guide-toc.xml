@@ -1,9 +1,0 @@
-<?xml version='1.0' encoding='utf-8' ?>
-<toc topic="TiShadow Plug-in User Guide.html" label="TiShadow Plug-in User Guide">
-	<topic href="TiShadow Plug-in User Guide.html" label="Running Tests with TiShadow">
-		<topic href="TiShadow Plug-in User Guide.html#Appifyyourproject" label="Appify your project"></topic>
-		<topic href="TiShadow Plug-in User Guide.html#StarttheTiShadowserver" label="Start the TiShadow server"></topic>
-		<topic href="TiShadow Plug-in User Guide.html#Runtheappifiedproject" label="Run the appified project"></topic>
-		<topic href="TiShadow Plug-in User Guide.html#Runthetests" label="Run the tests"></topic>
-	</topic>
-</toc>

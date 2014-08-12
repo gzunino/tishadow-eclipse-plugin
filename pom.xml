@@ -1,39 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.belatrixsf</groupId>
-  <artifactId>com.belatrixsf.tishadow</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <packaging>pom</packaging>
-  <modules>
-    <module>com.belatrixsf.tishadow.feature</module>
-    <module>com.belatrixsf.tishadow.tests</module>
-    <module>com.belatrixsf.tishadow.p2</module>
-    <module>com.belatrixsf.tishadow.preferences</module>
-    <module>com.belatrixsf.tishadow.runner</module>
-    <module>com.belatrixsf.tishadow.help</module>
-  </modules>
-  <repositories>
-    <repository>
-      <id>kepler</id>
-      <layout>p2</layout>
-      <url>http://download.eclipse.org/releases/kepler</url>
-    </repository>
-    <repository>
-      <id>ansi</id>
-      <layout>p2</layout>
-      <url>http://www.mihai-nita.net/eclipse</url>
-    </repository>
-  </repositories>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.eclipse.tycho</groupId>
-        <artifactId>tycho-maven-plugin</artifactId>
-        <version>0.20.0</version>
-        <extensions>true</extensions>
-      </plugin>
-    </plugins>
-  </build>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.belatrixsf</groupId>
+	<artifactId>com.belatrixsf.tishadow</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<modules>
+		<module>com.belatrixsf.tishadow.feature</module>
+		<module>com.belatrixsf.tishadow.tests</module>
+		<module>com.belatrixsf.tishadow.p2</module>
+		<module>com.belatrixsf.tishadow.preferences</module>
+		<module>com.belatrixsf.tishadow.runner</module>
+		<module>com.belatrixsf.tishadow.help</module>
+	</modules>
+
+	<repositories>
+		<repository>
+			<id>kepler</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/releases/kepler</url>
+		</repository>
+		<repository>
+			<id>ansi</id>
+			<layout>p2</layout>
+			<url>http://www.mihai-nita.net/eclipse</url>
+		</repository>
+	</repositories>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-maven-plugin</artifactId>
+				<version>0.20.0</version>
+				<extensions>true</extensions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>mylyn</id>
+			<url>https://repo.eclipse.org/content/repositories/mylyn-snapshots/</url>
+		</pluginRepository>
+	</pluginRepositories>
 </project>
