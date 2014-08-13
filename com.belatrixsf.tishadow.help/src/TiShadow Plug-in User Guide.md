@@ -4,6 +4,8 @@
 
 ![](./images/TiShadowLogo.png "TiShadow")
 
+Web: <http://gzunino.github.io/tishadow-eclipse-plugin/>
+
 TiShadow essentially works by building and installing a single app on iOS and Android.  This acts as a host or controller on the device.  That client app connects to your TiShadow server which pushes your Titanium project source code and resources out to the device and runs it as if it was compiled into the client app.
 
 ![](./images/consoles.png "TiShadow")

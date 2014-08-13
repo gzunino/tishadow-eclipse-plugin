@@ -65,7 +65,6 @@
 				<version>2.2.0-SNAPSHOT</version>
 				<configuration>
 					<sourceFolder>src</sourceFolder>
-					<multipleOutputFiles>true</multipleOutputFiles>
 					<navigationImages>true</navigationImages>
 					<formatOutput>true</formatOutput>
 					<useInlineCssStyles>false</useInlineCssStyles>
@@ -96,11 +95,23 @@
 									<targetPath>${project.basedir}/../</targetPath>
 									<file>${project.basedir}/src/TiShadow Plug-in User Guide.md</file>
 									<destFileName>README.md</destFileName>
+							    	<!-- Replacing relative paths to url paths.  -->
+									<replaces>
+								        <replace>
+								            <from><![CDATA[./images/]]></from>						  													
+								            <to>http://gzunino.github.io/tishadow-eclipse-plugin/images/</to>      
+								            <quoteReplacement>true</quoteReplacement>                 													
+								            <replaceAll>true</replaceAll>                            													
+								            <failIfNotFound>false</failIfNotFound>                    													
+								            <groovy>false</groovy>                                    													
+								    	</replace>
+								    </replaces>
 								</resource>
 								<resource>
 								    <targetPath>${project.build.directory}/generated-eclipse-help</targetPath>
 								    <directory>${project.build.directory}/generated-eclipse-help</directory>
 								    <include>TiShadow Plug-in User Guide.html</include>
+								    <destFileName>index.html</destFileName>
 								    <replaces>
 								    	<!-- Replacing </head> to include html content into the html. -->
 								        <replace>
@@ -120,7 +131,6 @@
 								            <failIfNotFound>false</failIfNotFound>                    													
 								            <groovy>false</groovy>                                    													
 								        </replace>
-								        
 								    </replaces>
 								</resource>
 							</resources>
