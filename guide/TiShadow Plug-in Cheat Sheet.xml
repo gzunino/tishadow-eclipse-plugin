@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet
+      title="Running Tests with TiShadow">
+   <intro
+   		href="/com.belatrixsf.tishadow.help/src/TiShadow Plug-in User Guide.html">
+      <description>
+         Welcome to the TiShadow tutorial to run tests. Let&apos;s get started!
+      </description>
+   </intro>
+   <item
+   		title="Appify your project">
+      <description>
+           First you have to &apos;appify&apos; the project you want to test, which will create a new app that is basically the same but with the TiShadow libraries included.<br/><br/>
+           <b>1.</b> Select the app you want to appify, right-click it and select <b>New>TiShadow Appify</b><br/><br/>
+           <b>2.</b> Enter the name of the appified project and select location of the  project you want to test (base project).<br/><br/>
+           <b>3.</b> Select the location where the appified app will be created (output folder) if you don't want the default location.<br/><br/>
+           <b>4.</b> Enter the port and host in which the TiShadow server will run.<br/><br/>
+           <b>5.</b> Click Finish.
+      </description>
+      <command
+            required="false"
+            serialization="com.belatrixsf.tishadow.tests.appify"/>
+   </item>
+   <item
+         title="Start the TiShadow server">
+      <description>
+         Then, you need to start the TiShadow server in order to access its services. So, do the following:<br/><br/>
+ <b>1.</b> Right-click on the appified project that you just created, Run As, Run TiShadow Server.
+      </description>
+      <command
+            required="false"
+            serialization="com.belatrixsf.tishadow.tests.runServer"/>
+   </item>
+   <item
+         title="Run the appified project">
+      <description>
+         After that, you need to run the appified project on a device or emulator.<br/><br/>Example: <b>On Genymotion:</b> <br/><br/>1. Open Genymotion. <br/><br/>2. Start your preferred device. <br/><br/>3. Start the appified project.
+      </description>
+   </item>
+    <item
+         title="Run the tests">
+      <description>
+         Finally, to run the tests, you need to do the following:<br/><br/>1. Right click on the appified project that you just created, Run As.. Run TiShadow Tests.
+      </description>
+      <command
+            required="false"
+            serialization="com.belatrixsf.tishadow.tests.runTest"/>
+   </item>
+</cheatsheet>
