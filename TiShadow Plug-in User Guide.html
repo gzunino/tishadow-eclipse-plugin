@@ -1,27 +1,4 @@
-<?xml version='1.0' encoding='utf-8' ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css">
-				<script type="text/javascript" src="javascript/jquery.min.js"></script>
-				<script type="text/javascript" src="javascript/jquery.stoc.js"></script>
-				<script type="text/javascript" src="javascript/ui.js"></script>
-			</head>
-			<body>
-				<div id="header_wrap" class="outer">
-					<header class="inner">
-						<a id="forkme_banner" href="https://github.com/gzunino/tishadow-eclipse-plugin">View on GitHub</a>
-						<h1 id="project_title">TiShadow Eclipse Plugin</h1>
-						<h2 id="project_tagline">Plugin to run TiShadow tests and display results on JUnit View for Titanium Studio</h2>
-						<hr>
-						<p>For TiShadow documentation, go to <a href="http://tishadow.yydigital.com/">http://tishadow.yydigital.com/</a></p>
-						<hr>
-						<section id="downloads">
-							<a class="zip_download_link" href="https://github.com/gzunino/tishadow-eclipse-plugin/zipball/master">Download this project as a .zip file</a>
-							<a class="tar_download_link" href="https://github.com/gzunino/tishadow-eclipse-plugin/tarball/master">Download this project as a tar.gz file</a>
-						</section>
-					</header>
-				</div>
-				<!-- Container for text, closed at the end before the footer. Items div is needed to load Contents from STOC plugin. -->
-				<div id="main_content_wrap" class="outer">
-					<section id="main_content" class="inner">
-						<div id="items"></div><hr/><p><img alt="" title="TiShadow" border="0" src="./images/TiShadowLogo.png"/></p><p>TiShadow essentially works by building and installing a single app on iOS and Android.  This acts as a host or controller on the device.  That client app connects to your TiShadow server which pushes your Titanium project source code and resources out to the device and runs it as if it was compiled into the client app.</p><p><img alt="" title="TiShadow" border="0" src="./images/consoles.png"/></p><p>This plugin does a very good job on making the creation e installation as easy as possible to avoid using the OS terminals (consoles) at all. For instance, to run the TiShadow server and run the tests without using this plugin (, it is necessary to open 2 terminals. In this way, the user can use all the features the TiShadow provides in a transparent way.</p><p>Using all the capabilities Eclipse provides, like wizards, shortcuts, among others,  it is possible to create a TiShadow base application, appify an existing Titanium project and one of the best features: the abitily to run tests and see the reports on junit format.</p><hr/><h1 id="InstallationGuide">Installation Guide</h1><h2 id="AddingURLrepository">Adding URL repository</h2><p>Point the following URL to your eclipse update site manager to install TiShadow Plugin:</p><p>Eclipse/Titanium Studio:</p><pre><code>http://gzunino.github.io/tishadow-eclipse-plugin/p2/</code></pre><h2 id="Problems">Problems?</h2><p>If you get an error installing similar to this:</p><pre><code>Cannot complete the install because one or more required items could not be found.
+<?xml version='1.0' encoding='utf-8' ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/></head><body><!--toReplaceWithXML1--><hr/><p><img alt="" title="TiShadow" border="0" src="./images/TiShadowLogo.png"/></p><p>TiShadow essentially works by building and installing a single app on iOS and Android.  This acts as a host or controller on the device.  That client app connects to your TiShadow server which pushes your Titanium project source code and resources out to the device and runs it as if it was compiled into the client app.</p><p><img alt="" title="TiShadow" border="0" src="./images/consoles.png"/></p><p>This plugin does a very good job on making the creation e installation as easy as possible to avoid using the OS terminals (consoles) at all. For instance, to run the TiShadow server and run the tests without using this plugin (, it is necessary to open 2 terminals. In this way, the user can use all the features the TiShadow provides in a transparent way.</p><p>Using all the capabilities Eclipse provides, like wizards, shortcuts, among others,  it is possible to create a TiShadow base application, appify an existing Titanium project and one of the best features: the abitily to run tests and see the reports on junit format.</p><hr/><h1 id="InstallationGuide">Installation Guide</h1><h2 id="AddingURLrepository">Adding URL repository</h2><p>Point the following URL to your eclipse update site manager to install TiShadow Plugin:</p><p>Eclipse/Titanium Studio:</p><pre><code>http://gzunino.github.io/tishadow-eclipse-plugin/p2/</code></pre><h2 id="Problems">Problems?</h2><p>If you get an error installing similar to this:</p><pre><code>Cannot complete the install because one or more required items could not be found.
 Software being installed: TiShadow Feature 0.0.1.201401061758 (com.belatrixsf.tishadow.feature.feature.group 0.0.1.201401061758)
 Missing requirement: TiShadowTestView 0.0.1.201401061758 (com.belatrixsf.tishadow.tests 0.0.1.201401061758) requires 'bundle org.eclipse.jdt.junit 0.0.0' but it could not be found
 Cannot satisfy dependency:
@@ -36,12 +13,4 @@ and then, <b> Run As &gt; Run TiShadow Tests</b>.</p><p><img alt="" title="TiSha
 	    message was displayed indicating the lack of the ".project" file was fixed. An option to run the 
 	    server was added to the 'Server not running' message.</p><p><em>2014-07-29:</em> Launch app option added to the 'no apps connected to the server' error message. A bug in which
 	    the parameters field on run configurations wasn't being formed correctly was fixed. A bug about
-	    the server button on the toolbar not being updated correctly was fixed.</p><p><em>2014-07-31:</em> A few bugs were fixed, that were related to problems when running tests on ti modules.</p><p><em>2014-08-13:</em> A CheatSheet page were added and help was updated.</p><hr/><h1 id="AuthorsandContributors">Authors and Contributors</h1><ul><li>Guillermo Zunino</li><li>Gerardo Fernandez</li><li>Marcelo José</li><li>Emiliano Hualpa</li><li>Maximiliano Ambrosini</li><li>Veronica Villegas</li></ul><p>Contact: <a href="mailto:guillez@gmail.com">guillez@gmail.com</a></p></section>
-				</div>
-				<div class="outer" id="footer_wrap">
-					<footer class="inner">
-				    	<p class="copyright">TiShadow Eclipse Plugin maintained by <a href="https://github.com/gzunino">gzunino</a></p>
-				    	<p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
-					</footer>
-					<a id="top-link" class="top-link" href="#top">▲ Top</a>
-				</div></body></html>
+	    the server button on the toolbar not being updated correctly was fixed.</p><p><em>2014-07-31:</em> A few bugs were fixed, that were related to problems when running tests on ti modules.</p><p><em>2014-08-13:</em> A CheatSheet page were added and help was updated.</p><hr/><h1 id="AuthorsandContributors">Authors and Contributors</h1><ul><li>Guillermo Zunino</li><li>Gerardo Fernandez</li><li>Marcelo José</li><li>Emiliano Hualpa</li><li>Maximiliano Ambrosini</li><li>Veronica Villegas</li></ul><p>Contact: <a href="mailto:guillez@gmail.com">guillez@gmail.com</a></p><!--toReplaceWithXML2--></body></html>
