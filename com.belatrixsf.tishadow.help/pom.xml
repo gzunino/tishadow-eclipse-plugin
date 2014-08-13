@@ -14,6 +14,47 @@
 	
 	<properties>
 		<help.output>${project.build.directory}/generated-eclipse-help</help.output>
+		<header>
+			<![CDATA[
+				<link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css">
+				<script type="text/javascript" src="javascript/jquery.min.js"></script>
+				<script type="text/javascript" src="javascript/jquery.stoc.js"></script>
+				<script type="text/javascript" src="javascript/ui.js"></script>
+			</head>
+			<body>
+				<div id="header_wrap" class="outer">
+					<header class="inner">
+						<a id="forkme_banner" href="https://github.com/gzunino/tishadow-eclipse-plugin">View on GitHub</a>
+						<h1 id="project_title">TiShadow Eclipse Plugin</h1>
+						<h2 id="project_tagline">Plugin to run TiShadow tests and display results on JUnit View for Titanium Studio</h2>
+						<hr>
+						<p>For TiShadow documentation, go to <a href="http://tishadow.yydigital.com/">http://tishadow.yydigital.com/</a></p>
+						<hr>
+						<section id="downloads">
+							<a class="zip_download_link" href="https://github.com/gzunino/tishadow-eclipse-plugin/zipball/master">Download this project as a .zip file</a>
+							<a class="tar_download_link" href="https://github.com/gzunino/tishadow-eclipse-plugin/tarball/master">Download this project as a tar.gz file</a>
+						</section>
+					</header>
+				</div>
+				<!-- Container for text, closed at the end before the footer. Items div is needed to load Contents from STOC plugin. -->
+				<div id="main_content_wrap" class="outer">
+					<section id="main_content" class="inner">
+						<div id="items"></div>
+			]]>
+		</header>
+		<footer>
+			<![CDATA[
+					</section>
+				</div>
+				<div class="outer" id="footer_wrap">
+					<footer class="inner">
+				    	<p class="copyright">TiShadow Eclipse Plugin maintained by <a href="https://github.com/gzunino">gzunino</a></p>
+				    	<p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+					</footer>
+					<a id="top-link" class="top-link" href="#top">▲ Top</a>
+				</div>
+			]]>
+		</footer>
 	</properties>
 
 	<build>
@@ -27,9 +68,6 @@
 					<multipleOutputFiles>true</multipleOutputFiles>
 					<navigationImages>true</navigationImages>
 					<formatOutput>true</formatOutput>
-					<stylesheetUrls>
-						<param>stylesheets/stylesheet.css</param>
-					</stylesheetUrls>
 					<useInlineCssStyles>false</useInlineCssStyles>
 				</configuration>
 				<executions>
@@ -56,8 +94,34 @@
 							<resources>
 								<resource>
 									<targetPath>${project.basedir}/../</targetPath>
-									<file>${help.output}/TiShadow Plug-in User Guide.md</file>
+									<file>${project.basedir}/src/TiShadow Plug-in User Guide.md</file>
 									<destFileName>README.md</destFileName>
+								</resource>
+								<resource>
+								    <targetPath>${project.build.directory}/generated-eclipse-help</targetPath>
+								    <directory>${project.build.directory}/generated-eclipse-help</directory>
+								    <include>TiShadow Plug-in User Guide.html</include>
+								    <replaces>
+								    	<!-- Replacing </head> to include html content into the html. -->
+								        <replace>
+								            <from><![CDATA[</head><body><!--toReplaceWithXML1-->]]></from>						  													
+								            <to>${header}</to>      
+								            <quoteReplacement>true</quoteReplacement>                 													
+								            <replaceAll>false</replaceAll>                            													
+								            <failIfNotFound>false</failIfNotFound>                    													
+								            <groovy>false</groovy>                                    													
+								        </replace>
+								        <!-- Replacing <div id=footer></div>  to include html content into the html. -->
+								        <replace>
+								            <from><![CDATA[<!--toReplaceWithXML2-->]]></from>						  													
+								            <to>${footer}</to>      
+								            <quoteReplacement>true</quoteReplacement>                 													
+								            <replaceAll>false</replaceAll>                            													
+								            <failIfNotFound>false</failIfNotFound>                    													
+								            <groovy>false</groovy>                                    													
+								        </replace>
+								        
+								    </replaces>
 								</resource>
 							</resources>
 						</configuration>

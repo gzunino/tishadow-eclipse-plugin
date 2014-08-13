@@ -36,9 +36,6 @@
       <description>
          After that, you need to run the appified project on a device or emulator.<br/><br/>Example: <b>On Genymotion:</b> <br/><br/>1. Open Genymotion. <br/><br/>2. Start your preferred device. <br/><br/>3. Start the appified project.
       </description>
-      <command
-            required="false"
-            serialization="org.eclipse.debug.ui.commands.OpenRunConfigurations"/>
    </item>
     <item
          title="Run the tests">
