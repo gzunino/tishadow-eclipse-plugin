@@ -16,9 +16,8 @@ rm -rf ./p2/*
 git rm -r p2/*
 
 mkdir -p p2
-mkdir -p guide
 cp -r ../tishadow-eclipse-plugin/com.belatrixsf.tishadow.p2/target/repository/* ./p2/
-cp -r ../tishadow-eclipse-plugin/com.belatrixsf.tishadow.help/target/generated-eclipse-help/* ./guide/
+cp -r ../tishadow-eclipse-plugin/com.belatrixsf.tishadow.help/target/generated-eclipse-help/* ./
 
 git add *
 
