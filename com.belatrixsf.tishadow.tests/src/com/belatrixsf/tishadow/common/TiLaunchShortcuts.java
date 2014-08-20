@@ -46,7 +46,7 @@ import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 
 import com.belatrixsf.tishadow.LaunchUtils;
-import com.belatrixsf.tishadow.tests.LaunchShortcut;
+import com.belatrixsf.tishadow.tests.LaunchTestsShortcut;
 
 
 @SuppressWarnings("restriction")
@@ -293,7 +293,7 @@ private class MultipleLaunchShortcutsContributionItem extends
 
 				protected ElementTreeSelectionDialog createProjectsDialog(Shell dialogShell) {
 						
-					LaunchShortcut ls = new LaunchShortcut();
+					LaunchTestsShortcut ls = new LaunchTestsShortcut();
 					ArrayList<IProject> tiShadowProjectsList;
     				tiShadowProjectsList = ls.getTiShadowProjectsList();
 					ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(dialogShell, new WorkbenchLabelProvider(), new BaseWorkbenchContentProvider() {

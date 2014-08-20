@@ -21,12 +21,15 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.ui.ILaunchShortcut;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
@@ -34,25 +37,51 @@ import org.eclipse.ui.model.WorkbenchLabelProvider;
 import com.belatrixsf.tishadow.common.ArgsBuilder;
 
 @SuppressWarnings("restriction")
-public class LaunchShortcut implements ILaunchShortcut {
+public class LaunchTestsShortcut implements ILaunchShortcut {
     
     private ArrayList<IProject> allowedProjectsList;
 
+
     @Override
     public void launch(ISelection selection, String mode) {
-        if (selection instanceof IStructuredSelection) {
+    	IProject project = null;
+    	if (selection instanceof IStructuredSelection) {
             Object element = ((IStructuredSelection)selection).getFirstElement();
             if (element instanceof IResource) {
-                IProject project = ((IResource) element).getProject();
-                searchAndLaunch(project, mode);
+                project = ((IResource) element).getProject();
             }
-        } 
+        } else if (selection instanceof ITextSelection){
+        	project = getCurrentProjectFromITextSelection();
+        }
+    	
+    	if (project != null){
+    		searchAndLaunch(project, mode);
+    	} else {
+    		MessageDialog.openError(null, "Error", "To launch TiShadow tests, you need to select a project.");
+    	}
     }
 
-    private void searchAndLaunch(IProject project, final String mode) {
-        final ILaunchConfiguration launch = getExistingLaunch(project);
-       if (launch != null) {
-            Job job = new Job("TiShadow Tests") {
+    private IProject getCurrentProjectFromITextSelection() {
+    	IProject project = null;
+    	
+    	IWorkbenchPart sourcePart = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getPartService().getActivePart();
+    	
+          if (sourcePart instanceof IEditorPart)
+          {
+            IEditorPart editorPart = (IEditorPart) sourcePart;
+            IResource resource = (IResource)editorPart.getEditorInput().getAdapter(IResource.class);
+            if (resource != null)
+            {
+              project = resource.getProject();
+            }
+          }
+    	return project;
+	}
+    
+	private void searchAndLaunch(IProject project, final String mode) {
+		final ILaunchConfiguration launch = getExistingLaunch(project);
+		if (launch != null) {
+			Job job = new Job("TiShadow Tests") {
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
 					this.setThread(Thread.currentThread());
@@ -66,8 +95,8 @@ public class LaunchShortcut implements ILaunchShortcut {
 			};
 			job.setUser(true);
 			job.schedule();
-        }
-    }
+		}
+	}
 
     public ILaunchConfiguration getExistingLaunch(IProject project) {
         ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();

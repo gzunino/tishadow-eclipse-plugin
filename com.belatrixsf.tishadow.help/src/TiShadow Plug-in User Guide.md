@@ -118,6 +118,10 @@ _2014-07-31:_ A few bugs were fixed, that were related to problems when running 
 
 _2014-08-13:_ A CheatSheet page were added and help was updated.
 
+_2014-08-20:_ A new TiShadow Run button with a pulldown menu was added next to the Run TiShadow Tests button on the TiShadow Toolbar, which
+	    allows to launch the TiShadow run command on the current project.
+	    Also, a bug about buttons were not responding if the code was being edited (the cursor placed on the code editor window).
+
 ---
 # Authors and Contributors
 

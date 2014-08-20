@@ -14,20 +14,19 @@ import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.handlers.HandlerUtil;
 import com.belatrixsf.tishadow.runner.IRunnerCallback;
-import com.belatrixsf.tishadow.tests.LaunchTestsShortcut;
+import com.belatrixsf.tishadow.run.LaunchRunShortcut;
 
-
-public class RunTest extends AbstractHandler implements IRunnerCallback {
+public class TiShadowRun extends AbstractHandler implements IRunnerCallback {
 
 	
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		if(event.getParameter("com.belatrixsf.tishadow.tests.config") != null){
-			final ILaunchConfiguration launchConfiguration = getLaunchConfiguration(event.getParameter("com.belatrixsf.tishadow.tests.config"));
+		if(event.getParameter("com.belatrixsf.tishadow.run.config") != null){
+			final ILaunchConfiguration launchConfiguration = getLaunchConfiguration(event.getParameter("com.belatrixsf.tishadow.run.config"));
 			
 				System.out.println("Config executed >> " + launchConfiguration.getName());
 			
-	            Job job = new Job("TiShadow Tests") {
+	            Job job = new Job("TiShadow Run") {
 					@Override
 					protected IStatus run(IProgressMonitor monitor) {
 						this.setThread(Thread.currentThread());
@@ -43,7 +42,7 @@ public class RunTest extends AbstractHandler implements IRunnerCallback {
 				job.schedule();
 		} else {
 			ISelection selection = HandlerUtil.getCurrentSelection(event);
-			LaunchTestsShortcut shortcut = new LaunchTestsShortcut();
+			LaunchRunShortcut shortcut = new LaunchRunShortcut();
 			shortcut.launch(selection, "run");
 		}
 
@@ -52,7 +51,7 @@ public class RunTest extends AbstractHandler implements IRunnerCallback {
 	
 	private ILaunchConfiguration getLaunchConfiguration(String runConfigName){
 		ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
-		ILaunchConfigurationType type = launchManager.getLaunchConfigurationType("com.belatrixsf.tishadow.tests.launchTiShadowTests");
+		ILaunchConfigurationType type = launchManager.getLaunchConfigurationType("com.belatrixsf.tishadow.run.launchTiShadowRun");
         ILaunchConfiguration[] launchs = null;
         
         try {
