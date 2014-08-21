@@ -126,7 +126,7 @@ public class LaunchRunShortcut implements ILaunchShortcut {
 	    	    
 	    try {
 	        ILaunchConfigurationWorkingCopy launch = type.newInstance(null, launchManager.generateLaunchConfigurationName(project.getName()));
-	        LaunchTiShadowRun.setLaunchAttributesWithArguments(launch, project, new ArgsBuilder().getSpecDefaultsString() + selectedTarget);
+	        LaunchTiShadowRun.setLaunchAttributesWithArguments(launch, project, new ArgsBuilder().getRunDefaultsString() + selectedTarget);
 	        return launch.doSave();
 	    }
 	    catch (CoreException e) {
@@ -136,7 +136,7 @@ public class LaunchRunShortcut implements ILaunchShortcut {
     }
     
     /**
-     * Returns the -T command plus the project name for running specs on a TiShadow app.
+     * Returns the -T command plus the project name for launching TiShadow Run on a TiShadow app.
      * @return selected TiShadow project name or empty String.
      */
     private String getSelectedTiShadowProject() {
