@@ -2,6 +2,25 @@
 <?eclipse version="3.4"?>
 <plugin>
 
+	<extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="com.belatrixsf.tishadow.tests.run"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="CTRL+9">
+      </key>
+      <key
+            commandId="com.belatrixsf.tishadow.tests.runTest"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="CTRL+8">
+      </key>
+      <key
+            commandId="com.belatrixsf.tishadow.tests.runServer"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="CTRL+0">
+      </key>
+   </extension>
+
    <extension
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
