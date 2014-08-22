@@ -124,16 +124,16 @@ _2014-08-20:_ A new TiShadow Run button with a pulldown menu was added next to t
 	    
 _2014-08-21:_ Fixed bug on the TiShadow run button that was getting the default attributes from the spec config.
 
+_2014-08-22:_ Added key shortcuts to launch TiShadow server, tests and run.
+
 ---
 # Authors and Contributors
 
-* Guillermo Zunino
-* Gerardo Fernandez
-* Marcelo José
-* Emiliano Hualpa
-* Maximiliano Ambrosini
-* Veronica Villegas
-
-Contact: <a href="mailto:guillez@gmail.com">guillez@gmail.com</a>
+* Guillermo Zunino | guillez@gmail.com |
+* Gerardo Fernandez | chelo2404@gmail.com |	
+* Marcelo José | marcelo.oscar.jose@gmail.com |
+* Emiliano Hualpa | ehualpa@gmail.com |
+* Maximiliano Ambrosini | maximiliano.ambrosini@gmail.com |
+* Veronica Villegas  | urseza@gmail.com | 
 
 <!--toReplaceWithXML2-->
