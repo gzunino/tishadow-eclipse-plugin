@@ -10,9 +10,13 @@ TiShadow essentially works by building and installing a single app on iOS and An
 
 ![](http://gzunino.github.io/tishadow-eclipse-plugin/images/consoles.png "TiShadow")
 
-This plugin does a very good job on making the creation e installation as easy as possible to avoid using the OS terminals (consoles) at all. For instance, to run the TiShadow server and run the tests without using this plugin (, it is necessary to open 2 terminals. In this way, the user can use all the features the TiShadow provides in a transparent way.
+This plugin does a very good job on making the creation e installation as easy as possible to avoid using the OS terminals (consoles) at all. For instance, to run the TiShadow server and run the tests without using this plugin it's necessary to open 2 terminals. In this way, the user can use all the features the TiShadow provides in a transparent way.
 
-Using all the capabilities Eclipse provides, like wizards, shortcuts, among others,  it is possible to create a TiShadow base application, appify an existing Titanium project and one of the best features: the abitily to run tests and see the reports on junit format.
+![](http://gzunino.github.io/tishadow-eclipse-plugin/images/tishadowToolbar.png "TiShadow")
+
+Using all the capabilities Eclipse provides, like wizards, shortcuts, among others,  it is possible to create a TiShadow base application, appify an existing Titanium project, deploy new changes on the application code and one of the best features: the abitily to run tests and see the reports on junit format.
+
+[More about TiShadow](http://tishadow.yydigital.com/getting%20started "TiShadow official page by YYDigital")
 
 ---
 # Installation Guide
@@ -45,7 +49,7 @@ Note: The update site URL will depend on you Eclipse/TitaniumStudio. For a stand
 	http://download.eclipse.org/releases/kepler
 
 ---
-# Running Tests with TiShadow
+# Working with TiShadow
 
 ## Appify your project
 
@@ -78,10 +82,18 @@ Example: On Genymotion (emulator):
 
 ![](http://gzunino.github.io/tishadow-eclipse-plugin/images/consoleServer.png "TiShadow Plug-in")
 
-## Run the tests
+# Deploy
+
+Once the server is running and the appified project is installed and running on the device we will be able to deploy the code
+into the application and see the changes immediately.
+
+To do that, you need to <b>right-click</b> on the original project, <b>not the appified one</b>, 
+and then, <b> Run As > Deploy TiShadow</b> or just use the "TiShadow Deploy" menu button on the Titanium/Eclipse toolbar. 
+
+# Tests
 
 Finally, to run the tests, you need to <b>right-click</b> on the original project, <b>not the appified one</b>, 
-and then, <b> Run As > Run TiShadow Tests</b>.
+and then, <b> Run As > Run TiShadow Tests</b> or just use the "Run TiShadow Tests" menu button on the Titanium/Eclipse toolbar.
 
 ![](http://gzunino.github.io/tishadow-eclipse-plugin/images/consoleSpecs.png "TiShadow Plug-in")
 
@@ -118,16 +130,24 @@ _2014-07-31:_ A few bugs were fixed, that were related to problems when running 
 
 _2014-08-13:_ A CheatSheet page were added and help was updated.
 
+_2014-08-20:_ A new TiShadow Run button with a pulldown menu was added next to the Run TiShadow Tests button on the TiShadow Toolbar, which
+	    allows to launch the TiShadow run command on the current project.
+	    Also, a bug about buttons were not responding if the code was being edited (the cursor placed on the code editor window).
+	    
+_2014-08-21:_ Fixed bug on the TiShadow run button that was getting the default attributes from the spec config.
+
+_2014-08-22:_ Added key shortcuts to launch TiShadow server, tests and run.
+
+_2014-08-28:_ Updated tooltip, labels and help. Renamed all Run commands to Deploy.
+
 ---
 # Authors and Contributors
 
-* Guillermo Zunino
-* Gerardo Fernandez
-* Marcelo José
-* Emiliano Hualpa
-* Maximiliano Ambrosini
-* Veronica Villegas
-
-Contact: <a href="mailto:guillez@gmail.com">guillez@gmail.com</a>
+* Guillermo Zunino | guillez@gmail.com |
+* Gerardo Fernandez | chelo2404@gmail.com |	
+* Marcelo José | marcelo.oscar.jose@gmail.com |
+* Emiliano Hualpa | ehualpa@gmail.com |
+* Maximiliano Ambrosini | maximiliano.ambrosini@gmail.com |
+* Veronica Villegas  | urseza@gmail.com | 
 
 <!--toReplaceWithXML2-->
