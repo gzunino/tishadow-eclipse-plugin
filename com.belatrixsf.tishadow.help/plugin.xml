@@ -5,7 +5,7 @@
          point="org.eclipse.help.toc">
       <toc
             category="TiShadow Plugin"
-            file="TiShadow Plug-in User Guide-toc.xml"
+            file="help/TiShadow Plug-in User Guide-toc.xml"
             primary="true">
       </toc>
    </extension>
@@ -14,7 +14,7 @@
       <cheatsheet
             category="com.belatrixsf.tishadow.help.category"
             composite="false"
-            contentFile="TiShadow Plug-in Cheat Sheet.xml"
+            contentFile="help/TiShadow Plug-in Cheat Sheet.xml"
             id="com.belatrixsf.tishadow.help.cheatsheet"
             name="Running Test with TiShadow">
       </cheatsheet>
