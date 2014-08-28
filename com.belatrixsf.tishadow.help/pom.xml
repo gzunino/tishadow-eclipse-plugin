@@ -93,7 +93,7 @@
 							<resources>
 								<resource>
 									<targetPath>${project.basedir}/../</targetPath>
-									<file>${project.basedir}/TiShadow Plug-in User Guide.md</file>
+									<file>${project.basedir}/help/TiShadow Plug-in User Guide.md</file>
 									<destFileName>README.md</destFileName>
 							    	<!-- Replacing relative paths to url paths.  -->
 									<replaces>
