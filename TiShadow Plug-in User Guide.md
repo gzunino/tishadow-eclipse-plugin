@@ -10,9 +10,13 @@ TiShadow essentially works by building and installing a single app on iOS and An
 
 ![](./images/consoles.png "TiShadow")
 
-This plugin does a very good job on making the creation e installation as easy as possible to avoid using the OS terminals (consoles) at all. For instance, to run the TiShadow server and run the tests without using this plugin (, it is necessary to open 2 terminals. In this way, the user can use all the features the TiShadow provides in a transparent way.
+This plugin does a very good job on making the creation e installation as easy as possible to avoid using the OS terminals (consoles) at all. For instance, to run the TiShadow server and run the tests without using this plugin it's necessary to open 2 terminals. In this way, the user can use all the features the TiShadow provides in a transparent way.
 
-Using all the capabilities Eclipse provides, like wizards, shortcuts, among others,  it is possible to create a TiShadow base application, appify an existing Titanium project and one of the best features: the abitily to run tests and see the reports on junit format.
+![](./images/tishadowToolbar.png "TiShadow")
+
+Using all the capabilities Eclipse provides, like wizards, shortcuts, among others,  it is possible to create a TiShadow base application, appify an existing Titanium project, deploy new changes on the application code and one of the best features: the abitily to run tests and see the reports on junit format.
+
+[More about TiShadow](http://tishadow.yydigital.com/getting%20started "TiShadow official page by YYDigital")
 
 ---
 # Installation Guide
@@ -45,7 +49,7 @@ Note: The update site URL will depend on you Eclipse/TitaniumStudio. For a stand
 	http://download.eclipse.org/releases/kepler
 
 ---
-# Running Tests with TiShadow
+# Working with TiShadow
 
 ## Appify your project
 
@@ -78,10 +82,18 @@ Example: On Genymotion (emulator):
 
 ![](./images/consoleServer.png "TiShadow Plug-in")
 
-## Run the tests
+# Deploy
+
+Once the server is running and the appified project is installed and running on the device we will be able to deploy the code
+into the application and see the changes immediately.
+
+To do that, you need to <b>right-click</b> on the original project, <b>not the appified one</b>, 
+and then, <b> Run As > Deploy TiShadow</b> or just use the "TiShadow Deploy" menu button on the Titanium/Eclipse toolbar. 
+
+# Tests
 
 Finally, to run the tests, you need to <b>right-click</b> on the original project, <b>not the appified one</b>, 
-and then, <b> Run As > Run TiShadow Tests</b>.
+and then, <b> Run As > Run TiShadow Tests</b> or just use the "Run TiShadow Tests" menu button on the Titanium/Eclipse toolbar.
 
 ![](./images/consoleSpecs.png "TiShadow Plug-in")
 
@@ -125,6 +137,8 @@ _2014-08-20:_ A new TiShadow Run button with a pulldown menu was added next to t
 _2014-08-21:_ Fixed bug on the TiShadow run button that was getting the default attributes from the spec config.
 
 _2014-08-22:_ Added key shortcuts to launch TiShadow server, tests and run.
+
+_2014-08-28:_ Updated tooltip, labels and help. Renamed all Run commands to Deploy.
 
 ---
 # Authors and Contributors

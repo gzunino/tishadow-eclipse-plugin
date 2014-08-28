@@ -3,6 +3,7 @@ $(function(){
 		search: "#main_content_wrap"	
 	});
 
+
 	var $topLink  = $("#top-link");
 
 	// hide top button on top
@@ -21,4 +22,5 @@ $(function(){
 		}, 250);
 		return false;
 	});
+
 });
