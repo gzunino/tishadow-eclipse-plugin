@@ -5,7 +5,7 @@
 	<extension
          point="org.eclipse.ui.bindings">
       <key
-            commandId="com.belatrixsf.tishadow.tests.run"
+            commandId="com.belatrixsf.tishadow.tests.runDeploy"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="CTRL+9">
       </key>
@@ -39,7 +39,7 @@
             delegate="com.belatrixsf.tishadow.run.LaunchTiShadowRun"
             id="com.belatrixsf.tishadow.run.launchTiShadowRun"
             modes="run"
-            name="TiShadow Run">
+            name="TiShadow Deploy">
       </launchConfigurationType>
    </extension>
    <extension
@@ -83,14 +83,29 @@
       <shortcut
             class="com.belatrixsf.tishadow.tests.LaunchTestsShortcut"
             description="Run Jasmine specs on this project and shows results in JUnit View"
-            icon="icons/tishadow_16.png"
+            icon="icons/tishadow-spec_16.png"
             id="com.belatrixsf.tishadow.tests.launchTiShadowTestsShortcut"
             label="TiShadow Tests"
             modes="run">
          <contextualLaunch>
             <enablement>true</enablement>
             <contextLabel
-                  label="Run TiShadow Tests"
+                  label="TiShadow Tests"
+                  mode="run">
+            </contextLabel>
+         </contextualLaunch>
+      </shortcut>
+      <shortcut
+            class="com.belatrixsf.tishadow.run.LaunchRunShortcut"
+            description="Command to deploy your app to all (tishadow) connected devices."
+            icon="icons/tishadow-run_run_16.png"
+            id="com.belatrixsf.tishadow.tests.launchTiShadowDeployShortcut"
+            label="TiShadow Deploy"
+            modes="run">
+         <contextualLaunch>
+            <enablement></enablement>
+            <contextLabel
+                  label="TiShadow Deploy"
                   mode="run">
             </contextLabel>
          </contextualLaunch>
@@ -190,12 +205,12 @@
                   tooltip="Run tests on the selected project">
             </command>
             <command
-                  commandId="com.belatrixsf.tishadow.tests.run"
+                  commandId="com.belatrixsf.tishadow.tests.runDeploy"
                   icon="icons/tishadow-run_run_16.png"
                   id="com.belatrixsf.tishadow.run.runTiShadow.pulldown"
-                  label="TS run"
+                  label="TS deploy"
                   style="pulldown"
-                  tooltip="Run TiShadow on the selected project">
+                  tooltip="TiShadow Deploy on the selected project">
             </command>
          </toolbar>
       </menuContribution>
@@ -273,8 +288,8 @@
       <command
             categoryId="com.belatrixsf.tishadow.tests.category"
             defaultHandler="com.belatrixsf.tishadow.handlers.TiShadowRun"
-            id="com.belatrixsf.tishadow.tests.run"
-            name="TiShadow Run">
+            id="com.belatrixsf.tishadow.tests.runDeploy"
+            name="TiShadow Deploy">
          <commandParameter
                id="com.belatrixsf.tishadow.run.config"
                name="runConfig"

@@ -37,10 +37,25 @@
          After that, you need to run the appified project on a device or emulator.<br/><br/>Example: <b>On Genymotion:</b> <br/><br/>1. Open Genymotion. <br/><br/>2. Start your preferred device. <br/><br/>3. Start the appified project.
       </description>
    </item>
+   <item
+         title="Deploy">
+      <description>
+         Perform any code change you need and deploy into the appified app. To do this, you have two options:
+
+1. Right click on the appified project that you just created, Run As.. Run TiShadow Tests.
+2. Click on the &quot;TiShadow Deploy&quot; menu button on the Titanium/Eclipse toolbar.
+      </description>
+            <command
+            required="false"
+            serialization="com.belatrixsf.tishadow.tests.runDeploy"/>
+   </item>
     <item
          title="Run the tests">
       <description>
-         Finally, to run the tests, you need to do the following:<br/><br/>1. Right click on the appified project that you just created, Run As.. Run TiShadow Tests.
+         Finally, to run the tests you have two options:
+
+1. Right click on the appified project that you just created, Run As&gt;Run TiShadow Tests.
+2. Select the project and click on the &quot;Run TiShadow Tests&quot; menu button on the Titanium/Eclipse toolbar.
       </description>
       <command
             required="false"

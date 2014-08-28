@@ -21,7 +21,7 @@
 				<script type="text/javascript" src="javascript/jquery.stoc.js"></script>
 				<script type="text/javascript" src="javascript/ui.js"></script>
 			</head>
-			<body>
+			<body id="top">
 				<div id="header_wrap" class="outer">
 					<header class="inner">
 						<a id="forkme_banner" href="https://github.com/gzunino/tishadow-eclipse-plugin">View on GitHub</a>
