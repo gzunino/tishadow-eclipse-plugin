@@ -140,6 +140,8 @@ _2014-08-22:_ Added key shortcuts to launch TiShadow server, tests and run.
 
 _2014-08-28:_ Updated tooltip, labels and help. Renamed all Run commands to Deploy.
 
+_2014-08-29:_ Fixed bugs on UI: error message alerts.
+
 ---
 # Authors and Contributors
 
