@@ -25,6 +25,7 @@ import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
@@ -57,7 +58,13 @@ public class LaunchTestsShortcut implements ILaunchShortcut {
     	if (project != null){
     		searchAndLaunch(project, mode);
     	} else {
-    		MessageDialog.openError(null, "Error", "To launch TiShadow tests, you need to select a project.");
+    		Display.getDefault().asyncExec(new Runnable() {
+    			public void run() {
+    				Display display = Display.getDefault();
+    				Shell shell = display.getActiveShell();
+    				MessageDialog.openError(shell, "Error", "To launch TiShadow tests, you need to select a project.");
+    			}
+    		});
     	}
     }
 
@@ -147,7 +154,13 @@ public class LaunchTestsShortcut implements ILaunchShortcut {
     	IProject tiShadowProjectSelected = null;
     	
     	if (tiShadowProjectsList.isEmpty()){
-    		MessageDialog.openError(null, "No TiShadow appified projects found", "To run tests on a Titanium module, you need a Tishadow app to run on.");
+    		Display.getDefault().asyncExec(new Runnable() {
+    			public void run() {
+    				Display display = Display.getDefault();
+    				Shell shell = display.getActiveShell();
+    				MessageDialog.openError(shell, "No TiShadow appified projects found", "To run tests on a Titanium module, you need a Tishadow app to run on.");
+    			}
+    		});
     	} else {
     		tiShadowProjectSelected = getSelectedProject(tiShadowProjectsList);
 	    	if (! tiShadowProjectSelected.getName().isEmpty()){

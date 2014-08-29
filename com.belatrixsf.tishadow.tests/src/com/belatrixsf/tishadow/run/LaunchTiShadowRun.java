@@ -18,6 +18,9 @@ import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 import com.belatrixsf.tishadow.LaunchUtils;
 import com.belatrixsf.tishadow.preferences.page.PreferenceValues;
@@ -47,18 +50,31 @@ public class LaunchTiShadowRun implements ILaunchConfigurationDelegate {
 		workingCopy.setAttribute(IExternalToolConstants.ATTR_TOOL_ARGUMENTS, toolArguments);
 		workingCopy.setAttribute(IExternalToolConstants.ATTR_WORKING_DIRECTORY, projectLoc);
 		workingCopy.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, envVars);
-		workingCopy.launch(mode, mon);
 		
-		monitor.subTask("Running tests...");
-		final Job job = Job.getJobManager().currentJob();
-		
-		if (job != null) {
-			job.done(monitor.isCanceled() ? Status.CANCEL_STATUS : Status.OK_STATUS);
+		Job job = null;
+		try {
+			job = Job.getJobManager().currentJob();
+			workingCopy.launch(mode, mon);
+			monitor.subTask("Running Deploy...");
+		} catch (Exception e) {
+			Display.getDefault().asyncExec(new Runnable() {
+				public void run() {
+					Display display = Display.getDefault();
+					Shell shell = display.getActiveShell();
+					MessageDialog.openError(shell, "Error executing TiShadow Command",
+							"There was a problem while trying to run TiShadow. \nPlease check your TiShadow configuration path on Window>Preferences>Tishadow");
+				}
+			});
+			e.printStackTrace();
+		} finally {
+			if (job != null) {
+				job.done(monitor.isCanceled() ? Status.CANCEL_STATUS
+						: Status.OK_STATUS);
+			}
+			if (monitor.isCanceled() && launch.canTerminate() || job == null) {
+				launch.terminate();
+			}
 		}
-		if (monitor.isCanceled() && launch.canTerminate()) {
-			launch.terminate();
-		}
-		
 		mon.done();
 	}
 

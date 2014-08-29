@@ -17,6 +17,8 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 import com.belatrixsf.tishadow.LaunchUtils;
 import com.belatrixsf.tishadow.preferences.page.PreferenceValues;
@@ -28,7 +30,13 @@ public class LaunchTiShadowServer implements ILaunchConfigurationDelegate {
 	@Override
 	public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		if(LaunchUtils.isServerLaunched(true)) {
-			MessageDialog.openError(null, "Error", "An instance of the server is already running.");
+			Display.getDefault().asyncExec(new Runnable() {
+				public void run() {
+					Display display = Display.getDefault();
+					Shell shell = display.getActiveShell();
+					MessageDialog.openError(shell, "Error", "An instance of the server is already running.");
+				}
+			});
 			return;
 		}
 

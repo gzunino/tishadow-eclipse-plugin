@@ -20,11 +20,15 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.INewWizard;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.WorkingSetGroup;
 import org.eclipse.ui.ide.undo.CreateProjectOperation;
 import org.eclipse.ui.ide.undo.WorkspaceUndoUtil;
@@ -184,8 +188,9 @@ public abstract class AbstractTiShadowWizard extends
 						Helper.getEnvVars());
 		
 		final String inputForRunTiShadowCommand = getInputForRunTiShadowCommand();
+		final String tishadowJob = "TiShadow App Creation";
 		
-		job = new Job("TiShadow App Creation") {
+		job = new Job(tishadowJob) {
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				this.setThread(Thread.currentThread());
@@ -195,6 +200,7 @@ public abstract class AbstractTiShadowWizard extends
 					tishadowRunner.runTiShadow(AbstractTiShadowWizard.this, inputForRunTiShadowCommand, monitor);
 										
 				} catch (Exception e) {
+					stopJob(this, tishadowJob);
 					e.printStackTrace();
 				}
 				return ASYNC_FINISH;
@@ -202,7 +208,20 @@ public abstract class AbstractTiShadowWizard extends
 		};
 		job.setUser(true);
 		job.schedule();
-		
+
+	}
+	
+	private void stopJob(Job currentJob, String tishadowJob) {
+		currentJob.cancel();
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				Display display = Display.getDefault();
+				Shell shell = display.getActiveShell();
+				MessageDialog.openError(shell, "Error executing TiShadow Command",
+						"There was a problem while trying to run TiShadow. \nPlease check your TiShadow configuration path on Window>Preferences>Tishadow");
+			}
+		});
+		currentJob.done(null);
 	}
 
 	abstract String getWorkingDirectory();

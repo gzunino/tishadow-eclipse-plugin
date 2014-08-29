@@ -69,61 +69,86 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 
 	@Override
 	public void launch(ILaunchConfiguration configuration, final String mode,
-			ILaunch launch, final IProgressMonitor monitor) throws CoreException {
+			ILaunch launch, final IProgressMonitor monitor)
+			throws CoreException {
 		monitor.beginTask("Running Tests", 1500);
 		showWizard();
-		
-		final String projectLoc = configuration.getAttribute(IExternalToolConstants.ATTR_WORKING_DIRECTORY, "");
+
+		final String projectLoc = configuration.getAttribute(
+				IExternalToolConstants.ATTR_WORKING_DIRECTORY, "");
 		final IProject project = LaunchUtils.getProject(projectLoc);
 
 		if (project == null || !project.isOpen()) {
 			Display.getDefault().asyncExec(new Runnable() {
 				@Override
 				public void run() {
-					MessageDialog.openError(null, "Error", "Project " + ((project != null) ? project.getName() : "" )+" is closed or doesn't exist");
-					monitor.done();
+					Display display = Display.getDefault();
+					Shell shell = display.getActiveShell();
+					MessageDialog.openError(shell, "Error", "Project "
+							+ ((project != null) ? project.getName() : "")
+							+ " is closed or doesn't exist");
 				}
 			});
+			monitor.done();
 			return;
 		}
-		
-		ILaunchConfigurationType type = DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurationType("org.eclipse.ui.externaltools.ProgramLaunchConfigurationType");
 
-		final ILaunchConfigurationWorkingCopy workingCopy = type.newInstance(null, "TiShadow Spec");
+		ILaunchConfigurationType type = DebugPlugin
+				.getDefault()
+				.getLaunchManager()
+				.getLaunchConfigurationType(
+						"org.eclipse.ui.externaltools.ProgramLaunchConfigurationType");
+
+		final ILaunchConfigurationWorkingCopy workingCopy = type.newInstance(
+				null, "TiShadow Spec");
 		@SuppressWarnings("unchecked")
-		final Map<String, String> envVars = configuration.getAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, new HashMap<String, String>());
-		final String location = configuration.getAttribute(IExternalToolConstants.ATTR_LOCATION,"");
-		final boolean showConsole = configuration.getAttribute(IExternalToolConstants.ATTR_SHOW_CONSOLE, false);
-		final String toolArguments = configuration.getAttribute(IExternalToolConstants.ATTR_TOOL_ARGUMENTS, "");
+		final Map<String, String> envVars = configuration.getAttribute(
+				ILaunchManager.ATTR_ENVIRONMENT_VARIABLES,
+				new HashMap<String, String>());
+		final String location = configuration.getAttribute(
+				IExternalToolConstants.ATTR_LOCATION, "");
+		final boolean showConsole = configuration.getAttribute(
+				IExternalToolConstants.ATTR_SHOW_CONSOLE, false);
+		final String toolArguments = configuration.getAttribute(
+				IExternalToolConstants.ATTR_TOOL_ARGUMENTS, "");
 
-		workingCopy.setAttribute(IExternalToolConstants.ATTR_LOCATION, location);
-		workingCopy.setAttribute(IExternalToolConstants.ATTR_SHOW_CONSOLE, showConsole);
-		workingCopy.setAttribute(IExternalToolConstants.ATTR_TOOL_ARGUMENTS, toolArguments);
-		workingCopy.setAttribute(IExternalToolConstants.ATTR_WORKING_DIRECTORY, projectLoc);
-		workingCopy.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, envVars);
-		
+		workingCopy
+				.setAttribute(IExternalToolConstants.ATTR_LOCATION, location);
+		workingCopy.setAttribute(IExternalToolConstants.ATTR_SHOW_CONSOLE,
+				showConsole);
+		workingCopy.setAttribute(IExternalToolConstants.ATTR_TOOL_ARGUMENTS,
+				toolArguments);
+		workingCopy.setAttribute(IExternalToolConstants.ATTR_WORKING_DIRECTORY,
+				projectLoc);
+		workingCopy.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES,
+				envVars);
+
 		try {
-			
+
 			ILaunchConfiguration newConfiguration = configuration;
-			
-			final boolean spec_touch = touchSpecFiles(configuration, project,monitor);
-			
-			/*LaunchUtils launchUtils = new LaunchUtils();
-			launchUtils.setLaunchConfiguration(newConfiguration);*/
-			
-			launchTests(mode, monitor, projectLoc, project,
-					workingCopy, spec_touch, newConfiguration);
-			
-		}
-		catch (final Exception ex) {
+
+			final boolean spec_touch = touchSpecFiles(configuration, project,
+					monitor);
+
+			/*
+			 * LaunchUtils launchUtils = new LaunchUtils();
+			 * launchUtils.setLaunchConfiguration(newConfiguration);
+			 */
+
+			launchTests(mode, monitor, projectLoc, project, workingCopy,
+					spec_touch, newConfiguration);
+
+		} catch (final Exception ex) {
 			Display.getDefault().asyncExec(new Runnable() {
 				@Override
 				public void run() {
-					MessageDialog.openError(null, "Error", ex.getMessage());
+					Display display = Display.getDefault();
+					Shell shell = display.getActiveShell();
+					MessageDialog.openError(shell, "Error", ex.getMessage());
 					ex.printStackTrace();
 				}
 			});
-	    }
+		}
 	}
 
 	protected void launchTests(String mode,
@@ -237,7 +262,11 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 			Display.getDefault().syncExec(new Runnable() {
 				@Override
 				public void run() {
-					MessageDialog.openError(null, "Error", "There are no appified versions of the base project.");
+					Display display = Display.getDefault();
+					Shell shell = display.getActiveShell();
+					MessageDialog
+							.openError(shell, "Error",
+									"There are no appified versions of the base project.");
 				}
 			});
 		} else {
@@ -246,7 +275,9 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 				public void run() {
 					Display display = Display.getDefault();
 					Shell shell = display.getActiveShell();
-					boolean result = MessageDialog.openQuestion(shell, "Error", "There are no appified versions of the project.\nWould you like to appify it?");
+					boolean result = MessageDialog
+							.openQuestion(shell, "Error",
+									"There are no appified versions of the project.\nWould you like to appify it?");
 					if (result) {
 						AppifyTiShadowWizard wizard = new AppifyTiShadowWizard();
 						WizardDialog w = new WizardDialog(shell, wizard);
@@ -307,7 +338,6 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 	}
 	
 	private ToolBar createDropdown(Composite parent) {
-        //Button button = super.createButton(parent, id, label, defaultButton);
 		((GridLayout) parent.getLayout()).numColumns++;
         ToolBar toolbar = new ToolBar(parent, SWT.NONE);
         
@@ -315,7 +345,6 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
         tils.createControl(toolbar);
         
         GridData data = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
-//		int widthHint = MessageDialog.convertHorizontalDLUsToPixels(IDialogConstants.BUTTON_WIDTH);
 		Point minSize = toolbar.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
 		data.widthHint = minSize.x;
 		toolbar.setLayoutData(data);

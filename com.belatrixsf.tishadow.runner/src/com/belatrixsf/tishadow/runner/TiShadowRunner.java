@@ -18,6 +18,9 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.IStreamListener;
 import org.eclipse.debug.core.model.IStreamMonitor;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 public class TiShadowRunner {
 	private ILaunchConfigurationWorkingCopy workingCopy;
@@ -79,6 +82,14 @@ public class TiShadowRunner {
 			}
 			
 		} catch (CoreException e) {
+			Display.getDefault().asyncExec(new Runnable() {
+				public void run() {
+					Display display = Display.getDefault();
+					Shell shell = display.getActiveShell();
+					MessageDialog.openError(shell, "Error executing TiShadow Command",
+							"There was a problem while trying to run TiShadow. \nPlease check your TiShadow configuration path on Window>Preferences>Tishadow");
+				}
+			});
 			throw new Exception(e.getCause());
 		}
 	}
