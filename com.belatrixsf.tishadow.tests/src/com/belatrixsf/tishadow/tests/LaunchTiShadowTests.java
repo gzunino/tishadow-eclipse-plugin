@@ -130,11 +130,6 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 			final boolean spec_touch = touchSpecFiles(configuration, project,
 					monitor);
 
-			/*
-			 * LaunchUtils launchUtils = new LaunchUtils();
-			 * launchUtils.setLaunchConfiguration(newConfiguration);
-			 */
-
 			launchTests(mode, monitor, projectLoc, project, workingCopy,
 					spec_touch, newConfiguration);
 
@@ -244,7 +239,6 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 					
 					appifyIfNotTiModule(project);
 					
-//					showError("Error", "There are no appified versions of the project.");
 				}
 			} else {
 

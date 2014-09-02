@@ -80,7 +80,6 @@ public class TiLaunchShortcuts {
 		toolbar.pack ();
 	}
 	
-	@SuppressWarnings("unchecked")
 	private void fillMenu(MenuManager menuManager) {
 		
 		LaunchConfigurationManager configurationManager = DebugUIPlugin.getDefault().getLaunchConfigurationManager();

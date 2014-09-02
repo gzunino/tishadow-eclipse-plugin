@@ -41,6 +41,7 @@ public class ArgsBuilder {
 	private Argument runPlatform = new Argument("-P", "platform", "Target platform", false,true);
 	private Argument runIncludeDotFiles = new Argument("-D", "include-dot-files", "Includes dot files in the bundle (defaults to false)", false, false);
 	private Argument runTarget = new Argument("-T", "target", "target TiShadow app (defaults to name on tiapp.xml or moduleid on manifest)", false, true);
+	private Argument runAutomaticUpdates = new Argument("@", "automatic updates", "when any files in the Resources directory are modified the run command will executed", false, false);	
 	
 	public ArrayList<Argument> getServerDefaults(){
 		
@@ -110,6 +111,7 @@ public class ArgsBuilder {
 		argumentsList.add(runPlatform);
 		argumentsList.add(runIncludeDotFiles);
 		argumentsList.add(runTarget);
+		argumentsList.add(runAutomaticUpdates);
 		
 		return argumentsList;
 	}

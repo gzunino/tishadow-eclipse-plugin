@@ -37,7 +37,6 @@ public class LaunchTiShadowRun implements ILaunchConfigurationDelegate {
 
 		final String projectLoc = configuration.getAttribute(IExternalToolConstants.ATTR_WORKING_DIRECTORY, "");
 
-		@SuppressWarnings("unchecked")
 		final Map<String, String> envVars = configuration.getAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, new HashMap<String, String>());
 		final String location = configuration.getAttribute(IExternalToolConstants.ATTR_LOCATION, "");
 		final boolean showConsole = configuration.getAttribute(IExternalToolConstants.ATTR_SHOW_CONSOLE, false);
@@ -57,14 +56,9 @@ public class LaunchTiShadowRun implements ILaunchConfigurationDelegate {
 			workingCopy.launch(mode, mon);
 			monitor.subTask("Running Deploy...");
 		} catch (Exception e) {
-			Display.getDefault().asyncExec(new Runnable() {
-				public void run() {
-					Display display = Display.getDefault();
-					Shell shell = display.getActiveShell();
-					MessageDialog.openError(shell, "Error executing TiShadow Command",
-							"There was a problem while trying to run TiShadow. \nPlease check your TiShadow configuration path on Window>Preferences>Tishadow");
-				}
-			});
+			showAsyncErrorMsg(
+					"Error executing TiShadow Command",
+					"There was a problem while trying to run TiShadow. \nPlease check your TiShadow command path on Window>Preferences>Tishadow");
 			e.printStackTrace();
 		} finally {
 			if (job != null) {
@@ -76,6 +70,16 @@ public class LaunchTiShadowRun implements ILaunchConfigurationDelegate {
 			}
 		}
 		mon.done();
+	}
+
+	private void showAsyncErrorMsg(final String title, final String msg) {
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				Display display = Display.getDefault();
+				Shell shell = display.getActiveShell();
+				MessageDialog.openError(shell, title,msg);
+			}
+		});
 	}
 
 	public static String getLaunchDir(IProject project) {
@@ -93,4 +97,5 @@ public class LaunchTiShadowRun implements ILaunchConfigurationDelegate {
 		configuration.setAttribute(IExternalToolConstants.ATTR_SHOW_CONSOLE, true);
 		configuration.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, LaunchUtils.getEnvVars());
 	}
+	
 }

@@ -51,6 +51,16 @@ Note: The update site URL will depend on you Eclipse/TitaniumStudio. For a stand
 ---
 # Working with TiShadow
 
+## Setup TiShadow plugin
+
+As soon as you have installed TiShadow plugin for Titanium, make sure the plugin recognizes accordingly the TiShadow version installed on your system. To do that, go to <b>Windows > Preferences</b> and select <b>TiShadow</b>.
+
+Check for the TiShadow version on the top. If is not shown, browse for your current TiShadow path location and apply the changes.
+
+Also you can configure the default port and host for your wizards.
+
+![](./images/TiShadowPreferences.png "TiShadow Plug-in")
+
 ## Appify your project
 
 First you have to "appify" the project you want to test, which will create a new app that is basically the same but with the TiShadow libraries included.

@@ -32,7 +32,7 @@ public class RunServer extends AbstractHandler implements IRunnerCallback {
 										.getKind() == DebugEvent.TERMINATE)) {
 							DebugPlugin.getDefault().removeDebugEventListener(this);
 							try {
-								// In order to refresh the plugin button we need
+								// In order to refresh the plug-in button we need
 								// to wait some time to wait for the server to
 								// be running.
 								Thread.sleep(1000);

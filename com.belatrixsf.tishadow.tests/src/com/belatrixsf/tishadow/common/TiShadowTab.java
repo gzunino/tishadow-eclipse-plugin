@@ -34,6 +34,7 @@ public abstract class TiShadowTab extends ProgramMainTab {
 	private GridData gridData = null;
 	protected String argumentsString;
 	protected boolean fInitializing = false;
+	private static final String AUTOMATIC_UPDATES_COMMAND="@";
 	
 	protected abstract ArrayList<Argument> getTabOptions();
 		
@@ -203,29 +204,49 @@ public abstract class TiShadowTab extends ProgramMainTab {
 	protected void checkboxClicked(final String parameter,
 			final boolean hasText, final Button argCheckbox,
 			final Text argTextBox) {
-		if(hasText){
-			if(argCheckbox.getSelection()){
-				argumentField.setText(argumentField.getText() + parameter + " " + argTextBox.getText() + " ");
+		if (isAutomaticUpdate(parameter)) {
+			if (argCheckbox.getSelection()) {
+				argumentsString = parameter + " " + argumentsString;
+				argumentField
+						.setText(argumentsString);
+				argumentsString = argumentField.getText();
+			} else {
+				String s = argumentField.getText();
+				s = s.replace(parameter + " ", "");
+				argumentField.setText(s);
+				argumentsString = argumentField.getText();
+			}
+		} else if (hasText) {
+			if (argCheckbox.getSelection()) {
+				argumentField.setText(argumentField.getText() + parameter + " "
+						+ argTextBox.getText() + " ");
 				argTextBox.setEnabled(true);
-				argumentsString =argumentField.getText();
-			}else{
+				argumentsString = argumentField.getText();
+			} else {
 				String s = argumentField.getText();
 				s = s.replace(parameter + " " + argTextBox.getText() + " ", "");
 				argTextBox.setEnabled(false);
 				argumentField.setText(s);
-				argumentsString =argumentField.getText();
+				argumentsString = argumentField.getText();
 			}
-		}else{
-			if(argCheckbox.getSelection()){
-					argumentField.setText(argumentField.getText() + parameter + " ");
-					argumentsString =argumentField.getText();
-			}else{
+		} else {
+			if (argCheckbox.getSelection()) {
+				argumentField
+						.setText(argumentField.getText() + parameter + " ");
+				argumentsString = argumentField.getText();
+			} else {
 				String s = argumentField.getText();
 				s = s.replace(parameter + " ", "");
 				argumentField.setText(s);
-				argumentsString =argumentField.getText();
+				argumentsString = argumentField.getText();
 			}
 		}
 	}
+
+	private boolean isAutomaticUpdate(String parameter) {
+		return parameter.equals(AUTOMATIC_UPDATES_COMMAND);
+	}
+	
+	
 	
 }

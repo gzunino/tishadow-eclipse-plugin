@@ -87,7 +87,7 @@ public class TiShadowRunner {
 					Display display = Display.getDefault();
 					Shell shell = display.getActiveShell();
 					MessageDialog.openError(shell, "Error executing TiShadow Command",
-							"There was a problem while trying to run TiShadow. \nPlease check your TiShadow configuration path on Window>Preferences>Tishadow");
+							"There was a problem while trying to run TiShadow. \nPlease check your TiShadow command path on Window>Preferences>Tishadow");
 				}
 			});
 			throw new Exception(e.getCause());
@@ -123,8 +123,6 @@ public class TiShadowRunner {
 		IStatus status = ResourcesPlugin.getWorkspace().validateNatureSet(newNatures);
 		return status.isOK();
 	}
-	
-	
 	
 	private void addDebugEventListener(final ILaunch launch, final IRunnerCallback callback, final IProgressMonitor monitor) {
 		setObjectToReturn(launch);

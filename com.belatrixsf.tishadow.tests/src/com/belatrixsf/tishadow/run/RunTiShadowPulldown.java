@@ -17,7 +17,8 @@ import org.eclipse.ui.services.IServiceLocator;
 
 public class RunTiShadowPulldown extends CompoundContributionItem implements IWorkbenchContribution {  
 	  
-	 private IServiceLocator mServiceLocator;  
+	 private IServiceLocator mServiceLocator;
+	 public static final String COMMAND_ID = "com.belatrixsf.tishadow.run.runDeploy";
 	  
 	 public RunTiShadowPulldown() {  
 	 }  
@@ -44,9 +45,9 @@ public class RunTiShadowPulldown extends CompoundContributionItem implements IWo
 		 
 		 for (int i = 0 ; i < launchs.length ; i++) {
 			 
-			 Map<String,String> pullDownConfig = Collections.singletonMap("com.belatrixsf.tishadow.run.config", launchs[i].getName());
+			 Map<String,String> pullDownConfig = Collections.singletonMap("com.belatrixsf.tishadow.config", launchs[i].getName());
 			 
-			 final CommandContributionItemParameter contributionParameter = new CommandContributionItemParameter(mServiceLocator, null, "com.belatrixsf.tishadow.tests.run",  
+			 final CommandContributionItemParameter contributionParameter = new CommandContributionItemParameter(mServiceLocator, null, COMMAND_ID,  
 					    CommandContributionItem.STYLE_PUSH);
 			 contributionParameter.label = (i+1) + ". " + launchs[i].getName();
 			 contributionParameter.visibleEnabled = true;

@@ -218,7 +218,7 @@ public abstract class AbstractTiShadowWizard extends
 				Display display = Display.getDefault();
 				Shell shell = display.getActiveShell();
 				MessageDialog.openError(shell, "Error executing TiShadow Command",
-						"There was a problem while trying to run TiShadow. \nPlease check your TiShadow configuration path on Window>Preferences>Tishadow");
+						"There was a problem while trying to run TiShadow. \nPlease check your TiShadow command path on Window>Preferences>Tishadow");
 			}
 		});
 		currentJob.done(null);

@@ -13,20 +13,28 @@ import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.handlers.HandlerUtil;
+
+import com.belatrixsf.tishadow.run.LaunchRunShortcut;
 import com.belatrixsf.tishadow.runner.IRunnerCallback;
 import com.belatrixsf.tishadow.tests.LaunchTestsShortcut;
 
-public class RunTest extends AbstractHandler implements IRunnerCallback {
+/**
+ *  This class consists on the command parameter or the contextual selection.
+ * */
+public class TiShadowHandler extends AbstractHandler implements IRunnerCallback {
 
-	
+	public static final String CONFIGURATION_PARAMETER = "com.belatrixsf.tishadow.config";
+	public static final String RUN_TYPE_PARAMETER = "com.belatrixsf.tishadow.runType";
+	private static String runTypeParameter;
+	 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		if(event.getParameter("com.belatrixsf.tishadow.tests.config") != null){
-			final ILaunchConfiguration launchConfiguration = getLaunchConfiguration(event.getParameter("com.belatrixsf.tishadow.tests.config"));
+		if(event.getParameter(CONFIGURATION_PARAMETER) != null){
+			final ILaunchConfiguration launchConfiguration = getLaunchConfiguration(event.getParameter(CONFIGURATION_PARAMETER), event.getParameter(RUN_TYPE_PARAMETER));
 			
 				System.out.println("Config executed >> " + launchConfiguration.getName());
 			
-	            Job job = new Job("TiShadow Tests") {
+	            Job job = new Job("TiShadow") {
 					@Override
 					protected IStatus run(IProgressMonitor monitor) {
 						this.setThread(Thread.currentThread());
@@ -42,18 +50,35 @@ public class RunTest extends AbstractHandler implements IRunnerCallback {
 				job.schedule();
 		} else {
 			ISelection selection = HandlerUtil.getCurrentSelection(event);
-			LaunchTestsShortcut shortcut = new LaunchTestsShortcut();
-			shortcut.launch(selection, "run");
+			
+			//////  DELETE after refactoring... 
+			runTypeParameter = event.getParameter(RUN_TYPE_PARAMETER);
+			if (runTypeParameter.equals("deploy")) {
+				LaunchRunShortcut shortcut = new LaunchRunShortcut();
+				shortcut.launch(selection, "run");
+			}
+			if (runTypeParameter.equals("test")) {
+				LaunchTestsShortcut shortcut = new LaunchTestsShortcut();
+				shortcut.launch(selection, "run");
+			}
+			////// DELETE
 		}
 
 		return null;
 	}
 	
-	private ILaunchConfiguration getLaunchConfiguration(String runConfigName){
+	private ILaunchConfiguration getLaunchConfiguration(String runConfigName, String runTypeParameter){
 		ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
-		ILaunchConfigurationType type = launchManager.getLaunchConfigurationType("com.belatrixsf.tishadow.tests.launchTiShadowTests");
+		ILaunchConfigurationType type = null;
+		
+		if (runTypeParameter.equals("deploy")) {
+			type = launchManager.getLaunchConfigurationType("com.belatrixsf.tishadow.run.launchTiShadowRun");
+		}
         ILaunchConfiguration[] launchs = null;
-        
+		if (runTypeParameter.equals("test")) {
+			 type = launchManager.getLaunchConfigurationType("com.belatrixsf.tishadow.tests.launchTiShadowTests");
+		}
+		
         try {
         	launchs = launchManager.getLaunchConfigurations(type);
 		} catch (CoreException e) {
@@ -70,6 +95,7 @@ public class RunTest extends AbstractHandler implements IRunnerCallback {
 	@Override
 	public void onRunnerTishadowFinish(Object response) {
 		// TODO Auto-generated method stub
+		
 	}
 	
 }

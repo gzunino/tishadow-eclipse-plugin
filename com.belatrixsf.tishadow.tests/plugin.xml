@@ -5,7 +5,7 @@
 	<extension
          point="org.eclipse.ui.bindings">
       <key
-            commandId="com.belatrixsf.tishadow.tests.runDeploy"
+            commandId="com.belatrixsf.tishadow.run.runDeploy"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="CTRL+9">
       </key>
@@ -205,12 +205,16 @@
                   tooltip="Run tests on the selected project">
             </command>
             <command
-                  commandId="com.belatrixsf.tishadow.tests.runDeploy"
+                  commandId="com.belatrixsf.tishadow.run.runDeploy"
                   icon="icons/tishadow-run_run_16.png"
                   id="com.belatrixsf.tishadow.run.runTiShadow.pulldown"
                   label="TS deploy"
                   style="pulldown"
                   tooltip="TiShadow Deploy on the selected project">
+               <parameter
+                     name="com.belatrixsf.tishadow.runType"
+                     value="deploy">
+               </parameter>
             </command>
          </toolbar>
       </menuContribution>
@@ -287,12 +291,17 @@
       </command>
       <command
             categoryId="com.belatrixsf.tishadow.tests.category"
-            defaultHandler="com.belatrixsf.tishadow.handlers.TiShadowRun"
-            id="com.belatrixsf.tishadow.tests.runDeploy"
+            defaultHandler="com.belatrixsf.tishadow.handlers.TiShadowHandler"
+            id="com.belatrixsf.tishadow.run.runDeploy"
             name="TiShadow Deploy">
          <commandParameter
-               id="com.belatrixsf.tishadow.run.config"
+               id="com.belatrixsf.tishadow.config"
                name="runConfig"
+               optional="true">
+         </commandParameter>
+         <commandParameter
+               id="com.belatrixsf.tishadow.runType"
+               name="deploy"
                optional="true">
          </commandParameter>
       </command>
