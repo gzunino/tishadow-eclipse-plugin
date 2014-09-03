@@ -5,6 +5,7 @@
 		<topic href="help/TiShadow Plug-in User Guide.html#Problems" label="Problems?"></topic>
 	</topic>
 	<topic href="help/TiShadow Plug-in User Guide.html#WorkingwithTiShadow" label="Working with TiShadow">
+		<topic href="help/TiShadow Plug-in User Guide.html#SetupTiShadowplugin" label="Setup TiShadow plugin"></topic>
 		<topic href="help/TiShadow Plug-in User Guide.html#Appifyyourproject" label="Appify your project"></topic>
 		<topic href="help/TiShadow Plug-in User Guide.html#StarttheTiShadowserver" label="Start the TiShadow server"></topic>
 		<topic href="help/TiShadow Plug-in User Guide.html#Runtheappifiedproject" label="Run the appified project"></topic>
