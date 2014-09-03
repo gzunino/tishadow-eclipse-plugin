@@ -92,33 +92,41 @@ public abstract class TiShadowTab extends ProgramMainTab {
 	
 	@Override
 	protected void updateArgument(ILaunchConfiguration configuration) {
-		
-		String [] argumentsNames = new String[argumentsList.size()];
-		for(int i=0; i<argumentsList.size(); i++){
+
+		String[] argumentsNames = new String[argumentsList.size()];
+		for (int i = 0; i < argumentsList.size(); i++) {
 			argumentsNames[i] = argumentsList.get(i).getArgumentShort();
 		}
-		
+
 		super.updateArgument(configuration);
-		if(!argumentField.getText().substring(argumentField.getText().length() - 1).equals(" ")){
-			argumentField.setText(argumentField.getText()+" ");
+		if (!argumentField.getText()
+				.substring(argumentField.getText().length() - 1).equals(" ")) {
+			argumentField.setText(argumentField.getText() + " ");
 		}
-				
-		for(int i = 0; i < argumentsList.size(); i++){
-			if (argumentField.getText().contains(" "+argumentsNames[i])){
+		
+		for (int i = 0; i < argumentsList.size(); i++) {
+			if (argumentField.getText().contains(" " + argumentsNames[i]) || argumentField.getText().contains(argumentsNames[i] + " ")) {
 				checkBoxMap.get(argumentsNames[i]).setSelection(true);
-				if(textBoxMap.get(argumentsNames[i]+"_textBox") != null){
-					textBoxMap.get(argumentsNames[i]+"_textBox").setEnabled(true);
-					String s = argumentField.getText(); //Since we are modifying the text on the parameters, and these have listeners to modify the argumentField, we save the state of the argumentField
-					textBoxMap.get(argumentsNames[i]+"_textBox").setText(findParameterTextIndex(argumentsNames[i]));
-					argumentField.setText(s); //We set to the argumentField the saved value.
+				if (textBoxMap.get(argumentsNames[i] + "_textBox") != null) {
+					textBoxMap.get(argumentsNames[i] + "_textBox").setEnabled(true);
+					 //Since we are modifying the text on the parameters, and these have listeners
+					 //to modify the argumentField, we save the state of the argumentField
+					String s = argumentField.getText(); 
+					textBoxMap.get(argumentsNames[i] + "_textBox").setText(
+							findParameterTextIndex(argumentsNames[i]));
+					// We set to the argumentField the saved value.
+					argumentField.setText(s); 
 				}
-			}else{
+			} else {
 				checkBoxMap.get(argumentsNames[i]).setSelection(false);
-				if(textBoxMap.get(argumentsNames[i]+"_textBox") != null){
-					textBoxMap.get(argumentsNames[i]+"_textBox").setEnabled(false);
-					String s = argumentField.getText(); //Since we are modifying the text on the parameters, and these have listeners to modify the argumentField, we save the state of the argumentField
-					textBoxMap.get(argumentsNames[i]+"_textBox").setText("");
-					argumentField.setText(s); //We set to the argumentField the saved value.
+				if (textBoxMap.get(argumentsNames[i] + "_textBox") != null) {
+					textBoxMap.get(argumentsNames[i] + "_textBox").setEnabled(false);
+					// Since we are modifying the text on the parameters, and
+					// these have listeners to modify the argumentField, we
+					// save the state of the argumentField
+					String s = argumentField.getText(); 
+					textBoxMap.get(argumentsNames[i] + "_textBox").setText("");
+					argumentField.setText(s); // We set to the argumentField the saved value.
 				}
 			}
 		}

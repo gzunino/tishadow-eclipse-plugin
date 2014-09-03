@@ -24,7 +24,11 @@ import com.belatrixsf.tishadow.tests.LaunchTestsShortcut;
 public class TiShadowHandler extends AbstractHandler implements IRunnerCallback {
 
 	public static final String CONFIGURATION_PARAMETER = "com.belatrixsf.tishadow.config";
+	public static final String TEST_LAUNCH_CONFIGURATION_PARAMETER = "com.belatrixsf.tishadow.tests.launchTiShadowTests";
+	public static final String DEPLOY_LAUNCH_CONFIGURATION_PARAMETER = "com.belatrixsf.tishadow.run.launchTiShadowRun";
 	public static final String RUN_TYPE_PARAMETER = "com.belatrixsf.tishadow.runType";
+	public static final String DEPLOY = "deploy";
+	public static final String TEST = "test";
 	private static String runTypeParameter;
 	 
 	@Override
@@ -51,17 +55,15 @@ public class TiShadowHandler extends AbstractHandler implements IRunnerCallback 
 		} else {
 			ISelection selection = HandlerUtil.getCurrentSelection(event);
 			
-			//////  DELETE after refactoring... 
 			runTypeParameter = event.getParameter(RUN_TYPE_PARAMETER);
-			if (runTypeParameter.equals("deploy")) {
+			if (runTypeParameter.equals(DEPLOY)) {
 				LaunchRunShortcut shortcut = new LaunchRunShortcut();
 				shortcut.launch(selection, "run");
 			}
-			if (runTypeParameter.equals("test")) {
+			if (runTypeParameter.equals(TEST)) {
 				LaunchTestsShortcut shortcut = new LaunchTestsShortcut();
 				shortcut.launch(selection, "run");
 			}
-			////// DELETE
 		}
 
 		return null;
@@ -71,12 +73,12 @@ public class TiShadowHandler extends AbstractHandler implements IRunnerCallback 
 		ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
 		ILaunchConfigurationType type = null;
 		
-		if (runTypeParameter.equals("deploy")) {
-			type = launchManager.getLaunchConfigurationType("com.belatrixsf.tishadow.run.launchTiShadowRun");
+		if (runTypeParameter.equals(DEPLOY)) {
+			type = launchManager.getLaunchConfigurationType(DEPLOY_LAUNCH_CONFIGURATION_PARAMETER);
 		}
         ILaunchConfiguration[] launchs = null;
-		if (runTypeParameter.equals("test")) {
-			 type = launchManager.getLaunchConfigurationType("com.belatrixsf.tishadow.tests.launchTiShadowTests");
+		if (runTypeParameter.equals(TEST)) {
+			 type = launchManager.getLaunchConfigurationType(TEST_LAUNCH_CONFIGURATION_PARAMETER);
 		}
 		
         try {

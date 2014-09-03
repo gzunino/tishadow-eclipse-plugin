@@ -121,19 +121,26 @@
             canFinishEarly="false"
             category="com.belatrixsf.tishadow.app"
             class="com.belatrixsf.tishadow.app.wizards.ApplicationTiShadowWizard"
-            icon="icons/tishadow.png"
+            icon="icons/tishadow-app_16.png"
             id="com.belatrixsf.tishadow.app.wizards.BaseProjectWizardController"
-            name="TiShadow App Creation"
+            name="App Creation"
             project="true">
+         <description>
+            Generate the source code / project for the tishadow app.
+         </description>
       </wizard>
       <wizard
             canFinishEarly="false"
             category="com.belatrixsf.tishadow.app"
             class="com.belatrixsf.tishadow.app.wizards.AppifyTiShadowWizard"
-            icon="icons/tishadow.png"
+            icon="icons/tishadow-appify_16.png"
             id="com.belatrixsf.tishadow.app.wizards.AppifyWizardController"
-            name="TiShadow Appify Creation (Creates a TI app)"
+            name="Appify an existing project"
             project="true">
+         <description>
+            Create a stand-alone app that is integrated with tishadow.
+This allows connecting to the deployed app via the repl and/or push upgrades.
+         </description>
       </wizard>
    </extension>
    <extension
@@ -142,7 +149,7 @@
             locationURI="popup:common.new.menu?before=new">
             <command
                   commandId="com.belatrixsf.tishadow.tests.appify"
-                  label="TiShadow Appify">
+                  label="TiShadow Appify...">
                   <visibleWhen>
 	               <with
 	                     variable="selection">
@@ -203,6 +210,10 @@
                   label="TS run tests"
                   style="pulldown"
                   tooltip="Run tests on the selected project">
+               <parameter
+                     name="com.belatrixsf.tishadow.runType"
+                     value="test">
+               </parameter>
             </command>
             <command
                   commandId="com.belatrixsf.tishadow.run.runDeploy"
@@ -269,12 +280,17 @@
       </command>
       <command
             categoryId="com.belatrixsf.tishadow.tests.category"
-            defaultHandler="com.belatrixsf.tishadow.handlers.RunTest"
+            defaultHandler="com.belatrixsf.tishadow.handlers.TiShadowHandler"
             id="com.belatrixsf.tishadow.tests.runTest"
             name="Run TiShadow Tests">
          <commandParameter
-               id="com.belatrixsf.tishadow.tests.config"
-               name="runTestsConfig"
+               id="com.belatrixsf.tishadow.runType"
+               name="test"
+               optional="true">
+         </commandParameter>
+         <commandParameter
+               id="com.belatrixsf.tishadow.config"
+               name="runConfig"
                optional="true">
          </commandParameter>
       </command>

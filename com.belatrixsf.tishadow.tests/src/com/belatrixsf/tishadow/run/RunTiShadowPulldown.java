@@ -19,6 +19,9 @@ public class RunTiShadowPulldown extends CompoundContributionItem implements IWo
 	  
 	 private IServiceLocator mServiceLocator;
 	 public static final String COMMAND_ID = "com.belatrixsf.tishadow.run.runDeploy";
+	 public static final String CONFIGURATION_PARAMETER = "com.belatrixsf.tishadow.config";
+	 public static final String LAUNCH_TEST_CONFIGURATION_PARAMETER = "com.belatrixsf.tishadow.run.launchTiShadowRun";
+	 
 	  
 	 public RunTiShadowPulldown() {  
 	 }  
@@ -32,7 +35,7 @@ public class RunTiShadowPulldown extends CompoundContributionItem implements IWo
 	  
 		 
 		 ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
-		 ILaunchConfigurationType type = launchManager.getLaunchConfigurationType("com.belatrixsf.tishadow.run.launchTiShadowRun");
+		 ILaunchConfigurationType type = launchManager.getLaunchConfigurationType(LAUNCH_TEST_CONFIGURATION_PARAMETER);
          ILaunchConfiguration[] launchs = null;
          
          try {
@@ -45,7 +48,7 @@ public class RunTiShadowPulldown extends CompoundContributionItem implements IWo
 		 
 		 for (int i = 0 ; i < launchs.length ; i++) {
 			 
-			 Map<String,String> pullDownConfig = Collections.singletonMap("com.belatrixsf.tishadow.config", launchs[i].getName());
+			 Map<String,String> pullDownConfig = Collections.singletonMap(CONFIGURATION_PARAMETER, launchs[i].getName());
 			 
 			 final CommandContributionItemParameter contributionParameter = new CommandContributionItemParameter(mServiceLocator, null, COMMAND_ID,  
 					    CommandContributionItem.STYLE_PUSH);

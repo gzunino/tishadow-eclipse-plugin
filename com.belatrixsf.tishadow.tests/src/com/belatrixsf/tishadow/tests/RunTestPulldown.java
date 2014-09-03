@@ -17,7 +17,11 @@ import org.eclipse.ui.services.IServiceLocator;
 
 public class RunTestPulldown extends CompoundContributionItem implements IWorkbenchContribution {  
 	  
-	 private IServiceLocator mServiceLocator;  
+	 private IServiceLocator mServiceLocator;
+	 public static final String COMMAND_ID = "com.belatrixsf.tishadow.tests.runTest";
+	 public static final String CONFIGURATION_PARAMETER = "com.belatrixsf.tishadow.config";
+	 public static final String LAUNCH_TEST_CONFIGURATION_PARAMETER = "com.belatrixsf.tishadow.tests.launchTiShadowTests";
+	
 	  
 	 public RunTestPulldown() {  
 	 }  
@@ -31,7 +35,7 @@ public class RunTestPulldown extends CompoundContributionItem implements IWorkbe
 	  
 		 
 		 ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
-		 ILaunchConfigurationType type = launchManager.getLaunchConfigurationType("com.belatrixsf.tishadow.tests.launchTiShadowTests");
+		 ILaunchConfigurationType type = launchManager.getLaunchConfigurationType(LAUNCH_TEST_CONFIGURATION_PARAMETER);
          ILaunchConfiguration[] launchs = null;
          
          try {
@@ -44,9 +48,9 @@ public class RunTestPulldown extends CompoundContributionItem implements IWorkbe
 		 
 		 for (int i = 0 ; i < launchs.length ; i++) {
 			 
-			 Map<String,String> pullDownConfig = Collections.singletonMap("com.belatrixsf.tishadow.tests.config", launchs[i].getName());
+			 Map<String,String> pullDownConfig = Collections.singletonMap(CONFIGURATION_PARAMETER, launchs[i].getName());
 			 
-			 final CommandContributionItemParameter contributionParameter = new CommandContributionItemParameter(mServiceLocator, null, "com.belatrixsf.tishadow.tests.runTest",  
+			 final CommandContributionItemParameter contributionParameter = new CommandContributionItemParameter(mServiceLocator, null, COMMAND_ID,  
 					    CommandContributionItem.STYLE_PUSH);
 			 contributionParameter.label = (i+1) + ". " + launchs[i].getName();
 			 contributionParameter.visibleEnabled = true;

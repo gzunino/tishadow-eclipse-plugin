@@ -100,6 +100,7 @@ public class ArgsBuilder {
 		ArrayList<Argument> argumentsList = new ArrayList<Argument>();
 		
 		argumentsList.add(runUpdate);
+		argumentsList.add(runAutomaticUpdates);
 		argumentsList.add(runPatch);
 		argumentsList.add(runLocale);
 		argumentsList.add(runJshint);
@@ -111,7 +112,6 @@ public class ArgsBuilder {
 		argumentsList.add(runPlatform);
 		argumentsList.add(runIncludeDotFiles);
 		argumentsList.add(runTarget);
-		argumentsList.add(runAutomaticUpdates);
 		
 		return argumentsList;
 	}
