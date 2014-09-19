@@ -363,22 +363,24 @@ public class LaunchTiShadowTests implements ILaunchConfigurationDelegate {
 	}
 
 	private void showWizard() {
-		String hideWizard = Activator.getDefault().getPreferenceStore().getString("tishadow.hideWizard");
-		
-		if(!MessageDialogWithToggle.ALWAYS.equals(hideWizard)) {
-			String instructionsMessage = "1 - Make sure the tishadow server is running. You can start it using the Run Tishadow server option in the context menu.\n";
-			instructionsMessage += "2 - Open the tishadow application on the devices you want to use to run the tests and connect them to the server.\n";
-			instructionsMessage += "3 - Once this is done the tests will run properly.\n";
+		String hideWizard = Activator.getDefault().getPreferenceStore()
+				.getString("tishadow.hideWizard");
 
-			MessageDialogWithToggle.openInformation(
-				null, 
-				"TiShadow Wizard", 
-				instructionsMessage, 
-				"Do not show this wizard again", 
-				true, 
-				Activator.getDefault().getPreferenceStore(), 
-				"tishadow.hideWizard"
-			);
+		if (!MessageDialogWithToggle.ALWAYS.equals(hideWizard)) {
+			final String instructionsMessage = "1 - Make sure the tishadow server is running. You can start it using the Run Tishadow server option in the context menu.\n 2 - Open the tishadow application on the devices you want to use to run the tests and connect them to the server.\n 3 - Once this is done the tests will run properly.\n";
+
+			Display.getDefault().asyncExec(new Runnable() {
+				@Override
+				public void run() {
+					Display display = Display.getDefault();
+					Shell shell = display.getActiveShell();
+					MessageDialogWithToggle.openInformation(shell,
+							"TiShadow Wizard", instructionsMessage,
+							"Do not show this wizard again", true, Activator
+									.getDefault().getPreferenceStore(),
+							"tishadow.hideWizard");
+				}
+			});
 		}
 	}
 
