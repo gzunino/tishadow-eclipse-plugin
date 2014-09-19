@@ -152,6 +152,8 @@ _2014-08-28:_ Updated tooltip, labels and help. Renamed all Run commands to Depl
 
 _2014-08-29:_ Fixed bugs on UI: error message alerts.
 
+_2014-09-19:_ Fixed bug on UI: error message alert for running tests.
+
 ---
 # Authors and Contributors
 
