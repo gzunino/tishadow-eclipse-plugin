@@ -51,6 +51,16 @@ Note: The update site URL will depend on you Eclipse/TitaniumStudio. For a stand
 ---
 # Working with TiShadow
 
+## Setup TiShadow plugin
+
+As soon as you have installed TiShadow plugin for Titanium, make sure the plugin recognizes accordingly the TiShadow version installed on your system. To do that, go to <b>Windows > Preferences</b> and select <b>TiShadow</b>.
+
+Check for the TiShadow version on the top. If is not shown, browse for your current TiShadow path location and apply the changes.
+
+Also you can configure the default port and host for your wizards.
+
+![](http://gzunino.github.io/tishadow-eclipse-plugin/images/TiShadowPreferences.png "TiShadow Plug-in")
+
 ## Appify your project
 
 First you have to "appify" the project you want to test, which will create a new app that is basically the same but with the TiShadow libraries included.
@@ -139,6 +149,10 @@ _2014-08-21:_ Fixed bug on the TiShadow run button that was getting the default 
 _2014-08-22:_ Added key shortcuts to launch TiShadow server, tests and run.
 
 _2014-08-28:_ Updated tooltip, labels and help. Renamed all Run commands to Deploy.
+
+_2014-08-29:_ Fixed bugs on UI: error message alerts.
+
+_2014-09-19:_ Fixed bug on UI: error message alert for running tests.
 
 ---
 # Authors and Contributors

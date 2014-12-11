@@ -8,11 +8,19 @@
             commandId="com.belatrixsf.tishadow.run.runDeploy"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="CTRL+9">
+         <parameter
+               id="com.belatrixsf.tishadow.runType"
+               value="deploy">
+         </parameter>
       </key>
       <key
             commandId="com.belatrixsf.tishadow.tests.runTest"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="CTRL+8">
+         <parameter
+               id="com.belatrixsf.tishadow.runType"
+               value="test">
+         </parameter>
       </key>
       <key
             commandId="com.belatrixsf.tishadow.tests.runServer"
