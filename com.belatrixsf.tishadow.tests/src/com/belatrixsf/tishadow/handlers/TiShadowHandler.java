@@ -13,7 +13,6 @@ import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.handlers.HandlerUtil;
-
 import com.belatrixsf.tishadow.run.LaunchRunShortcut;
 import com.belatrixsf.tishadow.runner.IRunnerCallback;
 import com.belatrixsf.tishadow.tests.LaunchTestsShortcut;
@@ -76,10 +75,11 @@ public class TiShadowHandler extends AbstractHandler implements IRunnerCallback 
 		if (runTypeParameter.equals(DEPLOY)) {
 			type = launchManager.getLaunchConfigurationType(DEPLOY_LAUNCH_CONFIGURATION_PARAMETER);
 		}
-        ILaunchConfiguration[] launchs = null;
 		if (runTypeParameter.equals(TEST)) {
-			 type = launchManager.getLaunchConfigurationType(TEST_LAUNCH_CONFIGURATION_PARAMETER);
+			type = launchManager.getLaunchConfigurationType(TEST_LAUNCH_CONFIGURATION_PARAMETER);
 		}
+		
+        ILaunchConfiguration[] launchs = null;
 		
         try {
         	launchs = launchManager.getLaunchConfigurations(type);
