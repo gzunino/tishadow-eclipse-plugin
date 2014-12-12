@@ -154,6 +154,11 @@ _2014-08-29:_ Fixed bugs on UI: error message alerts.
 
 _2014-09-19:_ Fixed bug on UI: error message alert for running tests.
 
+_2014-12-11:_ Fixed bug on UI: shortcuts for deploy (ctrl +9) and test (ctrol + 8) are working again.
+
+_2014-12-12:_ Fixed bug on UI: Run configurations working properly
+
+
 ---
 # Authors and Contributors
 
